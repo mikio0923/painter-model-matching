@@ -1,0 +1,19 @@
+# Laravel
+src/vendor/
+src/node_modules/
+src/.env
+src/storage/*.key
+src/storage/logs/
+src/storage/framework/
+src/bootstrap/cache/
+
+# Docker
+docker/mysql/data/
+*.log
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/

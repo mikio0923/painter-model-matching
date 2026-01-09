@@ -50,7 +50,7 @@ class ModelProfile extends Model
 
     public function mainImage(): ?ModelProfileImage
     {
-        return $this->images()->where('is_main', true)->first() 
+        return $this->images()->where('is_main', true)->first()
             ?? $this->images()->orderBy('display_order')->first();
     }
 }

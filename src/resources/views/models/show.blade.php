@@ -71,6 +71,47 @@
         </div>
     </div>
 
+    {{-- 自己紹介 --}}
+    @if($modelProfile->bio)
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-2">自己紹介</h2>
+            <p class="text-gray-700 whitespace-pre-wrap">{{ $modelProfile->bio }}</p>
+        </div>
+    @endif
+
+    {{-- 経験・実績 --}}
+    @if($modelProfile->experience)
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-2">経験・実績</h2>
+            <p class="text-gray-700 whitespace-pre-wrap">{{ $modelProfile->experience }}</p>
+        </div>
+    @endif
+
+    {{-- ポートフォリオ・SNS --}}
+    @if($modelProfile->portfolio_url || !empty($modelProfile->sns_links))
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-2">リンク</h2>
+            <div class="space-y-2">
+                @if($modelProfile->portfolio_url)
+                    <div>
+                        <a href="{{ $modelProfile->portfolio_url }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800">
+                            ポートフォリオ →
+                        </a>
+                    </div>
+                @endif
+                @if(!empty($modelProfile->sns_links))
+                    @foreach($modelProfile->sns_links as $link)
+                        <div>
+                            <a href="{{ $link }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800">
+                                {{ $link }} →
+                            </a>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+        </div>
+    @endif
+
     {{-- 画像ギャラリー --}}
     @if($modelProfile->images->count() > 0)
         <div class="mb-8">
@@ -78,8 +119,8 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach($modelProfile->images as $image)
                     <div class="aspect-square overflow-hidden rounded-lg border border-gray-300">
-                        <img src="{{ Storage::url($image->image_path) }}" 
-                             alt="ギャラリー画像" 
+                        <img src="{{ Storage::url($image->image_path) }}"
+                             alt="ギャラリー画像"
                              class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
                              onclick="openImageModal('{{ Storage::url($image->image_path) }}')">
                     </div>

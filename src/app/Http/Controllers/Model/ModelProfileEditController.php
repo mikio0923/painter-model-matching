@@ -80,6 +80,14 @@ class ModelProfileEditController extends Controller
             $validated['pose_ranges'] = array_values(array_filter($validated['pose_ranges']));
         }
 
+        // SNSリンクを配列形式で保存
+        if ($request->has('sns_links_input')) {
+            $links = array_filter(array_map('trim', explode(',', $request->input('sns_links_input'))));
+            $validated['sns_links'] = array_values($links);
+        } elseif (isset($validated['sns_links'])) {
+            $validated['sns_links'] = array_values(array_filter($validated['sns_links']));
+        }
+
         // online_availableとis_publicをbooleanに変換
         $validated['online_available'] = $request->has('online_available');
         $validated['is_public'] = $request->has('is_public');

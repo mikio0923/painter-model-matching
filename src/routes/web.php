@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MypageController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Painter\PainterJobController;
 use App\Http\Controllers\Painter\PainterJobApplicationController;
 use App\Http\Controllers\Model\ModelProfileEditController;
@@ -31,6 +32,12 @@ Route::view('/guideline', 'guideline')->name('guideline');
 Route::view('/faq', 'faq')->name('faq');
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
+Route::view('/guide/model', 'guide.model')->name('guide.model');
+Route::view('/guide/painter', 'guide.painter')->name('guide.painter');
+
+// お問い合わせ
+Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 /*
 |--------------------------------------------------------------------------

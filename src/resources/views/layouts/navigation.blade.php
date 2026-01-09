@@ -28,6 +28,12 @@
                     <a href="{{ route('faq') }}" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600">
                         Q&A
                     </a>
+                    <a href="{{ route('guide.model') }}" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600">
+                        モデルになるガイド
+                    </a>
+                    <a href="{{ route('guide.painter') }}" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600">
+                        モデルを探すガイド
+                    </a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2 text-sm">

@@ -1,0 +1,83 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\MypageController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Painter\PainterJobController;
+use App\Http\Controllers\Painter\PainterJobApplicationController;
+use App\Http\Controllers\Model\ModelProfileEditController;
+use App\Http\Controllers\Model\ModelApplicationController;
+use App\Http\Controllers\Model\ModelProfileController;
+use App\Http\Controllers\MessageController;
+
+/*
+|--------------------------------------------------------------------------
+| Public (Guest OK)
+|--------------------------------------------------------------------------
+*/
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/models', [ModelProfileController::class, 'index'])->name('models.index');
+Route::get('/models/{modelProfile}', [ModelProfileController::class, 'show'])->name('models.show');
+
+Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
+Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
+
+// 静的ページ
+Route::view('/about', 'about')->name('about');
+Route::view('/guideline', 'guideline')->name('guideline');
+Route::view('/faq', 'faq')->name('faq');
+Route::view('/terms', 'terms')->name('terms');
+Route::view('/privacy', 'privacy')->name('privacy');
+
+/*
+|--------------------------------------------------------------------------
+| Auth Required (Common)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
+    Route::get('/mypage', [MypageController::class, 'index'])->name('mypage');
+
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/job/{job}', [MessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/job/{job}', [MessageController::class, 'store'])->name('messages.store');
+
+    Route::get('/jobs/{job}/reviews/create', [ReviewController::class, 'create'])->name('reviews.create');
+    Route::post('/jobs/{job}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Model only
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->group(function () {
+    Route::get('/profile/edit', [ModelProfileEditController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ModelProfileEditController::class, 'update'])->name('profile.update');
+
+    Route::get('/applications', [ModelApplicationController::class, 'index'])->name('applications.index');
+
+    // 応募は「依頼詳細からPOST」想定（画面は jobs.show 側でOK）
+    Route::post('/jobs/{job}/apply', [ModelApplicationController::class, 'apply'])->name('jobs.apply');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Painter only
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:painter'])->prefix('painter')->name('painter.')->group(function () {
+    Route::get('/jobs', [PainterJobController::class, 'index'])->name('jobs.index');
+    Route::get('/jobs/create', [PainterJobController::class, 'create'])->name('jobs.create');
+    Route::post('/jobs', [PainterJobController::class, 'store'])->name('jobs.store');
+    Route::get('/jobs/{job}/edit', [PainterJobController::class, 'edit'])->name('jobs.edit');
+    Route::put('/jobs/{job}', [PainterJobController::class, 'update'])->name('jobs.update');
+
+    Route::get('/jobs/{job}/applications', [PainterJobApplicationController::class, 'index'])->name('jobs.applications.index');
+    Route::post('/jobs/{job}/applications/{application}/accept', [PainterJobApplicationController::class, 'accept'])->name('jobs.applications.accept');
+    Route::post('/jobs/{job}/applications/{application}/reject', [PainterJobApplicationController::class, 'reject'])->name('jobs.applications.reject');
+});
+
+require __DIR__.'/auth.php';

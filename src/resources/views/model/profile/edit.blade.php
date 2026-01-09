@@ -14,10 +14,10 @@
         @csrf
         @method('PUT')
 
-        {{-- プロフィール画像 --}}
+        {{-- プロフィール画像（旧形式、後方互換性のため残す） --}}
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-                プロフィール画像
+                プロフィール画像（メイン画像）
             </label>
             @if($modelProfile->profile_image_path)
                 <div class="mb-4">
@@ -35,6 +35,55 @@
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
             <p class="mt-1 text-sm text-gray-500">JPEG、PNG、GIF形式、最大5MB</p>
+        </div>
+
+        {{-- 複数画像ギャラリー --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                画像ギャラリー（最大10枚）
+            </label>
+            
+            @if($modelProfile->images->count() > 0)
+                <div class="grid grid-cols-3 md:grid-cols-5 gap-4 mb-4">
+                    @foreach($modelProfile->images as $image)
+                        <div class="relative">
+                            <img src="{{ Storage::url($image->image_path) }}" 
+                                 alt="ギャラリー画像" 
+                                 class="w-full aspect-square object-cover rounded-lg border border-gray-300">
+                            <div class="absolute top-2 right-2 flex gap-1">
+                                @if($image->is_main)
+                                    <span class="bg-green-500 text-white text-xs px-2 py-1 rounded">メイン</span>
+                                @else
+                                    <button type="button" 
+                                            onclick="setMainImage({{ $image->id }})"
+                                            class="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600">
+                                        メインに
+                                    </button>
+                                @endif
+                                <button type="button" 
+                                        onclick="deleteImage({{ $image->id }})"
+                                        class="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600">
+                                    削除
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <input type="file" 
+                   id="images" 
+                   name="images[]" 
+                   accept="image/jpeg,image/png,image/jpg,image/gif"
+                   multiple
+                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            @error('images')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+            @error('images.*')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+            <p class="mt-1 text-sm text-gray-500">複数選択可能、JPEG、PNG、GIF形式、各最大5MB</p>
         </div>
 
         {{-- 表示名 --}}
@@ -153,6 +202,65 @@
             @error('hair_type')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
+        </div>
+
+        {{-- 自己紹介 --}}
+        <div>
+            <label for="bio" class="block text-sm font-medium text-gray-700 mb-1">
+                自己紹介
+            </label>
+            <textarea id="bio" 
+                      name="bio" 
+                      rows="4"
+                      placeholder="自己紹介を入力してください"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('bio', $modelProfile->bio) }}</textarea>
+            @error('bio')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- 経験・実績 --}}
+        <div>
+            <label for="experience" class="block text-sm font-medium text-gray-700 mb-1">
+                経験・実績
+            </label>
+            <textarea id="experience" 
+                      name="experience" 
+                      rows="4"
+                      placeholder="経験や実績を入力してください"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('experience', $modelProfile->experience) }}</textarea>
+            @error('experience')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- ポートフォリオURL --}}
+        <div>
+            <label for="portfolio_url" class="block text-sm font-medium text-gray-700 mb-1">
+                ポートフォリオURL
+            </label>
+            <input type="url" 
+                   id="portfolio_url" 
+                   name="portfolio_url" 
+                   value="{{ old('portfolio_url', $modelProfile->portfolio_url) }}"
+                   placeholder="https://example.com"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            @error('portfolio_url')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- SNSリンク --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+                SNSリンク（カンマ区切りでURLを入力）
+            </label>
+            <input type="text" 
+                   name="sns_links_input" 
+                   value="{{ old('sns_links_input', is_array($modelProfile->sns_links) ? implode(',', $modelProfile->sns_links) : '') }}"
+                   placeholder="https://twitter.com/example, https://instagram.com/example"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <p class="mt-1 text-sm text-gray-500">カンマ区切りで複数のURLを入力できます</p>
         </div>
 
         {{-- スタイルタグ --}}

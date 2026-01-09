@@ -18,6 +18,10 @@ class ModelProfile extends Model
         'height',
         'body_type',
         'hair_type',
+        'bio',
+        'experience',
+        'portfolio_url',
+        'sns_links',
         'style_tags',
         'pose_ranges',
         'online_available',
@@ -29,6 +33,7 @@ class ModelProfile extends Model
     protected $casts = [
         'style_tags' => 'array',
         'pose_ranges' => 'array',
+        'sns_links' => 'array',
         'online_available' => 'boolean',
         'is_public' => 'boolean',
     ];

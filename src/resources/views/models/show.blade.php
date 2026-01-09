@@ -4,9 +4,13 @@
 <div class="container mx-auto px-4 py-8 max-w-3xl">
 
     <div class="flex gap-6 mb-6">
-        @if($modelProfile->profile_image_path)
+        @php
+            $mainImage = $modelProfile->mainImage();
+            $displayImage = $mainImage ? $mainImage->image_path : $modelProfile->profile_image_path;
+        @endphp
+        @if($displayImage)
             <div class="flex-shrink-0">
-                <img src="{{ Storage::url($modelProfile->profile_image_path) }}"
+                <img src="{{ Storage::url($displayImage) }}"
                      alt="{{ $modelProfile->display_name }}"
                      class="w-48 h-48 object-cover rounded-lg border border-gray-300">
             </div>
@@ -66,6 +70,23 @@
             @endif
         </div>
     </div>
+
+    {{-- 画像ギャラリー --}}
+    @if($modelProfile->images->count() > 0)
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">画像ギャラリー</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                @foreach($modelProfile->images as $image)
+                    <div class="aspect-square overflow-hidden rounded-lg border border-gray-300">
+                        <img src="{{ Storage::url($image->image_path) }}" 
+                             alt="ギャラリー画像" 
+                             class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+                             onclick="openImageModal('{{ Storage::url($image->image_path) }}')">
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
     {{-- タグ --}}
     <div class="mb-8">
@@ -146,4 +167,25 @@
     </div>
 
 </div>
+
+{{-- 画像モーダル --}}
+<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center" onclick="closeImageModal()">
+    <div class="max-w-4xl max-h-full p-4 relative">
+        <img id="modalImage" src="" alt="拡大画像" class="max-w-full max-h-screen object-contain">
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white text-2xl font-bold hover:text-gray-300 bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center">×</button>
+    </div>
+</div>
+
+<script>
+function openImageModal(imageSrc) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('imageModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    document.getElementById('imageModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+</script>
 @endsection

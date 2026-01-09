@@ -113,7 +113,7 @@ class ModelProfileController extends Controller
         }
 
         // user も一緒に読み込む（念のため）
-        $modelProfile->load('user');
+        $modelProfile->load('user', 'images');
 
         // 受け取ったレビューを取得
         $reviews = \App\Models\Review::where('reviewed_user_id', $modelProfile->user_id)

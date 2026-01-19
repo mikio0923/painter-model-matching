@@ -310,6 +310,203 @@ npm run build
 # ビルドされたアセットは public/build/ に出力される
 ```
 
+## よくある質問（FAQ）
+
+### ViteとNode.js環境について
+
+#### Q: `nvm use 20`の意味は？
+
+**A:** Node.jsのバージョンを20系に切り替えるコマンドです。
+
+- **nvm（Node Version Manager）**: Node.jsのバージョン管理ツール
+- **`nvm use 20`**: インストール済みのNode.js 20系（例: 20.20.0）を使用する
+- **理由**: このプロジェクトのViteはNode.js 20.19以上または22.12以上が必要なため
+
+**関連コマンド：**
+```bash
+# 現在のバージョン確認
+nvm current
+
+# インストール済みバージョン一覧
+nvm ls
+
+# 特定バージョンを使用
+nvm use 20
+
+# デフォルトバージョンを設定（再起動後も自動で使用）
+nvm alias default 20
+```
+
+#### Q: `http://localhost:5173/`が開けない理由は？
+
+**A:** Vite開発サーバーが起動していないためです。
+
+**解決方法：**
+```bash
+# プロジェクトのsrcディレクトリに移動
+cd src
+
+# Node.jsバージョンを設定（nvm使用時）
+source ~/.nvm/nvm.sh
+nvm use 20
+
+# Vite開発サーバーを起動
+npm run dev
+```
+
+**注意点：**
+- `http://localhost:5173/`はVite開発サーバーのアドレスです
+- 通常は`http://localhost:8081/`（Laravelアプリ）にアクセスします
+- Viteはバックグラウンドで動作し、CSS/JSの変更を自動反映します
+- 直接`http://localhost:5173/`にアクセスする必要は通常ありません
+
+#### Q: なぜ`http://localhost:5173/`を建てたの？
+
+**A:** Vite開発サーバーは、Laravelアプリケーションから自動的に参照されるため必要です。
+
+**役割：**
+1. **LaravelとViteの連携**
+   - LaravelのBladeテンプレートで`@vite(['resources/css/app.css', 'resources/js/app.js'])`を使用
+   - 開発中は、このディレクティブがVite開発サーバー（5173）からアセットを読み込む
+
+2. **ホットリロード（HMR）**
+   - CSS/JSの変更を自動反映
+   - ブラウザのリロードなしで変更が反映される
+
+3. **開発効率の向上**
+   - 変更を即時に確認できる
+
+**動作の流れ：**
+```
+1. ブラウザで http://localhost:8081/ にアクセス
+   ↓
+2. LaravelがBladeテンプレートをレンダリング
+   ↓
+3. @viteディレクティブが http://localhost:5173/ からCSS/JSを読み込む
+   ↓
+4. ページが表示される（Viteサーバー経由でアセットが配信される）
+```
+
+#### Q: Viteを使う際に新しいローカル環境（Node.js）は建てなきゃいけないの？
+
+**A:** 必須ではありません。選択肢は2つあります。
+
+**選択肢A: ローカル環境でNode.jsを使用（現在の構成）**
+- **メリット**: HMRが確実に動作、ファイル変更の検知が確実、開発体験が良い
+- **デメリット**: ローカルにNode.jsが必要、再起動後に手動で起動が必要
+
+**選択肢B: Dockerコンテナ内でViteを動かす**
+- `docker-compose.yml`を修正すれば、Viteもコンテナ内で動かせます
+- **メリット**: ローカルにNode.jsが不要、Docker Composeで一括起動可能
+- **デメリット**: HMRが不安定になる場合がある（ファイル監視の問題）
+
+**結論**: ローカル環境は必須ではないが、HMRの安定性を重視するならローカルが推奨。
+
+#### Q: Viteの機能と同じ実装をLaravelのみで完結することはできないの？
+
+**A:** 可能ですが、機能は制限されます。
+
+**方法1: 生のCSS/JSファイルを直接読み込む（最もシンプル）**
+```blade
+<!-- @viteの代わりに -->
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<script src="{{ asset('js/app.js') }}"></script>
+```
+- **メリット**: Node.js不要、シンプル
+- **デメリット**: HMRなし、Tailwind CSSのビルドができない、最適化なし、開発効率が下がる
+
+**方法2: 本番ビルドのみ使用（開発時は手動リロード）**
+```bash
+# 開発時：変更のたびに手動でビルド
+npm run build
+```
+- **メリット**: Node.jsは必要だが、開発サーバーは不要
+- **デメリット**: HMRなし、変更のたびにビルドが必要、開発効率が下がる
+
+**方法3: CDNを使用（Tailwind CSSをCDNから読み込む）**
+```blade
+<script src="https://cdn.tailwindcss.com"></script>
+```
+- **メリット**: Node.js不要、セットアップが簡単
+- **デメリット**: カスタム設定が使えない、ファイルサイズが大きい、本番環境では非推奨
+
+**推奨事項**: 現在の構成（ローカルVite）を推奨。HMRで開発効率が高く、Tailwind CSSのカスタム設定が使え、ビルド最適化が効く。
+
+#### Q: 今回Viteを利用した理由は？
+
+**A:** Laravel Breezeのデフォルト構成として自動的に含まれていたためです。
+
+**経緯：**
+1. **Laravel Breezeをインストール**
+   ```bash
+   composer require laravel/breeze --dev
+   php artisan breeze:install
+   ```
+
+2. **Breezeのインストール時に自動で含まれるもの**
+   - Vite設定（`vite.config.js`）
+   - `package.json`（Vite関連の依存関係）
+   - `@vite`ディレクティブを使ったBladeテンプレート
+   - Tailwind CSSの設定
+
+**なぜBreezeがViteを使うのか：**
+1. **Laravel 11の標準**: Laravel Mixは非推奨・削除され、Viteが推奨
+2. **モダンな開発体験**: 高速なHMR、最適化されたビルド、開発効率の向上
+3. **Tailwind CSSとの統合**: BreezeはTailwind CSSを使用し、ViteがTailwindのJITコンパイルを効率的に処理
+
+**まとめ**: 直接Viteを選んだわけではなく、Laravel Breezeを導入した際に自動で含まれた。結果として、モダンなフロントエンド開発環境が整った。
+
+#### Q: 今後の開発にあたって逐一コマンドを押してVite用の環境を作る必要があるの？
+
+**A:** いいえ、自動化できます。
+
+**方法1: Docker Composeで自動起動（推奨）**
+```bash
+# docker-compose.ymlにViteサービスを追加済み
+docker-compose up -d
+```
+- すべてのサービス（Laravel、MySQL、Nginx、Vite）が一度に起動
+
+**方法2: 起動スクリプトを使用**
+```bash
+# 完全自動起動（Docker Compose）
+./start-dev.sh
+
+# ローカル環境でVite起動
+./start-dev-local.sh
+```
+
+**方法3: 手動起動（従来の方法）**
+```bash
+cd src
+source ~/.nvm/nvm.sh
+nvm use 20
+npm run dev
+```
+
+**推奨**: `./start-dev.sh`を使用すれば、PC再起動後も1コマンドで開発環境が起動します。
+
+### 環境構成について
+
+#### Q: Dockerコンテナとローカル環境の違いは？
+
+**A:** 以下のように使い分けています。
+
+**Dockerコンテナで動いているもの：**
+- Laravelアプリケーション（PHP 8.3-FPM）
+- MySQLデータベース（ポート3307）
+- Nginx（ポート8081）
+- Vite開発サーバー（ポート5173）← Docker Composeで自動起動可能
+
+**ローカル環境で動かすことも可能：**
+- Vite開発サーバー（ポート5173）
+  - Docker Composeを使わない場合は、ローカル環境で実行
+  - ホットリロード（HMR）機能がより安定して動作する場合がある
+
+**理由：**
+- バックエンド（Laravel、MySQL）はDockerコンテナで一貫性を保つ
+- フロントエンド（Vite）はローカル環境でHMRの安定性を確保（またはDocker Composeで自動起動）
+
 ## ライセンス
 
 MIT License

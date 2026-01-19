@@ -122,6 +122,15 @@ class ModelProfileController extends Controller
             ->take(10)
             ->get();
 
-        return view('models.show', compact('modelProfile', 'reviews'));
+        // お気に入り状態を取得
+        $isFavorite = false;
+        if (Auth::check()) {
+            $isFavorite = \App\Models\Favorite::where('user_id', Auth::id())
+                ->where('favoritable_type', \App\Models\ModelProfile::class)
+                ->where('favoritable_id', $modelProfile->id)
+                ->exists();
+        }
+
+        return view('models.show', compact('modelProfile', 'reviews', 'isFavorite'));
     }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Job extends Model
 {
@@ -54,6 +55,12 @@ class Job extends Model
     public function scopeOpen($query)
     {
         return $query->where('status', 'open');
+    }
+
+    // お気に入り（ポリモーフィック）
+    public function favorites(): MorphMany
+    {
+        return $this->morphMany(Favorite::class, 'favoritable');
     }
 }
 

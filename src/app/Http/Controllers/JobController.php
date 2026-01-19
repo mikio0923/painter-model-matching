@@ -121,6 +121,15 @@ class JobController extends Controller
             }
         }
 
-        return view('jobs.show', compact('job', 'hasApplied', 'canReview', 'reviewTarget'));
+        // お気に入り状態を取得
+        $isFavorite = false;
+        if (Auth::check()) {
+            $isFavorite = \App\Models\Favorite::where('user_id', Auth::id())
+                ->where('favoritable_type', Job::class)
+                ->where('favoritable_id', $job->id)
+                ->exists();
+        }
+
+        return view('jobs.show', compact('job', 'hasApplied', 'canReview', 'reviewTarget', 'isFavorite'));
     }
 }

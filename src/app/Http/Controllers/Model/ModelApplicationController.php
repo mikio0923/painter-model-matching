@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Model;
 use App\Http\Controllers\Controller;
 use App\Models\Job;
 use App\Models\JobApplication;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -45,12 +46,15 @@ class ModelApplicationController extends Controller
         }
 
         // 応募を作成
-        JobApplication::create([
+        $application = JobApplication::create([
             'job_id' => $job->id,
             'model_id' => $user->id,
             'message' => $request->input('message'),
             'status' => 'applied',
         ]);
+
+        // 通知を作成（画家に通知）
+        NotificationService::notifyApplicationReceived($application);
 
         return redirect()->route('model.applications.index')
             ->with('success', '応募が完了しました');

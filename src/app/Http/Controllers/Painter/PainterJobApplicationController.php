@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PainterProfile;
 use App\Models\Job;
 use App\Models\JobApplication;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +54,9 @@ class PainterJobApplicationController extends Controller
             'status' => 'accepted',
         ]);
 
+        // 通知を作成（モデルに通知）
+        NotificationService::notifyApplicationAccepted($application);
+
         return redirect()->route('painter.jobs.applications.index', $job)
             ->with('success', '応募を承認しました');
     }
@@ -75,6 +79,9 @@ class PainterJobApplicationController extends Controller
         $application->update([
             'status' => 'rejected',
         ]);
+
+        // 通知を作成（モデルに通知）
+        NotificationService::notifyApplicationRejected($application);
 
         return redirect()->route('painter.jobs.applications.index', $job)
             ->with('success', '応募を却下しました');

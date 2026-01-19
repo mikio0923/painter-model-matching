@@ -41,6 +41,25 @@ services:
     volumes:
       - ./src:/var/www/html
     command: sh -lc "npm install && npm run build"
+    ports:
+      - "5173:5173"
+    stdin_open: true
+    tty: true
+
+  vite:
+    image: node:20-alpine
+    container_name: painter_vite
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+      - /var/www/html/node_modules
+    command: sh -c "npm install && npm run dev -- --host"
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - app
 
 volumes:
   db-data:

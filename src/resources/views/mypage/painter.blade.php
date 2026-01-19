@@ -15,12 +15,42 @@
                     @if($painterProfile->prefecture)
                         <p class="text-sm text-gray-600 mt-1">{{ $painterProfile->prefecture }}</p>
                     @endif
+                    @if($painterProfile->art_styles && count($painterProfile->art_styles) > 0)
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            @foreach($painterProfile->art_styles as $style)
+                                <span class="text-xs bg-gray-100 text-gray-700 rounded px-2 py-1">{{ $style }}</span>
+                            @endforeach
+                        </div>
+                    @endif
+                    @if($painterProfile->portfolio_url)
+                        <p class="text-sm mt-2">
+                            <a href="{{ $painterProfile->portfolio_url }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                                ポートフォリオを見る →
+                            </a>
+                        </p>
+                    @endif
                 </div>
             @else
-                <p class="text-gray-600 mb-4">プロフィールがまだ作成されていません</p>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-4">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-2">プロフィールを作成しましょう</h3>
+                    <p class="text-blue-700 text-sm mb-4">
+                        画家として活動するために、まずプロフィールを作成してください。<br>
+                        プロフィールを設定することで、モデルに依頼を出すことができます。
+                    </p>
+                    <a href="{{ route('painter.profile.edit') }}" 
+                       class="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 text-sm font-semibold">
+                        プロフィールを作成する
+                    </a>
+                </div>
             @endif
 
-            <div class="mt-4">
+            <div class="mt-4 flex gap-3">
+                @if($painterProfile)
+                    <a href="{{ route('painter.profile.edit') }}" 
+                       class="inline-block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 text-sm">
+                        プロフィールを編集
+                    </a>
+                @endif
                 <a href="{{ route('painter.jobs.create') }}" 
                    class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
                     新しい依頼を作成
@@ -57,18 +87,44 @@
     </div>
 
     {{-- 統計情報 --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div class="bg-white border rounded-lg p-6">
-            <div class="text-2xl font-bold text-blue-600">{{ $jobs->count() }}</div>
-            <div class="text-sm text-gray-600 mt-1">投稿中の依頼</div>
+            <div class="text-2xl font-bold text-blue-600">{{ $totalJobs }}</div>
+            <div class="text-sm text-gray-600 mt-1">総依頼数</div>
         </div>
         <div class="bg-white border rounded-lg p-6">
-            <div class="text-2xl font-bold text-green-600">{{ $totalApplications }}</div>
+            <div class="text-2xl font-bold text-green-600">{{ $openJobs }}</div>
+            <div class="text-sm text-gray-600 mt-1">募集中</div>
+        </div>
+        <div class="bg-white border rounded-lg p-6">
+            <div class="text-2xl font-bold text-purple-600">{{ $completedJobs }}</div>
+            <div class="text-sm text-gray-600 mt-1">完了済み</div>
+        </div>
+        <div class="bg-white border rounded-lg p-6">
+            <div class="text-2xl font-bold text-yellow-600">{{ $totalApplications }}</div>
             <div class="text-sm text-gray-600 mt-1">総応募数</div>
         </div>
         <div class="bg-white border rounded-lg p-6">
-            <div class="text-2xl font-bold text-purple-600">{{ $unreadMessages }}</div>
+            <div class="text-2xl font-bold text-indigo-600">{{ $acceptedApplications }}</div>
+            <div class="text-sm text-gray-600 mt-1">承認済み応募</div>
+        </div>
+        <div class="bg-white border rounded-lg p-6">
+            <div class="text-2xl font-bold text-pink-600">
+                @if($averageRating)
+                    {{ number_format($averageRating, 1) }}
+                @else
+                    -
+                @endif
+            </div>
+            <div class="text-sm text-gray-600 mt-1">平均評価</div>
+        </div>
+        <div class="bg-white border rounded-lg p-6">
+            <div class="text-2xl font-bold text-red-600">{{ $unreadMessages }}</div>
             <div class="text-sm text-gray-600 mt-1">未読メッセージ</div>
+        </div>
+        <div class="bg-white border rounded-lg p-6">
+            <div class="text-2xl font-bold text-teal-600">{{ $totalFavorites }}</div>
+            <div class="text-sm text-gray-600 mt-1">お気に入り数</div>
         </div>
     </div>
 

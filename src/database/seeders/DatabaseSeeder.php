@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
         // サンプルデータをシード
         $this->call([
             SampleDataSeeder::class,
+            InformationSeeder::class,
+            ReviewSeeder::class,
         ]);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class ModelProfile extends Model
 {
@@ -52,5 +53,11 @@ class ModelProfile extends Model
     {
         return $this->images()->where('is_main', true)->first()
             ?? $this->images()->orderBy('display_order')->first();
+    }
+
+    // お気に入り（ポリモーフィック）
+    public function favorites(): MorphMany
+    {
+        return $this->morphMany(Favorite::class, 'favoritable');
     }
 }

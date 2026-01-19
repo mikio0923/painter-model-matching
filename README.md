@@ -1,337 +1,316 @@
-# 画家 × モデル マッチングサイト  
-## 情報設計（IA） / 画面遷移・権限定義
-
----
-
-## 1. サイトの目的
-
-- 画家がモデルを探しやすくする
-- モデルが依頼を探しやすくする
-- 事前に「誰がどのモデルを使っているか」が被りにくい環境を作る
-
----
-
-## 2. ユーザー種別
-
-- ゲスト（未ログイン）
-- 画家（painter）
-- モデル（model）
-
----
-
-## 3. 公開ページ（ログイン不要）
-
-| URL | 画面 | 目的 |
-|---|---|---|
-| / | トップ | 検索導線・価値提示 |
-| /models | モデル一覧 | モデル検索 |
-| /models/{id} | モデル詳細 | 依頼判断 |
-| /jobs | 依頼一覧 | 案件検索 |
-| /jobs/{id} | 依頼詳細 | 応募判断 |
-
----
-
-## 4. 認証関連
-
-| URL | 内容 |
-|---|---|
-| /register | 新規登録（role選択） |
-| /login | ログイン |
-| /forgot-password | パスワード再発行 |
-
----
-
-## 5. ログイン必須（共通）
-
-| URL | 内容 |
-|---|---|
-| /mypage | マイページ（roleで分岐） |
-| /messages | メッセージ一覧 |
-| /messages/{id} | メッセージ詳細 |
-
----
-
-## 6. モデル専用
-
-| URL | 内容 |
-|---|---|
-| /model/profile/edit | プロフィール編集 |
-| /model/applications | 応募一覧 |
-
----
-
-## 7. 画家専用
-
-| URL | 内容 |
-|---|---|
-| /painter/jobs | 自分の依頼一覧 |
-| /painter/jobs/create | 依頼作成 |
-| /painter/jobs/{id}/applications | 応募者一覧 |
-
----
-
-## 8. ログインを要求するタイミング
-
-- 応募する
-- 依頼を投稿する
-- メッセージを送る
-- 応募者を見る
-
-※ 一覧・詳細の閲覧はログイン不要
-
----
-
-## 9. ユーザーフロー（概要）
-
-### 画家
-トップ → モデル検索 → モデル詳細 → ログイン → 依頼作成 → 応募承認 → メッセージ
-
-### モデル
-トップ → 依頼検索 → 依頼詳細 → ログイン → 応募 → 承認 → メッセージ
-
----
-
-## 10. MVPに含めない機能（後回し）
-
-- 決済
-- レビュー
-- 本人確認
-- 高度なおすすめ
-
-- # 画家 × モデル マッチングサイト  
-## 開発ロードマップ（MVP → 公開）
-
-本ドキュメントは、本サービスを **出戻りを最小限にしながら実装するための開発フェーズ定義** である。  
-実装時に迷った場合は、本資料を「判断基準」とする。
-
----
-
-## フェーズ0：土台の安定化（環境・基盤）
-
-### 目的
-- 実装を始めても止まらない状態を作る
-- ルーティング・認証・レイアウトの地雷を先に潰す
-
-### 成果物
-- Docker 環境起動
-- Laravel 初期画面表示
-- 認証ルート（login / register）有効
-- Vite build 成功
-- navigation / layout エラー解消
-- ルート骨組み（IA通り）
-
-### 完了条件
-- `php artisan route:list` がエラーなく通る
-- `/` `/models` が表示できる
-
----
-
-## フェーズ1：公開側（価値提示）を完成させる【最優先】
-
-### 目的
-- ログイン前に「このサイトは使えそう」と思わせる
-- 登録前に検索・閲覧体験を提供する
-
----
-
-### 1-1 トップ `/`
-
-**内容**
-- 新着モデル（最大6件）
-- 新着依頼（最大6件）
-- 検索導線（フォームのみでも可）
-- CTA
-  - モデルとして登録
-  - 画家として登録
-
-**完了条件**
-- ゲスト状態でトップが閲覧できる
-
----
-
-### 1-2 モデル一覧 `/models`
-
-**内容**
-- 公開中モデルのみ表示
-- 検索条件（段階的に追加）
-  - prefecture
-  - online_available
-  - style_tags
-- ページネーション
-
-**完了条件**
-- 条件を変えて一覧が更新される
-
----
-
-### 1-3 モデル詳細 `/models/{id}`
-
-**内容**
-- 公開情報のみ表示
-- 「このモデルに依頼したい」ボタン
-
-**ログイン制御**
-- 未ログイン → `/login`
-- ログイン済（画家）→ 依頼作成へ
-- ログイン済（モデル）→ ボタン非表示
-
-**完了条件**
-- ログイン誘導が正しく機能する
-
----
-
-### 1-4 依頼一覧 `/jobs`
-
-**内容**
-- status = open のみ表示
-- 検索
-  - prefecture
-  - location_type
-  - reward_amount
-
----
-
-### 1-5 依頼詳細 `/jobs/{id}`
-
-**内容**
-- 公開情報表示
-- 「応募する」ボタン
-
-**ログイン制御**
-- 未ログイン → `/login`
-- ログイン済（モデル）→ 応募可能
-- ログイン済（画家）→ 応募不可
-
----
-
-## フェーズ2：登録後の導線（オンボーディング）
-
-### 目的
-- 登録後に「何をすればいいか分からない」を防ぐ
-- role ごとの行動を明確に分ける
-
----
-
-### 2-1 新規登録時の role 選択
-
-**内容**
-- register 画面に role 選択（painter / model）
-- `users.role` に保存
-
----
-
-### 2-2 初回ログイン後の遷移
-
-**モデル**
-- `/model/profile/edit` に誘導
-- プロフィール未作成なら強制
-
-**画家**
-- `/painter/jobs/create` に誘導
-- まず依頼を出させる
-
----
-
-## フェーズ3：マッチングの成立（依頼 → 応募 → 承認）
-
-### 目的
-- サービスのコア機能を成立させる
-
----
-
-### 3-1 画家：依頼投稿（CRUD）
-
-**画面**
-- `/painter/jobs`
-- `/painter/jobs/create`
-- `/painter/jobs/{id}/edit`
-
-**内容**
-- status = open / closed
-
----
-
-### 3-2 モデル：応募
-
-**内容**
-- 依頼詳細から応募
-- `job_applications` 作成
-- 二重応募防止（unique）
-
-**画面**
-- `/model/applications`
-
----
-
-### 3-3 画家：応募管理
-
-**画面**
-- `/painter/jobs/{id}/applications`
-
-**操作**
-- accept / reject
-- accept 時にメッセージ解放
-
----
-
-## フェーズ4：メッセージ（最小チャット）
-
-### 目的
-- マッチ後のやり取りを可能にする
-
----
-
-### 4-1 メッセージ設計（最小）
-
-- job 単位で 1 スレッド
-- sender / receiver 管理
-- 時系列表示
-
----
-
-### 4-2 画面
-
-- `/messages`
-- `/messages/{job}`
-
----
-
-### 4-3 アクセス制御
-
-- 承認済み当事者のみ閲覧可
-- painter_id / model_id を厳密チェック
-
----
-
-## フェーズ5：公開前の最低限（後回し可）
-
-### 内容
-- プロフィール画像アップロード
-- 通報（最低限）
-- 退会
-- SEO（title / meta）
-- 管理者簡易画面（必要なら）
-
----
-
-## 実装の推奨順（最短）
-
-1. モデル詳細 `/models/{id}`
-2. 依頼一覧・詳細 `/jobs`
-3. register の role 分岐
-4. 画家の依頼作成
-5. モデルの応募
-6. 応募承認
-7. メッセージ
-
----
-
-## 判断基準（迷ったら）
-
-- 「ログイン前に価値が見えるか？」
-- 「この画面は MVP に必要か？」
-- 「IA に書いてあるか？」
-
-→ 書いてなければ **今は作らない**
-
+# Painter Model Matching プロジェクト
+
+モデルと画家をマッチングするWebアプリケーション
+
+## 技術スタック
+
+### バックエンド
+- **Laravel**: v12.0
+- **PHP**: 8.3（Dockerコンテナ内）
+- **MySQL**: 8.0（Dockerコンテナ内）
+
+### フロントエンド
+- **Vite**: v7.0.7（ビルドツール・開発サーバー）
+- **Tailwind CSS**: v3.1.0
+- **Alpine.js**: v3.4.2
+- **Node.js**: v20.20.0以上（ローカル環境）
+
+### インフラ
+- **Docker Compose**: バックエンド（Laravel、MySQL、Nginx）をコンテナ化
+- **Nginx**: ポート8081でアクセス
+
+## 環境構成について
+
+### Dockerコンテナで動いているもの
+- **Laravelアプリケーション**（PHP 8.3-FPM）
+- **MySQLデータベース**（ポート3307）
+- **Nginx**（ポート8081）
+- **Vite開発サーバー**（ポート5173）← Docker Composeで自動起動可能
+
+### ローカル環境で動かすことも可能
+- **Vite開発サーバー**（ポート5173）
+  - Docker Composeを使わない場合は、ローカル環境で実行
+  - ホットリロード（HMR）機能がより安定して動作する場合がある
+
+## 前提条件
+
+以下のソフトウェアがインストールされている必要があります：
+
+1. **Docker Desktop**（またはDocker + Docker Compose）
+2. **Node.js** v20.19以上 または v22.12以上
+   - 推奨: nvmを使用してNode.jsを管理
+3. **Composer**（PHP依存関係管理）
+   - またはDockerコンテナ内で実行
+
+## 初回セットアップ
+
+### 1. リポジトリのクローン
+```bash
+git clone <repository-url>
+cd painter-model-matching
+```
+
+### 2. Dockerコンテナの起動
+```bash
+docker-compose up -d
+```
+
+### 3. Laravel環境設定
+```bash
+# コンテナ内で実行
+docker-compose exec app composer install
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan migrate --seed
+docker-compose exec app php artisan storage:link
+```
+
+### 4. Node.js環境のセットアップ
+```bash
+# nvmを使用している場合
+source ~/.nvm/nvm.sh
+nvm install 20
+nvm use 20
+
+# プロジェクトディレクトリに移動
+cd src
+
+# 依存関係のインストール
+npm install
+```
+
+### 5. 開発サーバーの起動
+
+**ターミナル1: Vite開発サーバー**
+```bash
+cd src
+source ~/.nvm/nvm.sh  # nvmを使用している場合
+nvm use 20
+npm run dev
+```
+
+**ターミナル2: Laravel開発サーバー（オプション）**
+```bash
+# Dockerコンテナを使用している場合は不要
+# Nginxが既にポート8081で動作しているため
+```
+
+### 6. アクセス
+- **アプリケーション**: http://localhost:8081
+- **Vite開発サーバー**: http://localhost:5173（自動的にLaravelと連携）
+
+## PC再起動後の起動手順
+
+### 方法1: 自動起動スクリプトを使用（推奨）
+
+**Docker ComposeでViteも自動起動する場合：**
+```bash
+# プロジェクトルートディレクトリで実行
+./start-dev.sh
+```
+
+これで以下が自動的に起動します：
+- Dockerコンテナ（Laravel、MySQL、Nginx、Vite）
+- すべてのサービスが一度に起動
+
+**ローカル環境でViteを起動する場合：**
+```bash
+# プロジェクトルートディレクトリで実行
+./start-dev-local.sh
+```
+
+### 方法2: 手動で起動
+
+#### 1. Dockerコンテナの起動
+```bash
+# プロジェクトルートディレクトリで実行
+cd /path/to/painter-model-matching
+docker-compose up -d
+```
+
+#### 2. コンテナの状態確認
+```bash
+docker-compose ps
+```
+
+以下のコンテナが起動していることを確認：
+- `painter_app` (Laravel)
+- `painter_nginx` (Nginx)
+- `painter_db` (MySQL)
+- `painter_vite` (Vite開発サーバー) ← Docker Composeで自動起動
+
+#### 3. Vite開発サーバーの起動（Docker Composeを使わない場合のみ）
+```bash
+# プロジェクトのsrcディレクトリに移動
+cd src
+
+# nvmを使用している場合、Node.jsバージョンを設定
+source ~/.nvm/nvm.sh
+nvm use 20
+
+# Vite開発サーバーを起動
+npm run dev
+```
+
+#### 4. アクセス確認
+- ブラウザで http://localhost:8081 にアクセス
+- 開発中はViteのHMR（ホットリロード）が有効
+
+## よく使うコマンド
+
+### 開発環境の起動（自動化）
+
+**すべてを一度に起動（推奨）：**
+```bash
+# Docker ComposeでViteも含めて自動起動
+./start-dev.sh
+```
+
+**ローカル環境でViteを起動：**
+```bash
+# Viteのみローカル環境で起動（Docker Composeは別途起動）
+./start-dev-local.sh
+```
+
+### Docker関連
+```bash
+# コンテナの起動（Viteも含む）
+docker-compose up -d
+
+# コンテナの停止
+docker-compose down
+
+# コンテナの再起動
+docker-compose restart
+
+# ログの確認
+docker-compose logs -f app
+docker-compose logs -f db
+docker-compose logs -f vite  # Viteのログ
+
+# コンテナ内でコマンド実行
+docker-compose exec app php artisan migrate
+docker-compose exec app composer install
+```
+
+### Laravel関連
+```bash
+# マイグレーション実行
+docker-compose exec app php artisan migrate
+
+# マイグレーション + シーディング
+docker-compose exec app php artisan migrate:fresh --seed
+
+# キャッシュクリア
+docker-compose exec app php artisan cache:clear
+docker-compose exec app php artisan config:clear
+docker-compose exec app php artisan view:clear
+```
+
+### フロントエンド関連
+```bash
+# srcディレクトリに移動
+cd src
+
+# 開発サーバー起動（ホットリロード有効）
+npm run dev
+
+# 本番用ビルド（srcディレクトリ内で実行）
+npm run build
+# ビルド結果は src/public/build/ に出力される
+
+# 依存関係の再インストール
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### Node.jsバージョン管理（nvm使用時）
+```bash
+# Node.jsバージョンの確認
+node --version
+
+# Node.js 20を使用
+source ~/.nvm/nvm.sh
+nvm use 20
+
+# Node.js 20のインストール（未インストールの場合）
+nvm install 20
+```
+
+## トラブルシューティング
+
+### Viteサーバーが起動しない
+- **エラー**: `Vite requires Node.js version 20.19+ or 22.12+`
+  - **解決策**: Node.jsをアップグレード
+    ```bash
+    source ~/.nvm/nvm.sh
+    nvm install 20
+    nvm use 20
+    ```
+
+### Dockerコンテナが起動しない
+- **確認**: Docker Desktopが起動しているか確認
+- **再起動**: `docker-compose down` → `docker-compose up -d`
+
+### データベース接続エラー
+- **確認**: MySQLコンテナが起動しているか確認
+  ```bash
+  docker-compose ps
+  ```
+- **再起動**: `docker-compose restart db`
+
+### 画像が表示されない
+- **確認**: ストレージリンクが作成されているか
+  ```bash
+  docker-compose exec app php artisan storage:link
+  ```
+- **確認**: `src/storage/app/public` に画像ファイルが存在するか
+
+## ディレクトリ構造
+
+```
+painter-model-matching/
+├── docker/                 # Docker設定ファイル
+│   ├── nginx/             # Nginx設定
+│   └── php/               # PHP Dockerfile
+├── docker-compose.yml     # Docker Compose設定
+├── src/                   # Laravelアプリケーション
+│   ├── app/              # アプリケーションロジック
+│   ├── database/         # マイグレーション・シーダー
+│   ├── resources/        # ビュー・CSS・JS
+│   ├── routes/          # ルーティング
+│   └── storage/         # ストレージ（画像など）
+└── README.md            # このファイル
+```
+
+## 開発時の注意点
+
+1. **Vite開発サーバーは常に起動しておく**
+   - CSSやJavaScriptの変更をリアルタイムで反映するため
+   - 停止すると、スタイルが適用されない場合がある
+
+2. **Dockerコンテナとローカル環境の混在**
+   - バックエンド（Laravel、MySQL）はDockerコンテナ
+   - フロントエンド（Vite）はローカル環境
+   - この構成により、ViteのHMRが正常に動作
+
+3. **ポート番号**
+   - **8081**: Nginx（アプリケーションアクセス）
+   - **5173**: Vite開発サーバー（自動的にLaravelと連携）
+   - **3307**: MySQL（直接接続する場合）
+
+## 本番環境へのデプロイ
+
+本番環境では、Viteのビルド済みアセットを使用します：
+
+```bash
+# 本番用ビルド
+cd src
+npm run build
+
+# ビルドされたアセットは public/build/ に出力される
+```
+
+## ライセンス
+
+MIT License
 

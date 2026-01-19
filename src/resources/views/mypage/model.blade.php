@@ -46,11 +46,17 @@
                     </a>
                 </div>
             @else
-                <p class="text-gray-600 mb-4">プロフィールがまだ作成されていません</p>
-                <a href="{{ route('model.profile.edit') }}" 
-                   class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
-                    プロフィールを作成
-                </a>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-4">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-2">プロフィールを作成しましょう</h3>
+                    <p class="text-blue-700 text-sm mb-4">
+                        モデルとして活動するために、まずプロフィールを作成してください。<br>
+                        プロフィールを公開することで、画家からの依頼を受けることができます。
+                    </p>
+                    <a href="{{ route('model.profile.edit') }}" 
+                       class="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 text-sm font-semibold">
+                        プロフィールを作成する
+                    </a>
+                </div>
             @endif
         </div>
 
@@ -80,6 +86,38 @@
                 </a>
             </div>
         </div>
+    </div>
+
+    {{-- 統計情報 --}}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white border rounded-lg p-6">
+            <div class="text-2xl font-bold text-blue-600">{{ $totalApplications }}</div>
+            <div class="text-sm text-gray-600 mt-1">総応募数</div>
+        </div>
+        <div class="bg-white border rounded-lg p-6">
+            <div class="text-2xl font-bold text-green-600">{{ $acceptedApplications }}</div>
+            <div class="text-sm text-gray-600 mt-1">承認済み</div>
+        </div>
+        <div class="bg-white border rounded-lg p-6">
+            <div class="text-2xl font-bold text-purple-600">{{ $completedJobs }}</div>
+            <div class="text-sm text-gray-600 mt-1">完了した依頼</div>
+        </div>
+        <div class="bg-white border rounded-lg p-6">
+            <div class="text-2xl font-bold text-yellow-600">
+                @if($averageRating)
+                    {{ number_format($averageRating, 1) }}
+                @else
+                    -
+                @endif
+            </div>
+            <div class="text-sm text-gray-600 mt-1">平均評価</div>
+        </div>
+        @if($modelProfile)
+            <div class="bg-white border rounded-lg p-6">
+                <div class="text-2xl font-bold text-pink-600">{{ $totalFavorites }}</div>
+                <div class="text-sm text-gray-600 mt-1">お気に入り数</div>
+            </div>
+        @endif
     </div>
 
     {{-- 最近の応募 --}}

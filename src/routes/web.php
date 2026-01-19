@@ -8,10 +8,12 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Painter\PainterJobController;
 use App\Http\Controllers\Painter\PainterJobApplicationController;
+use App\Http\Controllers\Painter\PainterProfileEditController;
 use App\Http\Controllers\Model\ModelProfileEditController;
 use App\Http\Controllers\Model\ModelApplicationController;
 use App\Http\Controllers\Model\ModelProfileController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +27,9 @@ Route::get('/models/{modelProfile}', [ModelProfileController::class, 'show'])->n
 
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
 Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
+
+Route::get('/information', [\App\Http\Controllers\InformationController::class, 'index'])->name('information.index');
+Route::get('/information/{information}', [\App\Http\Controllers\InformationController::class, 'show'])->name('information.show');
 
 // 静的ページ
 Route::view('/about', 'about')->name('about');
@@ -53,6 +58,18 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/jobs/{job}/reviews/create', [ReviewController::class, 'create'])->name('reviews.create');
     Route::post('/jobs/{job}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read.post');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+
+    Route::get('/favorites', [\App\Http\Controllers\FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites/models/{modelProfile}', [\App\Http\Controllers\FavoriteController::class, 'storeModel'])->name('favorites.store.model');
+    Route::post('/favorites/jobs/{job}', [\App\Http\Controllers\FavoriteController::class, 'storeJob'])->name('favorites.store.job');
+    Route::delete('/favorites/models/{modelProfile}', [\App\Http\Controllers\FavoriteController::class, 'destroyModel'])->name('favorites.destroy.model');
+    Route::delete('/favorites/jobs/{job}', [\App\Http\Controllers\FavoriteController::class, 'destroyJob'])->name('favorites.destroy.job');
+    Route::delete('/favorites/{favorite}', [\App\Http\Controllers\FavoriteController::class, 'destroy'])->name('favorites.destroy');
 });
 
 /*
@@ -76,6 +93,9 @@ Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->grou
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:painter'])->prefix('painter')->name('painter.')->group(function () {
+    Route::get('/profile/edit', [PainterProfileEditController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [PainterProfileEditController::class, 'update'])->name('profile.update');
+
     Route::get('/jobs', [PainterJobController::class, 'index'])->name('jobs.index');
     Route::get('/jobs/create', [PainterJobController::class, 'create'])->name('jobs.create');
     Route::post('/jobs', [PainterJobController::class, 'store'])->name('jobs.store');

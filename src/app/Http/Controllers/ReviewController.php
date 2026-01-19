@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Job;
 use App\Models\Review;
 use App\Models\JobApplication;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,13 +76,16 @@ class ReviewController extends Controller
                 ->with('error', '既にレビューを投稿済みです');
         }
 
-        Review::create([
+        $review = Review::create([
             'job_id' => $job->id,
             'reviewer_id' => $user->id,
             'reviewed_user_id' => $request->reviewed_user_id,
             'rating' => $request->rating,
             'comment' => $request->comment,
         ]);
+
+        // 通知を作成（レビューされたユーザーに通知）
+        NotificationService::notifyReviewReceived($review);
 
         return redirect()->route('jobs.show', $job)
             ->with('success', 'レビューを投稿しました');

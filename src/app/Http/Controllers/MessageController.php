@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Job;
 use App\Models\Message;
 use App\Models\JobApplication;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -130,12 +131,15 @@ class MessageController extends Controller
 
         $user = Auth::user();
 
-        Message::create([
+        $message = Message::create([
             'job_id' => $job->id,
             'sender_id' => $user->id,
             'receiver_id' => $request->receiver_id,
             'body' => $request->body,
         ]);
+
+        // 通知を作成（受信者に通知）
+        NotificationService::notifyMessageReceived($message);
 
         return redirect()->route('messages.show', [
             'job' => $job,

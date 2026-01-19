@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -94,6 +95,24 @@ class User extends Authenticatable
     public function receivedReviews(): HasMany
     {
         return $this->hasMany(Review::class, 'reviewed_user_id');
+    }
+
+    // 通知（1:N）
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    // 未読通知
+    public function unreadNotifications(): HasMany
+    {
+        return $this->notifications()->whereNull('read_at');
+    }
+
+    // お気に入り（1:N）
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
     }
 
     // 便利メソッド（任意）

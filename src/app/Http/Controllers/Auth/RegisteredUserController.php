@@ -17,9 +17,13 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.register');
+        $role = $request->get('role', 'model'); // デフォルトはmodel
+        
+        return view('auth.register', [
+            'role' => $role,
+        ]);
     }
 
     /**
@@ -33,18 +37,21 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'string', 'in:model,painter'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // ロール別にマイページにリダイレクト
+        return redirect(route('mypage', absolute: false))->with('success', '登録が完了しました。プロフィールを設定してください。');
     }
 }

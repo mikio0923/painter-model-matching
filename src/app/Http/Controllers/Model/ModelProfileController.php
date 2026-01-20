@@ -81,25 +81,29 @@ class ModelProfileController extends Controller
                 $query->latest();
         }
 
-        $models = $query->paginate(12)->withQueryString();
+        $models = $query->with('user')->paginate(12)->withQueryString();
 
-        // 都道府県リスト（検索フォーム用）
-        $prefectures = ModelProfile::where('is_public', true)
-            ->whereNotNull('prefecture')
-            ->distinct()
-            ->pluck('prefecture')
-            ->sort()
-            ->values();
+        // 都道府県リスト（検索フォーム用・キャッシュ）
+        $prefectures = cache()->remember('model_prefectures', 3600, function () {
+            return ModelProfile::where('is_public', true)
+                ->whereNotNull('prefecture')
+                ->distinct()
+                ->pluck('prefecture')
+                ->sort()
+                ->values();
+        });
 
-        // タグリスト（検索フォーム用）
-        $allTags = ModelProfile::where('is_public', true)
-            ->whereNotNull('style_tags')
-            ->get()
-            ->pluck('style_tags')
-            ->flatten()
-            ->unique()
-            ->sort()
-            ->values();
+        // タグリスト（検索フォーム用・キャッシュ）
+        $allTags = cache()->remember('model_tags', 3600, function () {
+            return ModelProfile::where('is_public', true)
+                ->whereNotNull('style_tags')
+                ->get()
+                ->pluck('style_tags')
+                ->flatten()
+                ->unique()
+                ->sort()
+                ->values();
+        });
 
         return view('models.index', compact('models', 'prefectures', 'allTags'));
     }

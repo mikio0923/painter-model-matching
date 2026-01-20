@@ -1,5 +1,35 @@
 /* ボタンコンポーネント */
 @layer components {
+    /* ページ共通 */
+    .page {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+    }
+
+    .page-narrow {
+        @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+    }
+
+    /* セクション共通（公開ページ向け） */
+    .section {
+        @apply mb-12;
+    }
+
+    .section-panel {
+        @apply bg-white border border-secondary-200 rounded-2xl shadow-sm;
+    }
+
+    .section-panel-inner {
+        @apply p-6 sm:p-8;
+    }
+
+    .section-header {
+        @apply flex items-center justify-between gap-4 mb-6;
+    }
+
+    .section-header .section-title {
+        margin-bottom: 0; /* ヘッダー内では余白不要 */
+    }
+
     /* プライマリボタン */
     .btn-primary {
         @apply px-6 py-2.5 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200;
@@ -43,11 +73,35 @@
 
     /* カードコンポーネント */
     .card {
-        @apply bg-white border border-secondary-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200;
+        @apply bg-white border border-secondary-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
     }
 
     .card-body {
         @apply p-6;
+    }
+
+    .card-hover {
+        @apply hover:-translate-y-0.5;
+    }
+
+    .card-media {
+        @apply bg-secondary-200 overflow-hidden;
+    }
+
+    .card-media img {
+        @apply w-full h-full object-cover;
+    }
+
+    .card-title {
+        @apply font-semibold text-lg text-secondary-900;
+    }
+
+    .card-meta {
+        @apply text-sm text-secondary-600;
+    }
+
+    .card-price {
+        @apply text-sm font-semibold text-primary-600;
     }
 
     .card-header {

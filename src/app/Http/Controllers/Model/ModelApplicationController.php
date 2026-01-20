@@ -19,7 +19,7 @@ class ModelApplicationController extends Controller
     public function index(): View
     {
         $applications = JobApplication::where('model_id', Auth::id())
-            ->with(['job.painter'])
+            ->with(['job.painter.painterProfile'])
             ->orderBy('created_at', 'desc')
             ->get();
 

@@ -14,6 +14,11 @@ class Contact extends Model
         'subject',
         'message',
         'status',
+        'is_read',
+    ];
+
+    protected $casts = [
+        'is_read' => 'boolean',
     ];
 
     public function user(): BelongsTo

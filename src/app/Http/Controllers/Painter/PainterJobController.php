@@ -22,6 +22,7 @@ class PainterJobController extends Controller
     public function index(): View
     {
         $jobs = Job::where('painter_id', Auth::id())
+            ->with(['painter.painterProfile', 'applications.model.modelProfile'])
             ->orderBy('created_at', 'desc')
             ->get();
 

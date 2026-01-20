@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         // サンプルデータをシード
         $this->call([
+            AdminUserSeeder::class,
             SampleDataSeeder::class,
             InformationSeeder::class,
             ReviewSeeder::class,

@@ -1,26 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="page">
 
     {{-- ========== ピックアップモデル欄 ========== --}}
     @if($pickupModels->count() > 0)
-        <section class="mb-16 pb-12 border-b border-secondary-200">
-            <div class="flex items-center justify-between mb-6">
+        <section class="section">
+            <div class="section-header">
                 <h2 class="section-title">Pickup Model / ピックアップモデル</h2>
-                <a href="{{ route('models.index') }}" class="link-primary text-sm">
-                    もっと見る →
-                </a>
+                <a href="{{ route('models.index') }}" class="link-primary text-sm">もっと見る →</a>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="section-panel">
+                <div class="section-panel-inner">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 @foreach($pickupModels as $model)
-                    <a href="{{ route('models.show', $model) }}" class="card overflow-hidden">
+                        <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden">
                         {{-- 画像 --}}
-                        <div class="aspect-[3/4] bg-secondary-200 overflow-hidden">
+                            <div class="aspect-[3/4] card-media">
                             @if($model->profile_image_path)
                                 <img src="{{ asset('storage/' . $model->profile_image_path) }}"
                                      alt="{{ $model->display_name }}"
-                                     class="w-full h-full object-cover">
+                                         >
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-secondary-400">
                                     <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,11 +32,11 @@
 
                         {{-- 情報 --}}
                         <div class="card-body">
-                            <div class="font-semibold text-lg mb-1 text-secondary-900">
+                                <div class="card-title mb-1">
                                 {{ $model->display_name }}
                             </div>
 
-                            <div class="text-sm text-secondary-600 mb-2">
+                                <div class="card-meta mb-2">
                                 @if($model->prefecture)
                                     <span>{{ $model->prefecture }}</span>
                                 @endif
@@ -56,7 +56,7 @@
                             </div>
 
                             @if($model->reward_min || $model->reward_max)
-                                <div class="text-sm font-semibold text-primary-600 mb-2">
+                                    <div class="card-price mb-2">
                                     参考価格：
                                     @if($model->reward_min && $model->reward_max)
                                         {{ number_format($model->reward_min) }}円〜
@@ -82,22 +82,24 @@
                         </div>
                     </a>
                 @endforeach
+                    </div>
+                </div>
             </div>
         </section>
     @endif
 
     {{-- ========== モデル募集欄 ========== --}}
     @if($pickupJobs->count() > 0)
-        <section class="mb-16 pb-12 border-b border-secondary-200">
-            <div class="flex items-center justify-between mb-6">
+        <section class="section">
+            <div class="section-header">
                 <h2 class="section-title">Pickup Job / ピックアップジョブ</h2>
-                <a href="{{ route('jobs.index') }}" class="link-primary text-sm">
-                    もっと見る →
-                </a>
+                <a href="{{ route('jobs.index') }}" class="link-primary text-sm">もっと見る →</a>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="section-panel">
+                <div class="section-panel-inner">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($pickupJobs as $job)
-                    <a href="{{ route('jobs.show', $job) }}" class="card">
+                            <a href="{{ route('jobs.show', $job) }}" class="card card-hover">
                         <div class="card-body">
                             <h3 class="font-semibold text-lg mb-2 text-secondary-900">{{ $job->title }}</h3>
                             <p class="text-sm text-secondary-600 mb-3 line-clamp-2">
@@ -119,17 +121,21 @@
                         </div>
                     </a>
                 @endforeach
+                    </div>
+                </div>
             </div>
         </section>
     @endif
 
     {{-- ========== 新着レビュー欄 ========== --}}
     @if($latestReviews->count() > 0)
-        <section class="mb-16 pb-12 border-b border-secondary-200">
-            <div class="flex items-center justify-between mb-6">
+        <section class="section">
+            <div class="section-header">
                 <h2 class="section-title">Review / 新着レビュー</h2>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="section-panel">
+                <div class="section-panel-inner">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($latestReviews as $review)
                     <div class="card">
                         <div class="card-body">
@@ -165,6 +171,8 @@
                         </div>
                     </div>
                 @endforeach
+                    </div>
+                </div>
             </div>
         </section>
     @endif

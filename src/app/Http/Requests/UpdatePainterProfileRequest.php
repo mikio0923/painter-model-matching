@@ -29,4 +29,20 @@ class UpdatePainterProfileRequest extends FormRequest
             'prefecture' => ['nullable', 'string', 'max:255'],
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'display_name.required' => '表示名を入力してください。',
+            'display_name.max' => '表示名は255文字以内で入力してください。',
+            'portfolio_url.url' => 'ポートフォリオURLは有効なURLを入力してください。',
+            'portfolio_url.max' => 'ポートフォリオURLは255文字以内で入力してください。',
+            'prefecture.max' => '都道府県は255文字以内で入力してください。',
+        ];
+    }
 }

@@ -36,22 +36,27 @@
                     </a>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2 text-sm">
-                    @auth
-                        <a href="{{ route('notifications.index') }}" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600 relative text-white">
-                            通知
-                            @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
-                                <span class="absolute top-0 right-0 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full -mt-1 -mr-1">
-                                    {{ $unreadNotificationsCount }}
-                                </span>
-                            @endif
-                        </a>
-                        <a href="{{ route('favorites.index') }}" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600 text-white">
-                            お気に入り
-                        </a>
-                        <a href="{{ route('mypage') }}" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600 text-white">
-                            マイページ
-                        </a>
+                        <div class="flex items-center space-x-2 text-sm">
+                            @auth
+                                @if(auth()->user()->isAdmin())
+                                    <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600 text-white bg-red-600">
+                                        管理画面
+                                    </a>
+                                @endif
+                                <a href="{{ route('notifications.index') }}" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600 relative text-white">
+                                    通知
+                                    @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
+                                        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full -mt-1 -mr-1">
+                                            {{ $unreadNotificationsCount }}
+                                        </span>
+                                    @endif
+                                </a>
+                                <a href="{{ route('favorites.index') }}" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600 text-white">
+                                    お気に入り
+                                </a>
+                                <a href="{{ route('mypage') }}" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600 text-white">
+                                    マイページ
+                                </a>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="px-4 py-2 rounded hover:bg-gray-700 transition-colors border border-transparent hover:border-gray-600 text-white">

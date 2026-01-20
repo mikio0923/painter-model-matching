@@ -62,5 +62,16 @@ class Job extends Model
     {
         return $this->morphMany(Favorite::class, 'favoritable');
     }
+
+    // ステータスラベル
+    public function getStatusLabelAttribute(): string
+    {
+        return match($this->status) {
+            'open' => '公開中',
+            'closed' => '締切',
+            'completed' => '完了',
+            default => '不明',
+        };
+    }
 }
 

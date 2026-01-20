@@ -8,6 +8,7 @@
             </p>
 
             <form method="POST" action="{{ route('login') }}" class="card">
+                @csrf
                 <div class="card-body">
                     <table class="w-full mb-4">
                         <tr class="border-b border-secondary-200">

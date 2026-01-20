@@ -24,7 +24,7 @@ class MypageController extends Controller
             // モデル側のマイページ
             $modelProfile = $user->modelProfile;
             $applications = JobApplication::where('model_id', $user->id)
-                ->with(['job.painter'])
+                ->with(['job.painter.painterProfile'])
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();
@@ -62,6 +62,7 @@ class MypageController extends Controller
             // 画家側のマイページ
             $painterProfile = $user->painterProfile;
             $jobs = Job::where('painter_id', $user->id)
+                ->with(['painter.painterProfile', 'applications.model.modelProfile'])
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();

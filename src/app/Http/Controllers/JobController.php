@@ -16,7 +16,7 @@ class JobController extends Controller
     public function index(Request $request): View
     {
         $query = Job::where('status', 'open')
-            ->with('painter');
+            ->with('painter.painterProfile');
 
         // 都道府県で検索
         if ($request->filled('prefecture')) {
@@ -66,13 +66,15 @@ class JobController extends Controller
 
         $jobs = $query->paginate(12)->withQueryString();
 
-        // 都道府県リスト（検索フォーム用）
-        $prefectures = Job::where('status', 'open')
-            ->whereNotNull('prefecture')
-            ->distinct()
-            ->pluck('prefecture')
-            ->sort()
-            ->values();
+        // 都道府県リスト（検索フォーム用・キャッシュ）
+        $prefectures = cache()->remember('job_prefectures', 3600, function () {
+            return Job::where('status', 'open')
+                ->whereNotNull('prefecture')
+                ->distinct()
+                ->pluck('prefecture')
+                ->sort()
+                ->values();
+        });
 
         return view('jobs.index', compact('jobs', 'prefectures'));
     }

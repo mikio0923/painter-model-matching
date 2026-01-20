@@ -24,4 +24,14 @@ class JobApplication extends Model
         return $this->belongsTo(User::class, 'model_id');
     }
 
+    // ステータスラベル
+    public function getStatusLabelAttribute(): string
+    {
+        return match($this->status) {
+            'pending' => '未対応',
+            'accepted' => '承認',
+            'rejected' => '却下',
+            default => '不明',
+        };
+    }
 }

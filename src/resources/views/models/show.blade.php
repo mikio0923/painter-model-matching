@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-3xl">
+<div class="page-narrow">
 
     <div class="card mb-6">
         <div class="card-body">
@@ -12,7 +12,7 @@
                 @endphp
                 @if($displayImage)
                     <div class="flex-shrink-0">
-                        <img src="{{ Storage::url($displayImage) }}"
+                        <img src="{{ asset('storage/' . $displayImage) }}"
                              alt="{{ $modelProfile->display_name }}"
                              class="w-48 h-48 object-cover rounded-xl border border-secondary-300">
                     </div>
@@ -166,8 +166,8 @@
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     @foreach($modelProfile->images as $image)
                         <div class="aspect-square overflow-hidden rounded-xl border border-secondary-300 cursor-pointer hover:shadow-md transition-shadow"
-                             onclick="openImageModal('{{ Storage::url($image->image_path) }}')">
-                            <img src="{{ Storage::url($image->image_path) }}"
+                             onclick="openImageModal('{{ asset('storage/' . $image->image_path) }}')">
+                            <img src="{{ asset('storage/' . $image->image_path) }}"
                                  alt="ギャラリー画像"
                                  class="w-full h-full object-cover hover:scale-105 transition-transform">
                         </div>
@@ -263,7 +263,7 @@
 </div>
 
 {{-- 画像モーダル --}}
-<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center" onclick="closeImageModal()">
+<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 items-center justify-center" onclick="closeImageModal()">
     <div class="max-w-4xl max-h-full p-4 relative">
         <img id="modalImage" src="" alt="拡大画像" class="max-w-full max-h-screen object-contain">
         <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white text-2xl font-bold hover:text-gray-300 bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center">×</button>

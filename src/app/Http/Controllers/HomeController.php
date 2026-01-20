@@ -13,6 +13,7 @@ class HomeController extends Controller
         // Pickup Model（ランダムに12件、画像があるものを優先）
         $pickupModels = ModelProfile::where('is_public', true)
             ->whereNotNull('profile_image_path')
+            ->with('user')
             ->inRandomOrder()
             ->take(12)
             ->get();
@@ -21,6 +22,7 @@ class HomeController extends Controller
         if ($pickupModels->count() < 12) {
             $additionalModels = ModelProfile::where('is_public', true)
                 ->whereNull('profile_image_path')
+                ->with('user')
                 ->inRandomOrder()
                 ->take(12 - $pickupModels->count())
                 ->get();
@@ -29,6 +31,7 @@ class HomeController extends Controller
 
         // Pickup Job（ランダムに5件）
         $pickupJobs = Job::where('status', 'open')
+            ->with('painter.painterProfile')
             ->inRandomOrder()
             ->take(5)
             ->get();
@@ -36,24 +39,33 @@ class HomeController extends Controller
         // Image Update Profile（最近画像を更新したモデル、画像があるもの）
         $imageUpdateModels = ModelProfile::where('is_public', true)
             ->whereNotNull('profile_image_path')
+            ->with('user')
             ->orderBy('updated_at', 'desc')
             ->take(12)
             ->get();
 
         // 新着モデル（公開のみ）
         $models = ModelProfile::where('is_public', true)
+            ->with('user')
             ->latest()
             ->take(6)
             ->get();
 
         // 新着依頼
         $jobs = Job::where('status', 'open')
+            ->with('painter.painterProfile')
             ->latest()
             ->take(6)
             ->get();
 
         // 新着レビュー（20件、5列×4行）
-        $latestReviews = \App\Models\Review::with(['reviewer', 'reviewedUser', 'job'])
+        $latestReviews = \App\Models\Review::with([
+                'reviewer.painterProfile',
+                'reviewer.modelProfile',
+                'reviewedUser.painterProfile',
+                'reviewedUser.modelProfile',
+                'job.painter.painterProfile'
+            ])
             ->latest()
             ->take(20)
             ->get();

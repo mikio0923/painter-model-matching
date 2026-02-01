@@ -14,12 +14,20 @@ class ModelProfile extends Model
         'display_name',
         'profile_image_path',
         'age',
+        'birthdate',
         'gender',
         'prefecture',
+        'activity_regions',
         'height',
+        'shoe_size',
+        'clothing_size',
+        'model_types',
         'body_type',
         'hair_type',
         'bio',
+        'occupation',
+        'hobbies',
+        'avoid_work_types',
         'experience',
         'portfolio_url',
         'sns_links',
@@ -32,12 +40,25 @@ class ModelProfile extends Model
     ];
 
     protected $casts = [
+        'activity_regions' => 'array',
+        'model_types' => 'array',
+        'avoid_work_types' => 'array',
         'style_tags' => 'array',
         'pose_ranges' => 'array',
         'sns_links' => 'array',
         'online_available' => 'boolean',
         'is_public' => 'boolean',
+        'birthdate' => 'date',
     ];
+
+    // 年齢を自動計算（生年月日から）
+    public function getAgeAttribute($value)
+    {
+        if ($this->birthdate) {
+            return $this->birthdate->age;
+        }
+        return $value;
+    }
 
     public function user(): BelongsTo
     {

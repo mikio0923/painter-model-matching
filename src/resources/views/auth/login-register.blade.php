@@ -46,6 +46,35 @@
                                 </div>
                             </td>
                         </tr>
+                        <tr class="border-b border-secondary-200">
+                            <td class="py-3 pr-4 text-sm font-medium text-secondary-700">ログイン種別</td>
+                            <td class="py-3">
+                                <div class="flex gap-4">
+                                    <label class="flex items-center whitespace-nowrap">
+                                        <input type="radio" 
+                                               name="role" 
+                                               value="model"
+                                               {{ old('role', 'model') === 'model' ? 'checked' : '' }}
+                                               class="rounded border-secondary-300 text-primary-600 focus:ring-primary-500">
+                                        <span class="ml-2 text-sm text-secondary-700 whitespace-nowrap">モデル</span>
+                                    </label>
+                                    <label class="flex items-center whitespace-nowrap">
+                                        <input type="radio" 
+                                               name="role" 
+                                               value="painter"
+                                               {{ old('role') === 'painter' ? 'checked' : '' }}
+                                               class="rounded border-secondary-300 text-primary-600 focus:ring-primary-500">
+                                        <span class="ml-2 text-sm text-secondary-700 whitespace-nowrap">クライアント（画家）</span>
+                                    </label>
+                                </div>
+                                @error('role')
+                                    <p class="form-error">{{ $message }}</p>
+                                @enderror
+                                <p class="text-xs text-secondary-500 mt-2">
+                                    同じメールアドレスでモデルとクライアントの両方のアカウントをお持ちの場合は、どちらでログインするか選択してください。
+                                </p>
+                            </td>
+                        </tr>
                     </table>
 
                     <div class="flex items-center justify-end mb-4">
@@ -59,7 +88,7 @@
                     </div>
 
                     <div class="flex justify-end">
-                        <button type="submit" class="btn-outline border-secondary-800 text-secondary-800 hover:bg-secondary-50">
+                        <button type="submit" class="px-20 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
                             ログイン
                         </button>
                     </div>

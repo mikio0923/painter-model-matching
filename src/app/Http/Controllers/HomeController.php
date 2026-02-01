@@ -70,6 +70,19 @@ class HomeController extends Controller
             ->take(20)
             ->get();
 
+        // 高評価レビュー（モデル側と画家側の高評価、ランダムまたは新着順）
+        $highRatingReviews = \App\Models\Review::with([
+                'reviewer.painterProfile',
+                'reviewer.modelProfile',
+                'reviewedUser.painterProfile',
+                'reviewedUser.modelProfile',
+                'job.painter.painterProfile'
+            ])
+            ->whereIn('rating', ['very_good', 'good'])
+            ->latest()
+            ->take(10)
+            ->get();
+
         // お知らせ（最新4件）
         $informations = Information::published()
             ->ofType('information')
@@ -98,6 +111,7 @@ class HomeController extends Controller
             'models',
             'jobs',
             'latestReviews',
+            'highRatingReviews',
             'informations',
             'pressReleases',
             'newJobOffers'

@@ -184,5 +184,15 @@
         justify-content: center;
         gap: 0.5rem;
     }
+
+    /* スクロールバー非表示 */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
 }
 

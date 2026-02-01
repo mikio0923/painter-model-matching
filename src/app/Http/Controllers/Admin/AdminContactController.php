@@ -13,6 +13,17 @@ class AdminContactController extends Controller
     {
         $query = Contact::query();
 
+        // 検索機能
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%")
+                  ->orWhere('email', 'like', "%{$keyword}%")
+                  ->orWhere('subject', 'like', "%{$keyword}%")
+                  ->orWhere('message', 'like', "%{$keyword}%");
+            });
+        }
+
         // 未読のみフィルタ
         if ($request->filled('unread')) {
             $query->where(function($q) {

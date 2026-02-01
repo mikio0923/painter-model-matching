@@ -37,15 +37,39 @@ class ModelProfileController extends Controller
             $query->where('age', '<=', $request->age_max);
         }
 
+        // 身長範囲で検索
+        if ($request->filled('height_min')) {
+            $query->where('height', '>=', $request->height_min);
+        }
+        if ($request->filled('height_max')) {
+            $query->where('height', '<=', $request->height_max);
+        }
+
+        // 体型で検索（複数選択対応）
+        if ($request->filled('body_type')) {
+            $bodyTypes = is_array($request->body_type) ? $request->body_type : [$request->body_type];
+            $bodyTypes = array_filter($bodyTypes); // 空の値を除外
+            if (!empty($bodyTypes)) {
+                $query->whereIn('body_type', $bodyTypes);
+            }
+        }
+
         // オンライン対応で検索
         if ($request->filled('online_available')) {
             $query->where('online_available', true);
         }
 
-        // タグで検索（JSON配列内を検索）
+        // タグで検索（JSON配列内を検索・複数選択対応）
         if ($request->filled('tag')) {
-            $tag = $request->tag;
-            $query->whereJsonContains('style_tags', $tag);
+            $tags = is_array($request->tag) ? $request->tag : [$request->tag];
+            $tags = array_filter($tags); // 空の値を除外
+            if (!empty($tags)) {
+                $query->where(function($q) use ($tags) {
+                    foreach ($tags as $tag) {
+                        $q->orWhereJsonContains('style_tags', $tag);
+                    }
+                });
+            }
         }
 
         // 報酬範囲で検索
@@ -81,7 +105,7 @@ class ModelProfileController extends Controller
                 $query->latest();
         }
 
-        $models = $query->with('user')->paginate(12)->withQueryString();
+        $models = $query->with('user')->paginate(36)->withQueryString();
 
         // 都道府県リスト（検索フォーム用・キャッシュ）
         $prefectures = cache()->remember('model_prefectures', 3600, function () {
@@ -105,11 +129,22 @@ class ModelProfileController extends Controller
                 ->values();
         });
 
-        return view('models.index', compact('models', 'prefectures', 'allTags'));
+        // 体型リスト（検索フォーム用・キャッシュ）
+        $bodyTypes = cache()->remember('model_body_types', 3600, function () {
+            return ModelProfile::where('is_public', true)
+                ->whereNotNull('body_type')
+                ->distinct()
+                ->pluck('body_type')
+                ->filter()
+                ->sort()
+                ->values();
+        });
+
+        return view('models.index', compact('models', 'prefectures', 'allTags', 'bodyTypes'));
     }
 
     // 詳細
-    public function show(ModelProfile $modelProfile)
+    public function show(ModelProfile $modelProfile, Request $request)
     {
         // 非公開プロフィールは404
         if (!$modelProfile->is_public) {
@@ -118,6 +153,13 @@ class ModelProfileController extends Controller
 
         // user も一緒に読み込む（念のため）
         $modelProfile->load('user', 'images');
+
+        // タブの選択（デフォルトはprofile）
+        $tab = $request->get('tab', 'profile');
+        $validTabs = ['profile', 'qa', 'photo', 'comments'];
+        if (!in_array($tab, $validTabs)) {
+            $tab = 'profile';
+        }
 
         // 受け取ったレビューを取得
         $reviews = \App\Models\Review::where('reviewed_user_id', $modelProfile->user_id)
@@ -135,6 +177,6 @@ class ModelProfileController extends Controller
                 ->exists();
         }
 
-        return view('models.show', compact('modelProfile', 'reviews', 'isFavorite'));
+        return view('models.show', compact('modelProfile', 'reviews', 'isFavorite', 'tab'));
     }
 }

@@ -7,6 +7,7 @@ use App\Models\JobApplication;
 use App\Models\Message;
 use App\Models\Favorite;
 use App\Models\Review;
+use App\Models\Information;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -48,6 +49,23 @@ class MypageController extends Controller
                 ->where('favoritable_id', $modelProfile?->id ?? 0)
                 ->count();
 
+            // 最近の依頼（おすすめのお仕事）
+            $recentJobs = Job::where('status', 'open')
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+
+            // お知らせ
+            $information = Information::orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+
+            // サイトからのお知らせ（モデル向け）
+            $siteNotices = Information::published()
+                ->orderBy('created_at', 'desc')
+                ->take(3)
+                ->get();
+
             return view('mypage.model', [
                 'modelProfile' => $modelProfile,
                 'applications' => $applications,
@@ -57,6 +75,9 @@ class MypageController extends Controller
                 'completedJobs' => $completedJobs,
                 'averageRating' => $averageRating,
                 'totalFavorites' => $totalFavorites,
+                'recentJobs' => $recentJobs,
+                'information' => $information,
+                'siteNotices' => $siteNotices,
             ]);
         } else {
             // 画家側のマイページ

@@ -58,13 +58,10 @@ class SampleDataSeeder extends Seeder
             shuffle($poseRanges);
             $selectedPoses = array_slice($poseRanges, 0, rand(2, 4));
 
-            // 画像パスを設定（最初の数件に画像を設定）
-            $profileImagePath = null;
-            if ($i <= 12) {
-                // プレースホルダー画像を使用（実際の画像に置き換え可能）
-                $imageNumber = (($i - 1) % 12) + 1;
-                $profileImagePath = "model_images/sample_model_{$imageNumber}.jpg";
-            }
+            // 画像パスを設定（すべてのモデルに画像を設定）
+            // 12枚のサンプル画像を循環して使用
+            $imageNumber = (($i - 1) % 12) + 1;
+            $profileImagePath = "model_images/sample_model_{$imageNumber}.jpg";
 
             ModelProfile::create([
                 'user_id' => $user->id,

@@ -14,6 +14,7 @@ use App\Http\Controllers\Model\ModelApplicationController;
 use App\Http\Controllers\Model\ModelProfileController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,10 @@ Route::post('/contact', [ContactController::class, 'store'])
 Route::middleware(['auth'])->group(function () {
     Route::get('/mypage', [MypageController::class, 'index'])->name('mypage');
 
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/job/{job}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/job/{job}', [MessageController::class, 'store'])
@@ -88,6 +93,8 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->group(function () {
+    Route::get('/profile/create', [ModelProfileEditController::class, 'create'])->name('profile.create');
+    Route::post('/profile', [ModelProfileEditController::class, 'store'])->name('profile.store');
     Route::get('/profile/edit', [ModelProfileEditController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ModelProfileEditController::class, 'update'])
         ->middleware('throttle:5,1')

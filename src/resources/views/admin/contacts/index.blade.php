@@ -5,18 +5,28 @@
     <h1 class="text-3xl font-bold text-secondary-900">お問い合わせ管理</h1>
 </div>
 
-{{-- フィルタ --}}
+{{-- 検索・フィルタ --}}
 <div class="card mb-6">
     <div class="card-body">
         <form method="GET" action="{{ route('admin.contacts.index') }}" class="space-y-4">
-            <div class="flex items-end gap-4">
-                <div class="flex-1">
-                    <label class="flex items-center">
-                        <input type="checkbox" name="unread" value="1" {{ request('unread') ? 'checked' : '' }} class="mr-2">
-                        <span class="text-sm text-secondary-700">未読のみ表示</span>
-                    </label>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="keyword" class="form-label">キーワード</label>
+                    <input type="text" id="keyword" name="keyword" value="{{ request('keyword') }}" 
+                           placeholder="名前・メール・件名・内容" class="form-input">
                 </div>
-                <button type="submit" class="btn-primary">フィルタ</button>
+                <div>
+                    <label class="form-label">フィルタ</label>
+                    <div class="flex items-center h-10">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="unread" value="1" {{ request('unread') ? 'checked' : '' }} class="mr-2">
+                            <span class="text-sm text-secondary-700">未読のみ表示</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="btn-primary w-full">検索</button>
+                </div>
             </div>
         </form>
     </div>

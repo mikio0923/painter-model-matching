@@ -2,28 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ModelProfileImage extends Model
+class ModelProfileQuestion extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'model_profile_id',
-        'image_path',
-        'display_order',
-        'is_main',
-        'caption',
-    ];
-
-    protected $casts = [
-        'is_main' => 'boolean',
+        'asker_id',
+        'question',
+        'answer',
     ];
 
     public function modelProfile(): BelongsTo
     {
         return $this->belongsTo(ModelProfile::class);
+    }
+
+    public function asker(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'asker_id');
     }
 }

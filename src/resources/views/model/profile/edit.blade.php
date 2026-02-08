@@ -37,34 +37,45 @@
             <p class="mt-1 text-sm text-gray-500">JPEG、PNG、GIF形式、最大5MB</p>
         </div>
 
-        {{-- 複数画像ギャラリー --}}
+        {{-- ポートフォリオ・日記（画像＋キャプション） --}}
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-                画像ギャラリー（最大10枚）
+                ポートフォリオ・日記（最大10枚）
             </label>
+            <p class="text-sm text-gray-500 mb-4">写真とキャプションで日記のように投稿できます。</p>
             
             @if($modelProfile->images->count() > 0)
-                <div class="grid grid-cols-3 md:grid-cols-5 gap-4 mb-4" id="existingImages">
+                <div class="space-y-6 mb-6" id="existingImages">
                     @foreach($modelProfile->images as $image)
-                        <div class="relative" data-image-id="{{ $image->id }}">
-                            <img src="{{ Storage::url($image->image_path) }}" 
-                                 alt="ギャラリー画像" 
-                                 class="w-full aspect-square object-cover rounded-lg border border-gray-300">
-                            <div class="absolute top-2 right-2 flex gap-1">
-                                @if($image->is_main)
-                                    <span class="bg-green-500 text-white text-xs px-2 py-1 rounded">メイン</span>
-                                @else
+                        <div class="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row gap-4" data-image-id="{{ $image->id }}">
+                            <div class="relative flex-shrink-0 w-full sm:w-40">
+                                <img src="{{ Storage::url($image->image_path) }}" 
+                                     alt="ギャラリー画像" 
+                                     class="w-full aspect-square object-cover rounded-lg border border-gray-300">
+                                <div class="absolute top-2 right-2 flex gap-1">
+                                    @if($image->is_main)
+                                        <span class="bg-green-500 text-white text-xs px-2 py-1 rounded">メイン</span>
+                                    @else
+                                        <button type="button" 
+                                                onclick="setMainImage({{ $image->id }})"
+                                                class="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600">
+                                            メインに
+                                        </button>
+                                    @endif
                                     <button type="button" 
-                                            onclick="setMainImage({{ $image->id }})"
-                                            class="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600">
-                                        メインに
+                                            onclick="deleteImage({{ $image->id }})"
+                                            class="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600">
+                                        削除
                                     </button>
-                                @endif
-                                <button type="button" 
-                                        onclick="deleteImage({{ $image->id }})"
-                                        class="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600">
-                                    削除
-                                </button>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <label for="caption_{{ $image->id }}" class="block text-xs text-gray-600 mb-1">キャプション（日記・コメント）</label>
+                                <textarea id="caption_{{ $image->id }}" 
+                                          name="captions[{{ $image->id }}]" 
+                                          rows="3"
+                                          placeholder="写真へのコメントや日記を書けます"
+                                          class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old("captions.{$image->id}", $image->caption) }}</textarea>
                             </div>
                         </div>
                     @endforeach
@@ -95,7 +106,7 @@
             @error('images.*')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
-            <p class="mt-1 text-sm text-gray-500">複数選択可能、JPEG、PNG、GIF形式、各最大5MB</p>
+            <p class="mt-1 text-sm text-gray-500">複数選択可能、JPEG、PNG、GIF形式、各最大5MB。新しい画像を追加するとポートフォリオに投稿されます。</p>
         </div>
 
         {{-- 表示名 --}}
@@ -215,6 +226,34 @@
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
+
+            <div>
+                <label for="bust" class="block text-sm font-medium text-gray-700 mb-1">B (cm)</label>
+                <input type="number" id="bust" name="bust" value="{{ old('bust', $modelProfile->bust) }}"
+                       min="1" max="200" placeholder="バスト"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                @error('bust')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="waist" class="block text-sm font-medium text-gray-700 mb-1">W (cm)</label>
+                <input type="number" id="waist" name="waist" value="{{ old('waist', $modelProfile->waist) }}"
+                       min="1" max="200" placeholder="ウエスト"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                @error('waist')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="hip" class="block text-sm font-medium text-gray-700 mb-1">H (cm)</label>
+                <input type="number" id="hip" name="hip" value="{{ old('hip', $modelProfile->hip) }}"
+                       min="1" max="200" placeholder="ヒップ"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                @error('hip')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
         </div>
 
         {{-- 都道府県 --}}
@@ -265,6 +304,8 @@
                 <option value="short" {{ old('hair_type', $modelProfile->hair_type) === 'short' ? 'selected' : '' }}>ショート</option>
                 <option value="medium" {{ old('hair_type', $modelProfile->hair_type) === 'medium' ? 'selected' : '' }}>ミディアム</option>
                 <option value="long" {{ old('hair_type', $modelProfile->hair_type) === 'long' ? 'selected' : '' }}>ロング</option>
+                <option value="semi_long" {{ old('hair_type', $modelProfile->hair_type) === 'semi_long' ? 'selected' : '' }}>セミロング</option>
+                <option value="super_long" {{ old('hair_type', $modelProfile->hair_type) === 'super_long' ? 'selected' : '' }}>スーパーロング</option>
                 <option value="other" {{ old('hair_type', $modelProfile->hair_type) === 'other' ? 'selected' : '' }}>その他</option>
             </select>
             @error('hair_type')
@@ -387,6 +428,36 @@
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
+        </div>
+
+        {{-- 本人確認 --}}
+        <div id="identity">
+            <label class="block text-sm font-medium text-gray-700 mb-1">本人確認</label>
+            <label class="flex items-center">
+                <input type="checkbox" 
+                       name="identity_verified" 
+                       value="1"
+                       {{ old('identity_verified', $modelProfile->identity_verified) ? 'checked' : '' }}
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-gray-700">本人確認済み（書類提出・確認完了）</span>
+            </label>
+            <p class="mt-1 text-sm text-gray-500">確認済みの場合はチェックを入れてください。</p>
+        </div>
+
+        {{-- 取引条件 --}}
+        <div>
+            <label for="terms_text" class="block text-sm font-medium text-gray-700 mb-1">
+                取引条件
+            </label>
+            <textarea id="terms_text" 
+                      name="terms_text" 
+                      rows="3"
+                      placeholder="例：総合評価が-1以下のクライアントからのオファーを受け付けない。"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('terms_text', $modelProfile->terms_text) }}</textarea>
+            @error('terms_text')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+            <p class="mt-1 text-sm text-gray-500">クライアントへの取引条件を自由に記載できます。未記入の場合は「特になし」等で表示されます。</p>
         </div>
 
         {{-- チェックボックス --}}

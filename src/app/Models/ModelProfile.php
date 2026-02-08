@@ -18,8 +18,11 @@ class ModelProfile extends Model
         'gender',
         'prefecture',
         'activity_regions',
-        'height',
-        'shoe_size',
+            'height',
+            'bust',
+            'waist',
+            'hip',
+            'shoe_size',
         'clothing_size',
         'model_types',
         'body_type',
@@ -37,6 +40,8 @@ class ModelProfile extends Model
         'reward_min',
         'reward_max',
         'is_public',
+        'identity_verified',
+        'terms_text',
     ];
 
     protected $casts = [
@@ -48,6 +53,7 @@ class ModelProfile extends Model
         'sns_links' => 'array',
         'online_available' => 'boolean',
         'is_public' => 'boolean',
+        'identity_verified' => 'boolean',
         'birthdate' => 'date',
     ];
 
@@ -80,5 +86,10 @@ class ModelProfile extends Model
     public function favorites(): MorphMany
     {
         return $this->morphMany(Favorite::class, 'favoritable');
+    }
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(ModelProfileQuestion::class)->latest();
     }
 }

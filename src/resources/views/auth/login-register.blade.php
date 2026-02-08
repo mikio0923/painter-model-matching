@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
         {{-- ログインフォーム --}}
         <section class="mb-12">
             <h2 class="section-subtitle">> LOGIN / ログインフォーム</h2>
@@ -7,12 +7,16 @@
                 メールアドレス・パスワードを入力して、「ログイン」ボタンをクリックして下さい。
             </p>
 
-            <form method="POST" action="{{ route('login') }}" class="card">
+            <form method="POST" action="{{ route('login') }}" class="card w-full">
                 @csrf
-                <div class="card-body">
-                    <table class="w-full mb-4">
+                <div class="card-body px-6 sm:px-8">
+                    <table class="w-full mb-4" style="table-layout: fixed;">
+                        <colgroup>
+                            <col style="width: 10rem; min-width: 10rem;">
+                            <col style="width: auto;">
+                        </colgroup>
                         <tr class="border-b border-secondary-200">
-                            <td class="py-3 pr-4 text-sm font-medium text-secondary-700 w-1/3">メールアドレス</td>
+                            <td class="py-3 pr-6 text-sm font-medium text-secondary-700 align-top" style="white-space: nowrap;">メールアドレス</td>
                             <td class="py-3">
                                 <input type="email" 
                                        name="email" 
@@ -28,7 +32,7 @@
                             </td>
                         </tr>
                         <tr class="border-b border-secondary-200">
-                            <td class="py-3 pr-4 text-sm font-medium text-secondary-700">パスワード</td>
+                            <td class="py-3 pr-6 text-sm font-medium text-secondary-700 align-top" style="white-space: nowrap;">パスワード</td>
                             <td class="py-3">
                                 <input type="password" 
                                        name="password" 
@@ -47,7 +51,7 @@
                             </td>
                         </tr>
                         <tr class="border-b border-secondary-200">
-                            <td class="py-3 pr-4 text-sm font-medium text-secondary-700">ログイン種別</td>
+                            <td class="py-3 pr-6 text-sm font-medium text-secondary-700 align-top" style="white-space: nowrap;">ログイン種別</td>
                             <td class="py-3">
                                 <div class="flex gap-4">
                                     <label class="flex items-center whitespace-nowrap">

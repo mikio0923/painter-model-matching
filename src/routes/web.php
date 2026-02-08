@@ -12,6 +12,8 @@ use App\Http\Controllers\Painter\PainterProfileEditController;
 use App\Http\Controllers\Model\ModelProfileEditController;
 use App\Http\Controllers\Model\ModelApplicationController;
 use App\Http\Controllers\Model\ModelProfileController;
+use App\Http\Controllers\Model\ModelQuestionController;
+use App\Http\Controllers\Model\ModelAccountController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
@@ -25,6 +27,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/models', [ModelProfileController::class, 'index'])->name('models.index');
 Route::get('/models/{modelProfile}', [ModelProfileController::class, 'show'])->name('models.show');
+Route::post('/models/{modelProfile}/questions', [\App\Http\Controllers\ModelProfileQuestionController::class, 'store'])
+    ->middleware(['auth', 'throttle:10,1'])
+    ->name('model-profile.questions.store');
 
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
 Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
@@ -106,6 +111,17 @@ Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->grou
     Route::post('/jobs/{job}/apply', [ModelApplicationController::class, 'apply'])
         ->middleware('throttle:10,1')
         ->name('jobs.apply');
+
+    // あなたへの質問
+    Route::get('/questions', [ModelQuestionController::class, 'index'])->name('questions.index');
+    Route::post('/questions/{modelProfileQuestion}/answer', [ModelQuestionController::class, 'answer'])->name('questions.answer');
+    Route::get('/questions/{modelProfileQuestion}/edit', [ModelQuestionController::class, 'edit'])->name('questions.edit');
+
+    // 本人確認・決済関連
+    Route::get('/identity-verification', [ModelAccountController::class, 'identityVerification'])->name('identity-verification');
+    Route::get('/paid-options', [ModelAccountController::class, 'paidOptions'])->name('paid-options');
+    Route::get('/billing-history', [ModelAccountController::class, 'billingHistory'])->name('billing-history');
+    Route::get('/payment-method', [ModelAccountController::class, 'paymentMethod'])->name('payment-method');
 });
 
 /*

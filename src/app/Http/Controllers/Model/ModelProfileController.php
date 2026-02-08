@@ -168,8 +168,16 @@ class ModelProfileController extends Controller
             ->take(10)
             ->get();
 
-        // お気に入り状態を取得
+        // Q&A（回答済みのみ公開表示）
+        $questions = $modelProfile->questions()
+            ->whereNotNull('answer')
+            ->with('asker')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // お気に入り状態といいね数を取得
         $isFavorite = false;
+        $favoritesCount = $modelProfile->favorites()->count();
         if (Auth::check()) {
             $isFavorite = \App\Models\Favorite::where('user_id', Auth::id())
                 ->where('favoritable_type', \App\Models\ModelProfile::class)
@@ -177,6 +185,6 @@ class ModelProfileController extends Controller
                 ->exists();
         }
 
-        return view('models.show', compact('modelProfile', 'reviews', 'isFavorite', 'tab'));
+        return view('models.show', compact('modelProfile', 'reviews', 'questions', 'isFavorite', 'favoritesCount', 'tab'));
     }
 }

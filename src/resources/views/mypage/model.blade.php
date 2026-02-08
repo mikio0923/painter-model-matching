@@ -8,8 +8,8 @@
     </h1>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {{-- Row 1: メニュー | 警告+プロフィール（上辺揃え・メニュー固定） --}}
-        <div class="flex flex-col lg:sticky lg:top-4 lg:self-start">
+        {{-- Row 1: メニュー | 警告+プロフィール --}}
+        <div class="flex flex-col">
             {{-- メインメニュー（3x3グリッド） --}}
             <div class="grid grid-cols-3 gap-0">
                 {{-- モデルのお仕事 --}}
@@ -34,7 +34,7 @@
                     <span class="text-xs">モデルになるガイド</span>
                 </a>
                 {{-- あなたへの質問 --}}
-                <a href="#" class="bg-gray-800 hover:bg-gray-700 text-white p-3 flex flex-col items-center justify-center text-center border-r border-b border-gray-700 transition-colors">
+                <a href="{{ route('model.questions.index') }}" class="bg-gray-800 hover:bg-gray-700 text-white p-3 flex flex-col items-center justify-center text-center border-r border-b border-gray-700 transition-colors">
                     <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span class="text-xs">あなたへの質問</span>
                 </a>
@@ -61,7 +61,7 @@
             </div>
             {{-- 折りたたみメニュー --}}
             <div id="otherMenu" class="grid grid-cols-3 gap-0 transition-all duration-300 max-h-0 overflow-hidden opacity-0 pointer-events-none" aria-hidden="true" data-closed="true">
-                <a href="#" class="bg-gray-600 hover:bg-gray-500 text-white p-3 flex flex-col items-center justify-center text-center border-r border-b border-gray-500 transition-colors">
+                <a href="{{ route('model.identity-verification') }}" class="bg-gray-600 hover:bg-gray-500 text-white p-3 flex flex-col items-center justify-center text-center border-r border-b border-gray-500 transition-colors">
                     <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span class="text-xs">本人確認</span>
                 </a>
@@ -69,15 +69,15 @@
                     <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     <span class="text-xs">アカウント<br>(登録情報)</span>
                 </a>
-                <a href="#" class="bg-gray-600 hover:bg-gray-500 text-white p-3 flex flex-col items-center justify-center text-center border-b border-gray-500 transition-colors">
+                <a href="{{ route('model.paid-options') }}" class="bg-gray-600 hover:bg-gray-500 text-white p-3 flex flex-col items-center justify-center text-center border-b border-gray-500 transition-colors">
                     <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
                     <span class="text-xs">有料オプション</span>
                 </a>
-                <a href="#" class="bg-gray-700 hover:bg-gray-600 text-white p-3 flex flex-col items-center justify-center text-center border-r border-gray-600 transition-colors">
+                <a href="{{ route('model.billing-history') }}" class="bg-gray-700 hover:bg-gray-600 text-white p-3 flex flex-col items-center justify-center text-center border-r border-gray-600 transition-colors">
                     <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <span class="text-xs">課金・決済履歴</span>
                 </a>
-                <a href="#" class="bg-gray-600 hover:bg-gray-500 text-white p-3 flex flex-col items-center justify-center text-center border-r border-gray-500 transition-colors">
+                <a href="{{ route('model.payment-method') }}" class="bg-gray-600 hover:bg-gray-500 text-white p-3 flex flex-col items-center justify-center text-center border-r border-gray-500 transition-colors">
                     <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                     <span class="text-xs">カード情報登録</span>
                 </a>
@@ -88,7 +88,9 @@
         {{-- 右側 Row 1: 警告+プロフィール（メニューと高さ揃え） --}}
         <div class="flex flex-col space-y-4">
             <div class="bg-white border border-gray-200 rounded-lg p-4">
-                <p class="text-sm text-gray-700 mb-2">本人確認書類の提出がまだのようです。オファー率を高めるために本人確認書類の申請をお勧め致します。</p>
+                <p class="text-sm text-gray-700 mb-2">
+                    本人確認の設定は<a href="{{ route('model.identity-verification') }}" class="text-blue-600 hover:underline">こちら</a>から。オファー率を高めるためにご利用ください。
+                </p>
                 <a href="{{ route('model.profile.create') }}" class="block text-sm text-red-500 hover:text-red-600 hover:underline transition-colors">モデルプロフィールの登録がまだのようです。ジョブへエントリーするのに必要となります。</a>
             </div>
             @if($modelProfile)

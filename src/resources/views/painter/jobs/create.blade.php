@@ -134,11 +134,14 @@
                 <label for="prefecture" class="block text-sm font-medium text-gray-700 mb-1">
                     都道府県（任意）
                 </label>
-                <input type="text" 
-                       id="prefecture" 
-                       name="prefecture" 
-                       value="{{ old('prefecture') }}"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <select id="prefecture" 
+                        name="prefecture"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">選択してください</option>
+                    @foreach($prefectures as $pref)
+                        <option value="{{ $pref }}" {{ old('prefecture') === $pref ? 'selected' : '' }}>{{ $pref }}</option>
+                    @endforeach
+                </select>
                 @error('prefecture')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror

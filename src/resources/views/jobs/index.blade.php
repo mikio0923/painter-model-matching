@@ -118,22 +118,41 @@
   @else
     <div class="section-panel">
       <div class="section-panel-inner px-8 sm:px-10 lg:px-12">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       @foreach($jobs as $job)
-        <a href="{{ route('jobs.show', $job) }}" class="card">
-          <div class="card-body">
-            <h2 class="text-xl font-semibold mb-3 text-secondary-900">{{ $job->title }}</h2>
-            
+        @php
+          $painter = $job->painter;
+          $painterProfile = $painter->painterProfile;
+          $painterName = $painterProfile?->display_name ?? $painter->name;
+          $painterImage = $painterProfile?->profile_image_path ?? null;
+          $painterGender = $painterProfile?->gender ?? null;
+          $cardBg = $painterGender === 'male' ? 'bg-blue-50 border-blue-200' : (in_array($painterGender, ['female', 'other']) ? 'bg-accent-100 border-accent-300' : 'bg-gray-50 border-gray-200');
+        @endphp
+        <a href="{{ route('jobs.show', $job) }}" class="block rounded-xl border-2 shadow-sm overflow-hidden {{ $cardBg }} hover:opacity-95 transition-opacity">
+          <div class="p-5">
+            {{-- 画家アイコン＋名前 --}}
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 {{ $painterGender === 'male' ? 'border-blue-300 bg-blue-100' : (in_array($painterGender, ['female', 'other']) ? 'border-accent-300 bg-accent-100' : 'border-gray-300 bg-gray-200') }}">
+                @if($painterImage)
+                  <img src="{{ Storage::url($painterImage) }}" alt="{{ $painterName }}" class="w-full h-full object-cover">
+                @else
+                  <div class="w-full h-full flex items-center justify-center {{ $painterGender === 'male' ? 'text-blue-500' : (in_array($painterGender, ['female', 'other']) ? 'text-accent-500' : 'text-gray-500') }}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                  </div>
+                @endif
+              </div>
+              <div class="min-w-0">
+                <p class="font-semibold text-sm text-secondary-900 truncate">{{ $painterName }}</p>
+                <p class="text-xs text-secondary-600">画家</p>
+              </div>
+            </div>
+
+            <h2 class="text-lg font-semibold mb-2 text-secondary-900 line-clamp-2">{{ $job->title }}</h2>
             <p class="text-secondary-600 text-sm mb-4 line-clamp-3">
-              {{ mb_strlen($job->description) > 150 ? mb_substr($job->description, 0, 150) . '...' : $job->description }}
+              {{ mb_strlen($job->description) > 120 ? mb_substr($job->description, 0, 120) . '...' : $job->description }}
             </p>
 
             <div class="space-y-2 text-sm">
-              <div class="flex items-center justify-between">
-                <span class="text-secondary-600">投稿者</span>
-                <span class="font-semibold text-secondary-900">{{ $job->painter->name }}</span>
-              </div>
-
               <div class="flex items-center justify-between">
                 <span class="text-secondary-600">場所</span>
                 <span class="text-secondary-900">
@@ -143,7 +162,6 @@
                   @endif
                 </span>
               </div>
-
               @if($job->reward_amount)
                 <div class="flex items-center justify-between">
                   <span class="text-secondary-600">報酬</span>
@@ -157,27 +175,19 @@
                   </span>
                 </div>
               @endif
-
               @if($job->scheduled_date)
                 <div class="flex items-center justify-between">
                   <span class="text-secondary-600">日程</span>
                   <span class="text-secondary-900">{{ $job->scheduled_date->format('Y/m/d') }}</span>
                 </div>
               @endif
-
-              @if($job->apply_deadline)
-                <div class="flex items-center justify-between">
-                  <span class="text-secondary-600">応募締切</span>
-                  <span class="text-secondary-900">{{ $job->apply_deadline->format('Y/m/d') }}</span>
-                </div>
-              @endif
             </div>
 
-            <div class="mt-4 pt-4 border-t border-secondary-200">
+            <div class="mt-4 pt-3 border-t border-secondary-200/80">
               <div class="flex items-center justify-between text-xs text-secondary-500">
                 <span>投稿日: {{ $job->created_at->format('Y/m/d') }}</span>
-                @if($job->applications()->count() > 0)
-                  <span>応募: {{ $job->applications()->count() }}件</span>
+                @if($job->applications_count > 0)
+                  <span>応募: {{ $job->applications_count }}件</span>
                 @endif
               </div>
             </div>

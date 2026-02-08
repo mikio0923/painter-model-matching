@@ -134,28 +134,58 @@
                 <h2 class="section-title">Review / 新着レビュー</h2>
             </div>
             <div class="section-panel">
-                <div class="section-panel-inner">
+                <div class="section-panel-inner px-8 sm:px-10 lg:px-12">
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($latestReviews as $review)
-                    <div class="card">
-                        <div class="card-body">
-                            {{-- 評価のレベル --}}
-                            <div class="mb-3">
-                                <span class="badge badge-success">
-                                    {{ $review->rating_label }}
-                                </span>
+                    @php
+                        $reviewee = $review->reviewedUser;
+                        $revieweeProfile = $reviewee->modelProfile ?? $reviewee->painterProfile;
+                        $revieweeName = $revieweeProfile?->display_name ?? $reviewee->name;
+                        $revieweeImage = $reviewee->modelProfile?->profile_image_path ?? null;
+                        $revieweeGender = $reviewee->modelProfile?->gender ?? null;
+                        $revieweeRole = $reviewee->role === 'model' ? 'モデル' : '画家';
+                        $revieweeProfileUrl = $reviewee->role === 'model' && $reviewee->modelProfile
+                            ? route('models.show', $reviewee->modelProfile)
+                            : ($reviewee->role === 'painter' && $review->job ? route('jobs.show', $review->job) : null);
+                        $cardBg = $revieweeGender === 'male' ? 'bg-blue-50 border-blue-200' : (in_array($revieweeGender, ['female', 'other']) ? 'bg-accent-100 border-accent-300' : 'bg-gray-50 border-gray-200');
+                        $starCount = match($review->rating) { 'very_good' => 5, 'good' => 3, 'bad' => 1, default => 0 };
+                    @endphp
+                    <div class="rounded-xl border-2 shadow-sm overflow-hidden {{ $cardBg }}">
+                        <div class="p-5">
+                            {{-- レビュー受けた側のアイコン＋名前（クリックでプロフィールへ） --}}
+                            <div class="flex items-center gap-3 mb-4">
+                                @if($revieweeProfileUrl)
+                                    <a href="{{ $revieweeProfileUrl }}" class="block w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 {{ $revieweeGender === 'male' ? 'border-blue-300 bg-blue-100' : (in_array($revieweeGender, ['female', 'other']) ? 'border-accent-300 bg-accent-100' : 'border-gray-300 bg-gray-200') }} hover:opacity-90 transition-opacity">
+                                @else
+                                    <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 {{ $revieweeGender === 'male' ? 'border-blue-300 bg-blue-100' : (in_array($revieweeGender, ['female', 'other']) ? 'border-accent-300 bg-accent-100' : 'border-gray-300 bg-gray-200') }}">
+                                @endif
+                                    @if($revieweeImage)
+                                        <img src="{{ Storage::url($revieweeImage) }}" alt="{{ $revieweeName }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center {{ $revieweeGender === 'male' ? 'text-blue-500' : (in_array($revieweeGender, ['female', 'other']) ? 'text-accent-500' : 'text-gray-500') }}">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                        </div>
+                                    @endif
+                                @if($revieweeProfileUrl)
+                                    </a>
+                                @else
+                                    </div>
+                                @endif
+                                <div>
+                                    <p class="font-semibold text-sm text-secondary-900">{{ $revieweeName }}</p>
+                                    <p class="text-xs text-secondary-600">{{ $revieweeRole }}</p>
+                                </div>
                             </div>
 
-                            {{-- 評価者の名前 --}}
-                            <div class="mb-3">
-                                <p class="font-semibold text-sm text-secondary-900">
-                                    {{ $review->reviewer->name }}
-                                    @if($review->reviewer->role === 'model')
-                                        <span class="text-xs text-secondary-600">（モデル）</span>
+                            {{-- 星評価 --}}
+                            <div class="flex gap-0.5 mb-3" aria-label="評価 {{ $starCount }}つ星">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $starCount)
+                                        <svg class="w-5 h-5 {{ $revieweeGender === 'male' ? 'text-blue-500' : (in_array($revieweeGender, ['female', 'other']) ? 'text-accent-500' : 'text-amber-500') }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                     @else
-                                        <span class="text-xs text-secondary-600">（画家）</span>
+                                        <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                     @endif
-                                </p>
+                                @endfor
                             </div>
 
                             {{-- 評価内容 --}}
@@ -168,6 +198,11 @@
                                     コメントなし
                                 </p>
                             @endif
+
+                            {{-- 評価者（小さく） --}}
+                            <p class="mt-2 text-xs text-secondary-500">
+                                {{ $review->reviewer->modelProfile?->display_name ?? $review->reviewer->painterProfile?->display_name ?? $review->reviewer->name }} より
+                            </p>
                         </div>
                     </div>
                 @endforeach

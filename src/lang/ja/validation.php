@@ -200,6 +200,7 @@ return [
         'comment' => 'コメント',
         'subject' => '件名',
         'body' => '本文',
+        'role' => 'ログイン種別',
     ],
 ];
 

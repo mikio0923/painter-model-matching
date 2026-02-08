@@ -286,6 +286,8 @@
                     <option value="short" {{ old('hair_type') === 'short' ? 'selected' : '' }}>ショート</option>
                     <option value="medium" {{ old('hair_type') === 'medium' ? 'selected' : '' }}>ミディアム</option>
                     <option value="long" {{ old('hair_type') === 'long' ? 'selected' : '' }}>ロング</option>
+                    <option value="semi_long" {{ old('hair_type') === 'semi_long' ? 'selected' : '' }}>セミロング</option>
+                    <option value="super_long" {{ old('hair_type') === 'super_long' ? 'selected' : '' }}>スーパーロング</option>
                     <option value="other" {{ old('hair_type') === 'other' ? 'selected' : '' }}>その他</option>
                 </select>
                 @error('hair_type')

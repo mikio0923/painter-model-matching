@@ -72,9 +72,9 @@
 
     {{-- タブコンテンツ --}}
     @if($tab === 'profile')
-        @include('models.show.profile', ['modelProfile' => $modelProfile, 'isFavorite' => $isFavorite])
+        @include('models.show.profile', ['modelProfile' => $modelProfile, 'isFavorite' => $isFavorite, 'favoritesCount' => $favoritesCount])
     @elseif($tab === 'qa')
-        @include('models.show.qa', ['modelProfile' => $modelProfile])
+        @include('models.show.qa', ['modelProfile' => $modelProfile, 'questions' => $questions ?? collect()])
     @elseif($tab === 'photo')
         @include('models.show.photo', ['modelProfile' => $modelProfile])
     @elseif($tab === 'comments')

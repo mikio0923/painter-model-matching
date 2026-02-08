@@ -51,7 +51,7 @@ class ModelProfileEditController extends Controller
             'shoe_size' => ['required', 'string', Rule::in(self::shoeSizes())],
             'clothing_size' => ['required', 'string', Rule::in(self::clothingSizes())],
             'body_type' => ['required', 'string', 'in:スリム,普通,グラマー,細身,がっしり'],
-            'hair_type' => ['required', 'string', 'in:short,medium,long,other'],
+            'hair_type' => ['required', 'string', 'in:short,medium,long,semi_long,super_long,other'],
             'occupation' => ['required', 'string', 'max:255'],
             'hobbies' => ['required', 'string', 'max:500'],
             'avoid_work_types' => ['nullable', 'array'],
@@ -305,9 +305,10 @@ class ModelProfileEditController extends Controller
             $validated['sns_links'] = array_values(array_filter($validated['sns_links']));
         }
 
-        // online_availableとis_publicをbooleanに変換
+        // online_available, is_public, identity_verifiedをbooleanに変換
         $validated['online_available'] = $request->has('online_available');
         $validated['is_public'] = $request->has('is_public');
+        $validated['identity_verified'] = $request->has('identity_verified');
 
         // profile_imageキーを削除（profile_image_pathに変換済み）
         unset($validated['profile_image']);
@@ -348,6 +349,16 @@ class ModelProfileEditController extends Controller
             $mainImage = ModelProfileImage::find($request->main_image_id);
             if ($mainImage && $mainImage->model_profile_id === $modelProfile->id) {
                 $mainImage->update(['is_main' => true]);
+            }
+        }
+
+        // キャプションを更新
+        if ($request->has('captions') && is_array($request->captions)) {
+            foreach ($request->captions as $imageId => $caption) {
+                $image = ModelProfileImage::find($imageId);
+                if ($image && $image->model_profile_id === $modelProfile->id) {
+                    $image->update(['caption' => $caption ?: null]);
+                }
             }
         }
 

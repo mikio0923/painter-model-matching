@@ -10,6 +10,8 @@ class PainterProfile extends Model
     protected $fillable = [
         'user_id',
         'display_name',
+        'profile_image_path',
+        'gender',
         'art_styles',
         'portfolio_url',
         'prefecture',

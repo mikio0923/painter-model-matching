@@ -16,7 +16,8 @@ class JobController extends Controller
     public function index(Request $request): View
     {
         $query = Job::where('status', 'open')
-            ->with('painter.painterProfile');
+            ->with('painter.painterProfile')
+            ->withCount('applications');
 
         // 都道府県で検索
         if ($request->filled('prefecture')) {

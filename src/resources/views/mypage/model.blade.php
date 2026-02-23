@@ -91,7 +91,7 @@
                 <p class="text-sm text-gray-700 mb-2">
                     本人確認の設定は<a href="{{ route('model.identity-verification') }}" class="text-blue-600 hover:underline">こちら</a>から。オファー率を高めるためにご利用ください。
                 </p>
-                <a href="{{ route('model.profile.create') }}" class="block text-sm text-red-500 hover:text-red-600 hover:underline transition-colors">モデルプロフィールの登録がまだのようです。ジョブへエントリーするのに必要となります。</a>
+                <a href="{{ route('model.profile.edit') }}" class="block text-sm text-red-500 hover:text-red-600 hover:underline transition-colors">モデルプロフィールの登録がまだのようです。ジョブへエントリーするのに必要となります。</a>
             </div>
             @if($modelProfile)
                 <div class="bg-white border border-gray-200 rounded-lg p-4 mt-auto">

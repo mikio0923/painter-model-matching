@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Favorite;
 use App\Models\ModelProfile;
 use App\Models\Job;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +33,7 @@ class FavoriteController extends Controller
     /**
      * お気に入りを追加（モデル）
      */
-    public function storeModel(Request $request, ModelProfile $modelProfile): RedirectResponse
+    public function storeModel(Request $request, ModelProfile $modelProfile): RedirectResponse|JsonResponse
     {
         $user = Auth::user();
 
@@ -43,6 +44,9 @@ class FavoriteController extends Controller
             ->first();
 
         if ($existingFavorite) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => '既にお気に入りに登録されています'], 422);
+            }
             return back()->with('error', '既にお気に入りに登録されています');
         }
 
@@ -52,13 +56,16 @@ class FavoriteController extends Controller
             'favoritable_id' => $modelProfile->id,
         ]);
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
         return back()->with('success', 'お気に入りに追加しました');
     }
 
     /**
      * お気に入りを追加（依頼）
      */
-    public function storeJob(Request $request, Job $job): RedirectResponse
+    public function storeJob(Request $request, Job $job): RedirectResponse|JsonResponse
     {
         $user = Auth::user();
 
@@ -69,6 +76,9 @@ class FavoriteController extends Controller
             ->first();
 
         if ($existingFavorite) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => '既にお気に入りに登録されています'], 422);
+            }
             return back()->with('error', '既にお気に入りに登録されています');
         }
 
@@ -78,6 +88,9 @@ class FavoriteController extends Controller
             'favoritable_id' => $job->id,
         ]);
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
         return back()->with('success', 'お気に入りに追加しました');
     }
 
@@ -101,7 +114,7 @@ class FavoriteController extends Controller
     /**
      * お気に入りを削除（モデル）
      */
-    public function destroyModel(ModelProfile $modelProfile): RedirectResponse
+    public function destroyModel(Request $request, ModelProfile $modelProfile): RedirectResponse|JsonResponse
     {
         $user = Auth::user();
 
@@ -112,16 +125,22 @@ class FavoriteController extends Controller
 
         if ($favorite) {
             $favorite->delete();
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true]);
+            }
             return back()->with('success', 'お気に入りを削除しました');
         }
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => false, 'message' => 'お気に入りが見つかりませんでした'], 422);
+        }
         return back()->with('error', 'お気に入りが見つかりませんでした');
     }
 
     /**
      * お気に入りを削除（依頼）
      */
-    public function destroyJob(Job $job): RedirectResponse
+    public function destroyJob(Request $request, Job $job): RedirectResponse|JsonResponse
     {
         $user = Auth::user();
 
@@ -132,9 +151,15 @@ class FavoriteController extends Controller
 
         if ($favorite) {
             $favorite->delete();
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true]);
+            }
             return back()->with('success', 'お気に入りを削除しました');
         }
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => false, 'message' => 'お気に入りが見つかりませんでした'], 422);
+        }
         return back()->with('error', 'お気に入りが見つかりませんでした');
     }
 }

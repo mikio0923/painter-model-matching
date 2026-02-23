@@ -55,7 +55,7 @@
             @else
                 <div class="text-center py-8">
                     <p class="text-gray-600 mb-4">まずプロフィールを作成してください。</p>
-                    <a href="{{ route('model.profile.create') }}" class="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                    <a href="{{ route('model.profile.edit') }}" class="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
                         プロフィールを作成する
                     </a>
                 </div>

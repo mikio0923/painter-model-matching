@@ -276,20 +276,132 @@
             @enderror
         </div>
 
+        {{-- 活動地域 --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">活動地域</label>
+            <p class="text-sm text-gray-500 mb-2">活動可能な地域にチェックを入れてください。</p>
+            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
+                @foreach($prefectures as $p)
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="activity_regions[]" value="{{ $p }}"
+                            {{ in_array($p, old('activity_regions', $modelProfile->activity_regions ?? [])) ? 'checked' : '' }}
+                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700">{{ $p }}</span>
+                    </label>
+                @endforeach
+            </div>
+        </div>
+
         {{-- 体型 --}}
         <div>
-            <label for="body_type" class="block text-sm font-medium text-gray-700 mb-1">
-                体型
-            </label>
-            <input type="text" 
-                   id="body_type" 
-                   name="body_type" 
-                   value="{{ old('body_type', $modelProfile->body_type) }}"
-                   placeholder="例：スリム、普通、グラマー"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <label for="body_type" class="block text-sm font-medium text-gray-700 mb-1">体型</label>
+            <select id="body_type" name="body_type"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <option value="">選択してください</option>
+                @foreach($bodyTypes as $b)
+                    <option value="{{ $b }}" {{ old('body_type', $modelProfile->body_type) === $b ? 'selected' : '' }}>{{ $b }}</option>
+                @endforeach
+            </select>
             @error('body_type')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
+        </div>
+
+        {{-- 靴のサイズ --}}
+        <div>
+            <label for="shoe_size" class="block text-sm font-medium text-gray-700 mb-1">靴のサイズ (cm)</label>
+            <select id="shoe_size" name="shoe_size"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <option value="">選択してください</option>
+                @foreach($shoeSizes as $s)
+                    <option value="{{ $s }}" {{ old('shoe_size', $modelProfile->shoe_size) === $s ? 'selected' : '' }}>{{ $s }} cm</option>
+                @endforeach
+            </select>
+            @error('shoe_size')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- 洋服のサイズ --}}
+        <div>
+            <label for="clothing_size" class="block text-sm font-medium text-gray-700 mb-1">洋服のサイズ</label>
+            <select id="clothing_size" name="clothing_size"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <option value="">選択してください</option>
+                @foreach($clothingSizes as $c)
+                    <option value="{{ $c }}" {{ old('clothing_size', $modelProfile->clothing_size) === $c ? 'selected' : '' }}>{{ $c }}{{ is_numeric($c) ? '号' : '' }}</option>
+                @endforeach
+            </select>
+            @error('clothing_size')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- モデルタイプ（複数選択可） --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">モデルタイプ</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                @foreach($modelTypes as $t)
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="model_types[]" value="{{ $t }}"
+                            {{ in_array($t, old('model_types', $modelProfile->model_types ?? [])) ? 'checked' : '' }}
+                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700">{{ $t }}</span>
+                    </label>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- 職業 --}}
+        <div>
+            <label for="occupation" class="block text-sm font-medium text-gray-700 mb-1">職業</label>
+            <input type="text" id="occupation" name="occupation"
+                   value="{{ old('occupation', $modelProfile->occupation) }}"
+                   placeholder="例：大学生、会社員"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            @error('occupation')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- 趣味 --}}
+        <div>
+            <label for="hobbies" class="block text-sm font-medium text-gray-700 mb-1">趣味</label>
+            <input type="text" id="hobbies" name="hobbies"
+                   value="{{ old('hobbies', $modelProfile->hobbies) }}"
+                   placeholder="例：料理、読書"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            @error('hobbies')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- 避けたい仕事・参考条件（NG選択） --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">避けたい仕事・参考条件</label>
+            <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2 mb-2">あなたが避けたい仕事に合致する項目があればチェックを入れてください。</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+                <div class="space-y-2">
+                    @foreach(array_slice($avoidWorkTypes, 0, 5) as $opt)
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="avoid_work_types[]" value="{{ $opt }}"
+                                {{ in_array($opt, old('avoid_work_types', $modelProfile->avoid_work_types ?? [])) ? 'checked' : '' }}
+                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-700">{{ $opt }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                <div class="space-y-2">
+                    @foreach(array_slice($avoidWorkTypes, 5, 5) as $opt)
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="avoid_work_types[]" value="{{ $opt }}"
+                                {{ in_array($opt, old('avoid_work_types', $modelProfile->avoid_work_types ?? [])) ? 'checked' : '' }}
+                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-700">{{ $opt }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
         </div>
 
         {{-- 髪型 --}}
@@ -482,14 +594,14 @@
         </div>
 
         {{-- 送信ボタン --}}
-        <div class="flex gap-4 pt-4">
+        <div class="flex gap-4 pt-4 justify-center">
             <button type="submit" 
                     class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                 更新する
             </button>
-            <a href="{{ route('models.show', $modelProfile) }}" 
+            <a href="{{ route('mypage') }}" 
                class="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                キャンセル
+                戻る
             </a>
         </div>
     </form>

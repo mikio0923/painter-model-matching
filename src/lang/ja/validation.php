@@ -201,6 +201,11 @@ return [
         'subject' => '件名',
         'body' => '本文',
         'role' => 'ログイン種別',
+        'phone_number_part1' => '電話番号（市外局番）',
+        'phone_number_part2' => '電話番号（市内局番）',
+        'phone_number_part3' => '電話番号（加入者番号）',
+        'postal_code_part1' => '郵便番号（前半）',
+        'postal_code_part2' => '郵便番号（後半）',
     ],
 ];
 

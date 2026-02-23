@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Model;
 
+use App\Models\Favorite;
 use App\Models\ModelProfile;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -107,6 +108,14 @@ class ModelProfileController extends Controller
 
         $models = $query->with('user')->paginate(36)->withQueryString();
 
+        $favoriteModelIds = [];
+        if (Auth::check()) {
+            $favoriteModelIds = Favorite::where('user_id', Auth::id())
+                ->where('favoritable_type', ModelProfile::class)
+                ->pluck('favoritable_id')
+                ->all();
+        }
+
         // 都道府県リスト（検索フォーム用・キャッシュ）
         $prefectures = cache()->remember('model_prefectures', 3600, function () {
             return ModelProfile::where('is_public', true)
@@ -140,7 +149,7 @@ class ModelProfileController extends Controller
                 ->values();
         });
 
-        return view('models.index', compact('models', 'prefectures', 'allTags', 'bodyTypes'));
+        return view('models.index', compact('models', 'prefectures', 'allTags', 'bodyTypes', 'favoriteModelIds'));
     }
 
     // 詳細

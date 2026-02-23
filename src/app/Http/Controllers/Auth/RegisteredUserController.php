@@ -22,10 +22,18 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view (email verification step).
      */
-    public function create(Request $request): View
+    public function create(Request $request): View|RedirectResponse
     {
-        $role = $request->get('role', 'model'); // デフォルトはmodel
-        
+        $role = $request->get('role', 'model');
+
+        // 認証済みでフォーム表示を要求された場合（バリデーション失敗後の再表示など）
+        if ($request->get('step') === 'form' && session('verified_email') && session('verified_role')) {
+            return view('auth.register', [
+                'email' => session('verified_email'),
+                'role' => session('verified_role'),
+            ]);
+        }
+
         return view('auth.register-email', [
             'role' => $role,
         ]);
@@ -83,10 +91,11 @@ class RegisteredUserController extends Controller
      */
     public function verify(Request $request): View|RedirectResponse
     {
-        $email = $request->get('email');
-        $token = $request->get('token');
+        // コピペ時に改行や前後の空白が入ることがあるためトリム
+        $email = trim((string) $request->get('email'));
+        $token = trim((string) $request->get('token'));
 
-        if (!$email || !$token) {
+        if ($email === '' || $token === '') {
             return redirect()->route('register')
                 ->with('error', '無効な認証リンクです。');
         }
@@ -94,8 +103,15 @@ class RegisteredUserController extends Controller
         $registrationToken = RegistrationToken::verifyToken($email, $token);
 
         if (!$registrationToken) {
+            // 既にこのメールで認証済み（リンクを2回目にクリックした等）の場合は登録フォームへ
+            if (session('verified_email') === $email && session('verified_role')) {
+                return view('auth.register', [
+                    'email' => $email,
+                    'role' => session('verified_role'),
+                ]);
+            }
             return redirect()->route('register')
-                ->with('error', '認証リンクが無効または期限切れです。再度メールアドレスを入力してください。');
+                ->with('error', '認証リンクが無効または期限切れです。再度メールアドレスを入力し、届いたメールのリンクは1回だけクリックしてください。');
         }
 
         // トークンを削除
@@ -147,7 +163,7 @@ class RegisteredUserController extends Controller
                     return $query->where('role', $verifiedRole);
                 }),
             ],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', 'string', 'min:6'],
             'role' => ['required', 'string', 'in:model,painter'],
         ];
 
@@ -178,9 +194,9 @@ class RegisteredUserController extends Controller
                 },
             ];
             $validationRules['gender'] = ['required', 'string', 'in:男性,女性'];
-            $validationRules['phone_number_part1'] = ['nullable', 'string', 'max:4', 'regex:/^[0-9]+$/'];
-            $validationRules['phone_number_part2'] = ['nullable', 'string', 'max:4', 'regex:/^[0-9]+$/'];
-            $validationRules['phone_number_part3'] = ['nullable', 'string', 'max:4', 'regex:/^[0-9]+$/'];
+            $validationRules['phone_number_part1'] = ['nullable', 'string', 'min:2', 'max:3', 'regex:/^[0-9]+$/'];
+            $validationRules['phone_number_part2'] = ['nullable', 'string', 'size:4', 'regex:/^[0-9]+$/'];
+            $validationRules['phone_number_part3'] = ['nullable', 'string', 'size:4', 'regex:/^[0-9]+$/'];
             $validationRules['postal_code_part1'] = ['required', 'string', 'size:3', 'regex:/^[0-9]+$/'];
             $validationRules['postal_code_part2'] = ['required', 'string', 'size:4', 'regex:/^[0-9]+$/'];
             $validationRules['prefecture'] = ['required', 'string'];
@@ -189,7 +205,30 @@ class RegisteredUserController extends Controller
             $validationRules['building_name'] = ['nullable', 'string', 'max:255'];
         }
 
-        $request->validate($validationRules);
+        try {
+            $request->validate($validationRules, [
+                'phone_number_part1.regex' => '電話番号は半角数字のみで入力してください。',
+                'phone_number_part1.min' => '電話番号の市外局番は2桁以上3桁以下で入力してください。（例：080、03）',
+                'phone_number_part1.max' => '電話番号の市外局番は2桁以上3桁以下で入力してください。（例：080、03）',
+                'phone_number_part2.regex' => '電話番号は半角数字のみで入力してください。',
+                'phone_number_part2.size' => '電話番号の市内局番は4桁で入力してください。',
+                'phone_number_part3.regex' => '電話番号は半角数字のみで入力してください。',
+                'phone_number_part3.size' => '電話番号の加入者番号は4桁で入力してください。',
+                'password.min' => 'パスワードは6文字以上で入力してください。',
+                'postal_code_part1.regex' => '郵便番号は半角数字のみで入力してください。',
+                'postal_code_part2.regex' => '郵便番号は半角数字のみで入力してください。',
+            ], [
+                'phone_number_part1' => '電話番号（市外局番）',
+                'phone_number_part2' => '電話番号（市内局番）',
+                'phone_number_part3' => '電話番号（加入者番号）',
+                'postal_code_part1' => '郵便番号（前半）',
+                'postal_code_part2' => '郵便番号（後半）',
+            ]);
+        } catch (ValidationException $e) {
+            return redirect()->route('register', ['role' => $verifiedRole, 'step' => 'form'])
+                ->withInput()
+                ->withErrors($e->validator);
+        }
 
         // ロールが一致するか確認
         if ($request->role !== $verifiedRole) {

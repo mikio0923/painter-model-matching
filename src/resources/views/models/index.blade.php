@@ -245,9 +245,10 @@
       <div class="section-panel-inner px-8 sm:px-10 lg:px-12">
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-3">
           @foreach($models as $model)
-            <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden">
+            @php $isFavModel = in_array($model->id, $favoriteModelIds ?? []); @endphp
+            <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden relative">
               {{-- 画像 --}}
-              <div class="aspect-[3/4] card-media">
+              <div class="aspect-[3/4] card-media relative">
                 @if($model->profile_image_path)
                   <img src="{{ Storage::url($model->profile_image_path) }}"
                        alt="{{ $model->display_name }}"
@@ -260,6 +261,23 @@
                   </div>
                 @endif
               </div>
+              @auth
+              <div class="absolute top-1 right-1 z-10" onclick="event.stopPropagation();">
+                @if($isFavModel)
+                  <form method="POST" action="{{ route('favorites.destroy.model', $model) }}" class="inline">@csrf @method('DELETE')
+                    <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-red-500" title="お気に入り解除">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
+                    </button>
+                  </form>
+                @else
+                  <form method="POST" action="{{ route('favorites.store.model', $model) }}" class="inline">@csrf
+                    <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-gray-400 hover:text-red-500" title="お気に入りに追加">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </button>
+                  </form>
+                @endif
+              </div>
+              @endauth
 
               {{-- 情報 --}}
               <div class="card-body p-2">

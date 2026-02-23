@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             ModelProfileDiarySeeder::class,
             InformationSeeder::class,
             ReviewSeeder::class,
+            ModelProfileQuestionSeeder::class,
         ]);
     }
 }

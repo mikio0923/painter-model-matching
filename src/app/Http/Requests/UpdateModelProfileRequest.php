@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateModelProfileRequest extends FormRequest
 {
@@ -46,11 +47,24 @@ class UpdateModelProfileRequest extends FormRequest
             'birthdate' => ['nullable', 'date', 'before:today'],
             'gender' => ['nullable', 'string', 'in:male,female,other'],
             'prefecture' => ['nullable', 'string', 'max:255'],
+            'activity_regions' => ['nullable', 'array'],
+            'activity_regions.*' => ['string', 'max:255'],
             'height' => ['nullable', 'integer', 'min:1', 'max:300'],
             'bust' => ['nullable', 'integer', 'min:1', 'max:200'],
             'waist' => ['nullable', 'integer', 'min:1', 'max:200'],
             'hip' => ['nullable', 'integer', 'min:1', 'max:200'],
-            'body_type' => ['nullable', 'string', 'max:255'],
+            'shoe_size' => ['nullable', 'string', 'max:10'],
+            'clothing_size' => ['nullable', 'string', 'max:10'],
+            'model_types' => ['nullable', 'array'],
+            'model_types.*' => ['string', 'max:64'],
+            'body_type' => ['nullable', 'string', Rule::in(['スリム', '普通', 'グラマー', '細身', 'がっしり'])],
+            'occupation' => ['nullable', 'string', 'max:255'],
+            'hobbies' => ['nullable', 'string', 'max:500'],
+            'avoid_work_types' => ['nullable', 'array'],
+            'avoid_work_types.*' => ['string', Rule::in([
+                '専属契約', '水着撮影', '衣装チェンジ(着替え)', '商用ストックフォト', '撮影データの販売',
+                'スカウト', '露出度の高い衣装', '個室での撮影', '長期に渡る撮影', '撮影データの私的利用(SNS投稿など)',
+            ])],
             'hair_type' => ['nullable', 'string', 'in:short,medium,long,semi_long,super_long,other'],
             'bio' => ['nullable', 'string', 'max:2000'],
             'experience' => ['nullable', 'string', 'max:2000'],

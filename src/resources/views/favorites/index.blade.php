@@ -23,9 +23,9 @@
                 
                 @if($item instanceof \App\Models\ModelProfile)
                     {{-- モデルプロフィール --}}
-                    <div class="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow relative">
                         <a href="{{ route('models.show', $item) }}" class="block">
-                            <div class="aspect-[3/4] bg-gray-200 overflow-hidden">
+                            <div class="aspect-[3/4] bg-gray-200 overflow-hidden relative">
                                 @if($item->profile_image_path)
                                     <img src="{{ Storage::url($item->profile_image_path) }}"
                                          alt="{{ $item->display_name }}"
@@ -46,21 +46,20 @@
                                 </div>
                             </div>
                         </a>
-                        <div class="px-4 pb-4">
+                        <div class="absolute top-2 right-2 z-10" onclick="event.stopPropagation();">
                             <form action="{{ route('favorites.destroy.model', $item) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" 
-                                        class="text-red-600 hover:text-red-800 text-sm">
-                                    お気に入りから削除
+                                <button type="submit" class="p-1.5 rounded-full bg-white/90 shadow hover:bg-red-50 text-red-500" title="お気に入りから削除（ハートをもう一度押すとOFFになります）">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
                                 </button>
                             </form>
                         </div>
                     </div>
                 @elseif($item instanceof \App\Models\Job)
                     {{-- 依頼 --}}
-                    <div class="bg-white border rounded-lg p-4 hover:shadow-lg transition-shadow">
-                        <a href="{{ route('jobs.show', $item) }}" class="block">
+                    <div class="bg-white border rounded-lg p-4 hover:shadow-lg transition-shadow relative">
+                        <a href="{{ route('jobs.show', $item) }}" class="block pr-10">
                             <h3 class="font-semibold text-lg mb-2">{{ $item->title }}</h3>
                             <p class="text-sm text-gray-600 mb-3 line-clamp-2">
                                 {{ mb_strlen($item->description) > 100 ? mb_substr($item->description, 0, 100) . '...' : $item->description }}
@@ -79,13 +78,12 @@
                                 @endif
                             </div>
                         </a>
-                        <div class="mt-3">
+                        <div class="absolute top-2 right-2 z-10">
                             <form action="{{ route('favorites.destroy.job', $item) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" 
-                                        class="text-red-600 hover:text-red-800 text-sm">
-                                    お気に入りから削除
+                                <button type="submit" class="p-1.5 rounded-full bg-white/90 shadow hover:bg-red-50 text-red-500 border border-gray-200" title="お気に入りから削除（ハートをもう一度押すとOFFになります）">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
                                 </button>
                             </form>
                         </div>

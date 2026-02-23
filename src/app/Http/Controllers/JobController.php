@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Favorite;
 use App\Models\Job;
 use App\Models\JobApplication;
 use Illuminate\Http\Request;
@@ -67,6 +68,14 @@ class JobController extends Controller
 
         $jobs = $query->paginate(12)->withQueryString();
 
+        $favoriteJobIds = [];
+        if (Auth::check()) {
+            $favoriteJobIds = Favorite::where('user_id', Auth::id())
+                ->where('favoritable_type', Job::class)
+                ->pluck('favoritable_id')
+                ->all();
+        }
+
         // 都道府県リスト（検索フォーム用・キャッシュ）
         $prefectures = cache()->remember('job_prefectures', 3600, function () {
             return Job::where('status', 'open')
@@ -77,7 +86,7 @@ class JobController extends Controller
                 ->values();
         });
 
-        return view('jobs.index', compact('jobs', 'prefectures'));
+        return view('jobs.index', compact('jobs', 'prefectures', 'favoriteJobIds'));
     }
 
     /**

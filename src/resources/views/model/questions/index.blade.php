@@ -16,7 +16,7 @@
     @if(!$modelProfile)
         <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 text-center">
             <p class="text-amber-800 mb-4">プロフィールを作成すると、画家から質問を受け付けられるようになります。</p>
-            <a href="{{ route('model.profile.create') }}" class="inline-block bg-amber-600 text-white px-6 py-2 rounded hover:bg-amber-700">
+            <a href="{{ route('model.profile.edit') }}" class="inline-block bg-amber-600 text-white px-6 py-2 rounded hover:bg-amber-700">
                 プロフィールを作成する
             </a>
         </div>

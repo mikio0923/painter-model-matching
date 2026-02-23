@@ -127,9 +127,10 @@
           $painterImage = $painterProfile?->profile_image_path ?? null;
           $painterGender = $painterProfile?->gender ?? null;
           $cardBg = $painterGender === 'male' ? 'bg-blue-50 border-blue-200' : (in_array($painterGender, ['female', 'other']) ? 'bg-accent-100 border-accent-300' : 'bg-gray-50 border-gray-200');
+          $isFavJob = in_array($job->id, $favoriteJobIds ?? []);
         @endphp
-        <a href="{{ route('jobs.show', $job) }}" class="block rounded-xl border-2 shadow-sm overflow-hidden {{ $cardBg }} hover:opacity-95 transition-opacity">
-          <div class="p-5">
+        <div class="relative rounded-xl border-2 shadow-sm overflow-hidden {{ $cardBg }}">
+          <a href="{{ route('jobs.show', $job) }}" class="block p-5 hover:opacity-95 transition-opacity">
             {{-- 画家アイコン＋名前 --}}
             <div class="flex items-center gap-3 mb-4">
               <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 {{ $painterGender === 'male' ? 'border-blue-300 bg-blue-100' : (in_array($painterGender, ['female', 'other']) ? 'border-accent-300 bg-accent-100' : 'border-gray-300 bg-gray-200') }}">
@@ -175,12 +176,11 @@
                   </span>
                 </div>
               @endif
-              @if($job->scheduled_date)
-                <div class="flex items-center justify-between">
-                  <span class="text-secondary-600">日程</span>
-                  <span class="text-secondary-900">{{ $job->scheduled_date->format('Y/m/d') }}</span>
-                </div>
-              @endif
+              {{-- 日程行は常に表示して投稿日の位置を揃える --}}
+              <div class="flex items-center justify-between">
+                <span class="text-secondary-600">日程</span>
+                <span class="text-secondary-900">{{ $job->scheduled_date ? $job->scheduled_date->format('Y/m/d') : '未定' }}</span>
+              </div>
             </div>
 
             <div class="mt-4 pt-3 border-t border-secondary-200/80">
@@ -191,8 +191,25 @@
                 @endif
               </div>
             </div>
+          </a>
+          @auth
+          <div class="absolute top-2 right-2 z-10">
+            @if($isFavJob)
+              <form method="POST" action="{{ route('favorites.destroy.job', $job) }}" class="inline">@csrf @method('DELETE')
+                <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-red-500" title="お気に入り解除">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
+                </button>
+              </form>
+            @else
+              <form method="POST" action="{{ route('favorites.store.job', $job) }}" class="inline">@csrf
+                <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-gray-400 hover:text-red-500" title="お気に入りに追加">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                </button>
+              </form>
+            @endif
           </div>
-        </a>
+          @endauth
+        </div>
       @endforeach
         </div>
       </div>

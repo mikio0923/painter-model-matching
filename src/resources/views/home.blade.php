@@ -14,9 +14,10 @@
                 <div class="section-panel-inner px-8 sm:px-10 lg:px-12">
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-3">
                 @foreach($pickupModels as $model)
-                        <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden">
+                        @php $isFav = in_array($model->id, $favoriteModelIds ?? []); @endphp
+                        <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden relative">
                         {{-- 画像 --}}
-                            <div class="aspect-[3/4] card-media">
+                            <div class="aspect-[3/4] card-media relative">
                             @if($model->profile_image_path)
                                 <img src="{{ Storage::url($model->profile_image_path) }}"
                                      alt="{{ $model->display_name }}"
@@ -29,6 +30,19 @@
                                 </div>
                             @endif
                         </div>
+                        @auth
+                        <div class="absolute top-1 right-1 z-10 js-fav-wrapper" data-store-url="{{ route('favorites.store.model', $model) }}" data-destroy-url="{{ route('favorites.destroy.model', $model) }}" onclick="event.stopPropagation();">
+                            @if($isFav)
+                            <form method="POST" action="{{ route('favorites.destroy.model', $model) }}" class="inline js-ajax-favorite-home">@csrf @method('DELETE')
+                                <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-red-500" title="お気に入り解除"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></button>
+                            </form>
+                            @else
+                            <form method="POST" action="{{ route('favorites.store.model', $model) }}" class="inline js-ajax-favorite-home">@csrf
+                                <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-gray-400 hover:text-red-500" title="お気に入りに追加"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
+                            </form>
+                            @endif
+                        </div>
+                        @endauth
 
                         {{-- 情報 --}}
                         <div class="card-body p-2">
@@ -99,27 +113,66 @@
                 <div class="section-panel-inner px-8 sm:px-10 lg:px-12">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($pickupJobs as $job)
-                            <a href="{{ route('jobs.show', $job) }}" class="card card-hover">
-                        <div class="card-body">
-                            <h3 class="font-semibold text-lg mb-2 text-secondary-900">{{ $job->title }}</h3>
-                            <p class="text-sm text-secondary-600 mb-3 line-clamp-2">
-                                {{ mb_strlen($job->description) > 100 ? mb_substr($job->description, 0, 100) . '...' : $job->description }}
-                            </p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="text-secondary-600">
-                                    {{ $job->location_type === 'online' ? 'オンライン' : 'オフライン' }}
-                                    @if($job->prefecture)
-                                        ({{ $job->prefecture }})
+                            @php
+                                $painter = $job->painter;
+                                $painterProfile = $painter->painterProfile ?? null;
+                                $painterName = $painterProfile?->display_name ?? $painter->name;
+                                $painterImage = $painterProfile?->profile_image_path ?? null;
+                                $painterGender = $painterProfile?->gender ?? null;
+                                $cardBg = $painterGender === 'male' ? 'bg-blue-50 border-blue-200' : (in_array($painterGender, ['female', 'other']) ? 'bg-accent-100 border-accent-300' : 'bg-gray-50 border-gray-200');
+                                $isFavJob = in_array($job->id, $favoriteJobIds ?? []);
+                            @endphp
+                            <div class="relative rounded-xl border-2 shadow-sm overflow-hidden {{ $cardBg }} hover:shadow-md transition-shadow">
+                                <a href="{{ route('jobs.show', $job) }}" class="block p-5 hover:opacity-95 transition-opacity">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 {{ $painterGender === 'male' ? 'border-blue-300 bg-blue-100' : (in_array($painterGender, ['female', 'other']) ? 'border-accent-300 bg-accent-100' : 'border-gray-300 bg-gray-200') }}">
+                                            @if($painterImage)
+                                                <img src="{{ Storage::url($painterImage) }}" alt="{{ $painterName }}" class="w-full h-full object-cover">
+                                            @else
+                                                <div class="w-full h-full flex items-center justify-center {{ $painterGender === 'male' ? 'text-blue-500' : (in_array($painterGender, ['female', 'other']) ? 'text-accent-500' : 'text-gray-500') }}">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="font-semibold text-sm text-secondary-900 truncate">{{ $painterName }}</p>
+                                            <p class="text-xs text-secondary-600">画家</p>
+                                        </div>
+                                    </div>
+                                    <h3 class="font-semibold text-base mb-2 text-secondary-900 line-clamp-2">{{ $job->title }}</h3>
+                                    <p class="text-secondary-600 text-sm mb-3 line-clamp-2">
+                                        {{ mb_strlen($job->description) > 100 ? mb_substr($job->description, 0, 100) . '...' : $job->description }}
+                                    </p>
+                                    <div class="space-y-1 text-sm">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-secondary-600">場所</span>
+                                            <span class="text-secondary-900">
+                                                {{ $job->location_type === 'online' ? 'オンライン' : 'オフライン' }}
+                                                @if($job->prefecture)({{ $job->prefecture }})@endif
+                                            </span>
+                                        </div>
+                                        @if($job->reward_amount)
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-secondary-600">報酬</span>
+                                                <span class="font-semibold text-primary-600">{{ number_format($job->reward_amount) }}円</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </a>
+                                @auth
+                                <div class="absolute top-2 right-2 z-10 js-fav-wrapper" data-store-url="{{ route('favorites.store.job', $job) }}" data-destroy-url="{{ route('favorites.destroy.job', $job) }}">
+                                    @if($isFavJob)
+                                    <form method="POST" action="{{ route('favorites.destroy.job', $job) }}" class="inline js-ajax-favorite-home">@csrf @method('DELETE')
+                                        <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-red-500" title="お気に入り解除"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></button>
+                                    </form>
+                                    @else
+                                    <form method="POST" action="{{ route('favorites.store.job', $job) }}" class="inline js-ajax-favorite-home">@csrf
+                                        <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-gray-400 hover:text-red-500" title="お気に入りに追加"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
+                                    </form>
                                     @endif
-                                </span>
-                                @if($job->reward_amount)
-                                    <span class="font-semibold text-primary-600">
-                                        {{ number_format($job->reward_amount) }}円
-                                    </span>
-                                @endif
+                                </div>
+                                @endauth
                             </div>
-                        </div>
-                    </a>
                 @endforeach
                     </div>
                 </div>
@@ -225,9 +278,10 @@
                 <div class="section-panel-inner px-8 sm:px-10 lg:px-12">
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-3">
                     @foreach($imageUpdateModels as $model)
-                        <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden">
+                        @php $isFavImg = in_array($model->id, $favoriteModelIds ?? []); @endphp
+                        <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden relative">
                         {{-- 画像 --}}
-                            <div class="aspect-[3/4] card-media">
+                            <div class="aspect-[3/4] card-media relative">
                             @if($model->profile_image_path)
                                 <img src="{{ Storage::url($model->profile_image_path) }}"
                                      alt="{{ $model->display_name }}"
@@ -240,6 +294,19 @@
                                 </div>
                             @endif
                         </div>
+                        @auth
+                        <div class="absolute top-1 right-1 z-10 js-fav-wrapper" data-store-url="{{ route('favorites.store.model', $model) }}" data-destroy-url="{{ route('favorites.destroy.model', $model) }}" onclick="event.stopPropagation();">
+                            @if($isFavImg)
+                            <form method="POST" action="{{ route('favorites.destroy.model', $model) }}" class="inline js-ajax-favorite-home">@csrf @method('DELETE')
+                                <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-red-500" title="お気に入り解除"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></button>
+                            </form>
+                            @else
+                            <form method="POST" action="{{ route('favorites.store.model', $model) }}" class="inline js-ajax-favorite-home">@csrf
+                                <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-gray-400 hover:text-red-500" title="お気に入りに追加"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
+                            </form>
+                            @endif
+                        </div>
+                        @endauth
 
                         {{-- 情報 --}}
                         <div class="card-body p-2">
@@ -312,9 +379,10 @@
                 <div class="section-panel-inner px-8 sm:px-10 lg:px-12">
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-3">
                 @foreach($models as $model)
-                        <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden">
+                        @php $isFavNew = in_array($model->id, $favoriteModelIds ?? []); @endphp
+                        <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden relative">
                         {{-- 画像 --}}
-                            <div class="aspect-[3/4] card-media">
+                            <div class="aspect-[3/4] card-media relative">
                             @if($model->profile_image_path)
                                 <img src="{{ Storage::url($model->profile_image_path) }}"
                                      alt="{{ $model->display_name }}"
@@ -327,6 +395,19 @@
                                 </div>
                             @endif
                         </div>
+                        @auth
+                        <div class="absolute top-1 right-1 z-10 js-fav-wrapper" data-store-url="{{ route('favorites.store.model', $model) }}" data-destroy-url="{{ route('favorites.destroy.model', $model) }}" onclick="event.stopPropagation();">
+                            @if($isFavNew)
+                            <form method="POST" action="{{ route('favorites.destroy.model', $model) }}" class="inline js-ajax-favorite-home">@csrf @method('DELETE')
+                                <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-red-500" title="お気に入り解除"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></button>
+                            </form>
+                            @else
+                            <form method="POST" action="{{ route('favorites.store.model', $model) }}" class="inline js-ajax-favorite-home">@csrf
+                                <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-gray-400 hover:text-red-500" title="お気に入りに追加"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
+                            </form>
+                            @endif
+                        </div>
+                        @endauth
 
                         {{-- 情報 --}}
                         <div class="card-body p-2">
@@ -535,4 +616,48 @@
     </div>
 
 </div>
+
+@auth
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var btnFilled = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>';
+    var btnOutline = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>';
+    document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (!form || !form.classList.contains('js-ajax-favorite-home')) return;
+        e.preventDefault();
+        var wrapper = form.closest('.js-fav-wrapper');
+        if (!wrapper) return;
+        var storeUrl = wrapper.getAttribute('data-store-url');
+        var destroyUrl = wrapper.getAttribute('data-destroy-url');
+        var token = form.querySelector('input[name="_token"]');
+        if (!token) return;
+        var isDestroy = form.action.indexOf('destroy') !== -1;
+        var url = isDestroy ? destroyUrl : storeUrl;
+        var body = new FormData();
+        body.append('_token', token.value);
+        if (isDestroy) body.append('_method', 'DELETE');
+        fetch(url, { method: 'POST', body: body, headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }, function() { return { ok: false, data: {} }; }); })
+            .then(function(result) {
+                if (!result.ok || !result.data.success) return;
+                var newForm = document.createElement('form');
+                newForm.method = 'POST';
+                newForm.className = 'inline js-ajax-favorite-home';
+                newForm.innerHTML = '<input type="hidden" name="_token" value="' + token.value + '">';
+                if (isDestroy) {
+                    newForm.action = storeUrl;
+                    newForm.innerHTML += '<button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-gray-400 hover:text-red-500" title="お気に入りに追加">' + btnOutline + '</button>';
+                } else {
+                    newForm.action = destroyUrl;
+                    newForm.innerHTML += '<input type="hidden" name="_method" value="DELETE">';
+                    newForm.innerHTML += '<button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-red-500" title="お気に入り解除">' + btnFilled + '</button>';
+                }
+                wrapper.innerHTML = '';
+                wrapper.appendChild(newForm);
+            });
+    });
+});
+</script>
+@endauth
 @endsection

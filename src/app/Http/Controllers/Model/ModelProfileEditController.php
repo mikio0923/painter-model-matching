@@ -17,17 +17,11 @@ use Illuminate\View\View;
 class ModelProfileEditController extends Controller
 {
     /**
-     * プロフィールの登録画面（雛形）
+     * プロフィールの登録画面（初回登録も編集画面で行うため edit へリダイレクト）
      */
-    public function create(Request $request): View
+    public function create(Request $request): RedirectResponse
     {
-        $prefectures = self::prefectures();
-        $modelTypes = self::modelTypes();
-        $bodyTypes = self::bodyTypes();
-        $avoidWorkTypes = self::avoidWorkTypes();
-        $shoeSizes = self::shoeSizes();
-        $clothingSizes = self::clothingSizes();
-        return view('model.profile.create', compact('prefectures', 'modelTypes', 'bodyTypes', 'avoidWorkTypes', 'shoeSizes', 'clothingSizes'));
+        return redirect()->route('model.profile.edit');
     }
 
     /**
@@ -88,7 +82,7 @@ class ModelProfileEditController extends Controller
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            return redirect()->route('model.profile.create')
+            return redirect()->route('model.profile.edit')
                 ->withErrors($validator)
                 ->withInput();
         }
@@ -233,10 +227,20 @@ class ModelProfileEditController extends Controller
 
         $modelProfile->load('images');
         $prefectures = self::prefectures();
+        $modelTypes = self::modelTypes();
+        $bodyTypes = self::bodyTypes();
+        $avoidWorkTypes = self::avoidWorkTypes();
+        $shoeSizes = self::shoeSizes();
+        $clothingSizes = self::clothingSizes();
 
         return view('model.profile.edit', [
             'modelProfile' => $modelProfile,
             'prefectures' => $prefectures,
+            'modelTypes' => $modelTypes,
+            'bodyTypes' => $bodyTypes,
+            'avoidWorkTypes' => $avoidWorkTypes,
+            'shoeSizes' => $shoeSizes,
+            'clothingSizes' => $clothingSizes,
         ]);
     }
 
@@ -254,6 +258,11 @@ class ModelProfileEditController extends Controller
         }
 
         $validated = $request->validated();
+
+        // チェックボックス配列（未送信時は空配列で上書き）
+        $validated['activity_regions'] = $request->input('activity_regions', []);
+        $validated['avoid_work_types'] = $request->input('avoid_work_types', []);
+        $validated['model_types'] = $request->input('model_types', []);
 
         // 生年月日から年齢を自動計算
         if ($request->filled('birth_year') && $request->filled('birth_month') && $request->filled('birth_day')) {

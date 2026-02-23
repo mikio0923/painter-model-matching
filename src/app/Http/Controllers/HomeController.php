@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Favorite;
 use App\Models\ModelProfile;
 use App\Models\Job;
 use App\Models\Information;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -104,6 +106,19 @@ class HomeController extends Controller
             ->take(7)
             ->get();
 
+        $favoriteModelIds = [];
+        $favoriteJobIds = [];
+        if (Auth::check()) {
+            $favoriteModelIds = Favorite::where('user_id', Auth::id())
+                ->where('favoritable_type', ModelProfile::class)
+                ->pluck('favoritable_id')
+                ->all();
+            $favoriteJobIds = Favorite::where('user_id', Auth::id())
+                ->where('favoritable_type', Job::class)
+                ->pluck('favoritable_id')
+                ->all();
+        }
+
         return view('home', compact(
             'pickupModels',
             'pickupJobs',
@@ -114,7 +129,9 @@ class HomeController extends Controller
             'highRatingReviews',
             'informations',
             'pressReleases',
-            'newJobOffers'
+            'newJobOffers',
+            'favoriteModelIds',
+            'favoriteJobIds'
         ));
     }
 }

@@ -15,7 +15,8 @@
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-3">
                 @foreach($pickupModels as $model)
                         @php $isFav = in_array($model->id, $favoriteModelIds ?? []); @endphp
-                        <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden relative">
+                        <div class="rounded-xl border-2 border-secondary-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                        <a href="{{ route('models.show', $model) }}" class="block relative">
                         {{-- 画像 --}}
                             <div class="aspect-[3/4] card-media relative">
                             @if($model->profile_image_path)
@@ -45,7 +46,7 @@
                         @endauth
 
                         {{-- 情報 --}}
-                        <div class="card-body p-2">
+                        <div class="p-2">
                                 <div class="card-title mb-0.5 text-sm">
                                 {{ $model->display_name }}
                             </div>
@@ -95,6 +96,7 @@
                             @endif
                         </div>
                     </a>
+                    </div>
                 @endforeach
                     </div>
                 </div>
@@ -279,7 +281,8 @@
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-3">
                     @foreach($imageUpdateModels as $model)
                         @php $isFavImg = in_array($model->id, $favoriteModelIds ?? []); @endphp
-                        <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden relative">
+                        <div class="rounded-xl border-2 border-secondary-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                        <a href="{{ route('models.show', $model) }}" class="block relative">
                         {{-- 画像 --}}
                             <div class="aspect-[3/4] card-media relative">
                             @if($model->profile_image_path)
@@ -309,7 +312,7 @@
                         @endauth
 
                         {{-- 情報 --}}
-                        <div class="card-body p-2">
+                        <div class="p-2">
                                 <div class="card-title mb-0.5 text-sm">
                                 {{ $model->display_name }}
                             </div>
@@ -359,6 +362,7 @@
                             @endif
                         </div>
                     </a>
+                    </div>
                 @endforeach
                     </div>
                 </div>
@@ -380,7 +384,8 @@
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-3">
                 @foreach($models as $model)
                         @php $isFavNew = in_array($model->id, $favoriteModelIds ?? []); @endphp
-                        <a href="{{ route('models.show', $model) }}" class="card card-hover overflow-hidden relative">
+                        <div class="rounded-xl border-2 border-secondary-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                        <a href="{{ route('models.show', $model) }}" class="block relative">
                         {{-- 画像 --}}
                             <div class="aspect-[3/4] card-media relative">
                             @if($model->profile_image_path)
@@ -410,7 +415,7 @@
                         @endauth
 
                         {{-- 情報 --}}
-                        <div class="card-body p-2">
+                        <div class="p-2">
                                 <div class="card-title mb-0.5 text-sm">
                                 {{ $model->display_name }}
                             </div>
@@ -460,6 +465,7 @@
                             @endif
                         </div>
                     </a>
+                    </div>
                 @endforeach
                     </div>
                 </div>

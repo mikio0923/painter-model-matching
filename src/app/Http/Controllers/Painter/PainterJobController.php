@@ -23,6 +23,7 @@ class PainterJobController extends Controller
     {
         $jobs = Job::where('painter_id', Auth::id())
             ->with(['painter.painterProfile', 'applications.model.modelProfile'])
+            ->withCount('applications')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -60,11 +61,18 @@ class PainterJobController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'],
             'usage_purpose' => $validated['usage_purpose'] ?? null,
+            'category' => $validated['category'] ?? null,
             'reward_amount' => $validated['reward_amount'] ?? null,
             'reward_unit' => $validated['reward_unit'] ?? 'per_session',
+            'transportation_fee' => $validated['transportation_fee'] ?? null,
+            'costume_provided' => $validated['costume_provided'] ?? null,
+            'target' => $validated['target'] ?? null,
+            'recruitment_number' => $validated['recruitment_number'] ?? null,
             'location_type' => $validated['location_type'],
             'prefecture' => $validated['prefecture'] ?? null,
             'city' => $validated['city'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'access' => $validated['access'] ?? null,
             'scheduled_date' => $validated['scheduled_date'] ?? null,
             'apply_deadline' => $validated['apply_deadline'] ?? null,
             'status' => 'open',
@@ -106,11 +114,18 @@ class PainterJobController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'],
             'usage_purpose' => $validated['usage_purpose'] ?? null,
+            'category' => $validated['category'] ?? null,
             'reward_amount' => $validated['reward_amount'] ?? null,
             'reward_unit' => $validated['reward_unit'] ?? 'per_session',
+            'transportation_fee' => $validated['transportation_fee'] ?? null,
+            'costume_provided' => $validated['costume_provided'] ?? null,
+            'target' => $validated['target'] ?? null,
+            'recruitment_number' => $validated['recruitment_number'] ?? null,
             'location_type' => $validated['location_type'],
             'prefecture' => $validated['prefecture'] ?? null,
             'city' => $validated['city'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'access' => $validated['access'] ?? null,
             'scheduled_date' => $validated['scheduled_date'] ?? null,
             'apply_deadline' => $validated['apply_deadline'] ?? null,
             'status' => $validated['status'] ?? $job->status,

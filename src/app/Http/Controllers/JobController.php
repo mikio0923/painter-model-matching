@@ -99,7 +99,14 @@ class JobController extends Controller
             abort(404);
         }
 
-        $job->load('painter.painterProfile', 'applications.model.modelProfile', 'reviews.reviewer', 'reviews.reviewedUser');
+        $job->load(
+            'painter.painterProfile',
+            'applications.model.modelProfile',
+            'reviews.reviewer.painterProfile',
+            'reviews.reviewer.modelProfile',
+            'reviews.reviewedUser.painterProfile',
+            'reviews.reviewedUser.modelProfile'
+        );
 
         // ログインユーザーが既に応募しているかチェック
         $hasApplied = false;

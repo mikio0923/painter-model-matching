@@ -26,12 +26,60 @@
                     <dt class="text-sm font-medium text-secondary-500">説明</dt>
                     <dd class="mt-1 text-sm text-secondary-900 whitespace-pre-wrap">{{ $job->description }}</dd>
                 </div>
+                @if($job->category)
+                <div>
+                    <dt class="text-sm font-medium text-secondary-500">カテゴリ</dt>
+                    <dd class="mt-1 text-sm text-secondary-900">{{ $job->category }}</dd>
+                </div>
+                @endif
                 <div>
                     <dt class="text-sm font-medium text-secondary-500">報酬</dt>
                     <dd class="mt-1 text-sm text-secondary-900">
                         {{ number_format($job->reward_amount) }}{{ $job->reward_unit }}
                     </dd>
                 </div>
+                @if($job->transportation_fee)
+                <div>
+                    <dt class="text-sm font-medium text-secondary-500">交通費</dt>
+                    <dd class="mt-1 text-sm text-secondary-900">{{ $job->transportation_fee }}</dd>
+                </div>
+                @endif
+                @if($job->costume_provided)
+                <div>
+                    <dt class="text-sm font-medium text-secondary-500">衣装</dt>
+                    <dd class="mt-1 text-sm text-secondary-900">{{ $job->costume_provided }}</dd>
+                </div>
+                @endif
+                @if($job->target)
+                <div>
+                    <dt class="text-sm font-medium text-secondary-500">募集対象</dt>
+                    <dd class="mt-1 text-sm text-secondary-900">{{ $job->target }}</dd>
+                </div>
+                @endif
+                @if($job->recruitment_number)
+                <div>
+                    <dt class="text-sm font-medium text-secondary-500">募集人数</dt>
+                    <dd class="mt-1 text-sm text-secondary-900">{{ number_format($job->recruitment_number) }}名</dd>
+                </div>
+                @endif
+                @if($job->location_type === 'offline' && ($job->prefecture || $job->city || $job->address))
+                <div>
+                    <dt class="text-sm font-medium text-secondary-500">場所</dt>
+                    <dd class="mt-1 text-sm text-secondary-900">
+                        @if($job->prefecture){{ $job->prefecture }}@endif
+                        @if($job->city) {{ $job->city }}@endif
+                        @if($job->address)
+                            <div class="mt-1">{{ $job->address }}</div>
+                        @endif
+                    </dd>
+                </div>
+                @endif
+                @if($job->access)
+                <div>
+                    <dt class="text-sm font-medium text-secondary-500">アクセス</dt>
+                    <dd class="mt-1 text-sm text-secondary-900 whitespace-pre-wrap">{{ $job->access }}</dd>
+                </div>
+                @endif
                 <div>
                     <dt class="text-sm font-medium text-secondary-500">ステータス</dt>
                     <dd class="mt-1">

@@ -57,6 +57,12 @@
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-4">
+                        @if($job->category)
+                            <div class="md:col-span-2">
+                                <span class="font-semibold">カテゴリ：</span>
+                                {{ $job->category }}
+                            </div>
+                        @endif
                         @if($job->reward_amount)
                             <div>
                                 <span class="font-semibold">報酬：</span>
@@ -76,6 +82,13 @@
                                 ({{ $job->prefecture }})
                             @endif
                         </div>
+
+                        @if($job->transportation_fee)
+                            <div>
+                                <span class="font-semibold">交通費：</span>
+                                {{ $job->transportation_fee }}
+                            </div>
+                        @endif
 
                         @if($job->scheduled_date)
                             <div>
@@ -101,8 +114,8 @@
                         <a href="{{ route('painter.jobs.applications.index', $job) }}" 
                            class="text-blue-600 hover:text-blue-800">
                             応募一覧
-                            @if($job->applications()->count() > 0)
-                                ({{ $job->applications()->count() }})
+                            @if(($job->applications_count ?? 0) > 0)
+                                ({{ $job->applications_count }})
                             @endif
                         </a>
                         <span class="text-gray-300">|</span>

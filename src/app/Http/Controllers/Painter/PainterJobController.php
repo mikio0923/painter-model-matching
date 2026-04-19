@@ -135,6 +135,28 @@ class PainterJobController extends Controller
             ->with('success', '依頼を更新しました');
     }
 
+    /**
+     * 依頼を削除
+     */
+    public function destroy(Job $job): RedirectResponse
+    {
+        if ($job->painter_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // 承認済みの応募がある場合は削除不可
+        $hasAccepted = $job->applications()->where('status', 'accepted')->exists();
+        if ($hasAccepted) {
+            return redirect()->route('painter.jobs.index')
+                ->with('error', '承認済みの応募がある依頼は削除できません。先にステータスを変更してください。');
+        }
+
+        $job->delete();
+
+        return redirect()->route('painter.jobs.index')
+            ->with('success', '依頼を削除しました');
+    }
+
     private static function prefectures(): array
     {
         return [

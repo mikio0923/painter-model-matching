@@ -1,120 +1,324 @@
-/* ボタンコンポーネント */
+/* ========================================================
+   コンポーネントライブラリ — アートギャラリー × モダンデザイン
+   ======================================================== */
 @layer components {
-    /* ページ共通 */
+
+    /* ─────────────────────────────────────────
+       レイアウト
+    ───────────────────────────────────────── */
     .page {
-        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10;
     }
 
     .page-narrow {
-        @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+        @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10;
     }
 
-    /* セクション共通（公開ページ向け） */
     .section {
-        @apply mb-12;
+        @apply mb-16;
     }
 
+    /* ─────────────────────────────────────────
+       セクションパネル
+    ───────────────────────────────────────── */
     .section-panel {
-        @apply bg-white border border-secondary-200 rounded-2xl shadow-sm;
+        @apply bg-white rounded-2xl shadow-card overflow-hidden;
     }
 
     .section-panel-inner {
-        @apply p-6 sm:p-8;
+        @apply p-6 sm:p-8 lg:p-10;
     }
 
     .section-header {
-        @apply flex items-center justify-between gap-4 mb-6;
+        @apply flex items-end justify-between gap-4 mb-7;
     }
 
-    .section-header .section-title {
-        margin-bottom: 0; /* ヘッダー内では余白不要 */
+    /* ─────────────────────────────────────────
+       タイポグラフィ
+    ───────────────────────────────────────── */
+    .section-title {
+        @apply font-display font-bold text-secondary-900 leading-none;
+        font-size: clamp(1.75rem, 4vw, 2.75rem);
+        letter-spacing: -0.03em;
     }
 
-    /* プライマリボタン */
+    /* ピルバッジスタイルのサブラベル */
+    .section-title-en {
+        @apply inline-flex items-center
+               px-2.5 py-0.5
+               bg-primary-600 text-white
+               rounded-full
+               text-[10px] font-bold tracking-widest uppercase
+               mb-3;
+    }
+
+    /* Pickup など特別扱いセクションのラベル */
+    .section-title-en-gold {
+        @apply inline-flex items-center
+               px-2.5 py-0.5
+               bg-gold-600 text-white
+               rounded-full
+               text-[10px] font-bold tracking-widest uppercase
+               mb-3;
+    }
+
+    .section-subtitle {
+        @apply text-lg font-semibold text-secondary-700 mb-4;
+    }
+
+    /* ─────────────────────────────────────────
+       ボタン
+    ───────────────────────────────────────── */
+
+    /* プライマリ（バイオレット） */
     .btn-primary {
-        @apply px-6 py-2.5 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200;
+        @apply inline-flex items-center justify-center gap-2
+               px-6 py-2.5
+               bg-primary-600 text-white
+               font-semibold text-sm
+               rounded-xl
+               shadow-sm hover:shadow-glow
+               hover:bg-primary-700
+               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+               transition-all duration-200
+               disabled:opacity-40 disabled:pointer-events-none;
     }
 
     .btn-primary-sm {
-        @apply px-4 py-2 text-sm bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200;
+        @apply inline-flex items-center justify-center gap-1.5
+               px-4 py-2
+               bg-primary-600 text-white
+               font-medium text-xs
+               rounded-lg
+               hover:bg-primary-700
+               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+               transition-all duration-200;
     }
 
     .btn-primary-lg {
-        @apply px-8 py-3 text-lg bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200;
+        @apply inline-flex items-center justify-center gap-2
+               px-8 py-3.5
+               bg-primary-600 text-white
+               font-bold text-base
+               rounded-xl
+               shadow-md hover:shadow-glow
+               hover:bg-primary-700 hover:-translate-y-0.5
+               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+               transition-all duration-200;
     }
 
-    /* セカンダリボタン */
+    /* セカンダリ（ホワイト・アウトライン） */
     .btn-secondary {
-        @apply px-6 py-2.5 bg-secondary-200 text-secondary-800 font-medium rounded-lg hover:bg-secondary-300 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 transition-colors duration-200;
+        @apply inline-flex items-center justify-center gap-2
+               px-6 py-2.5
+               bg-white text-secondary-700
+               font-semibold text-sm
+               rounded-xl border border-secondary-300
+               hover:bg-secondary-50 hover:border-secondary-400
+               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+               transition-all duration-200
+               disabled:opacity-40 disabled:pointer-events-none;
     }
 
     .btn-secondary-sm {
-        @apply px-4 py-2 text-sm bg-secondary-200 text-secondary-800 font-medium rounded-lg hover:bg-secondary-300 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 transition-colors duration-200;
+        @apply inline-flex items-center justify-center gap-1.5
+               px-4 py-2
+               bg-white text-secondary-700
+               font-medium text-xs
+               rounded-lg border border-secondary-300
+               hover:bg-secondary-50
+               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+               transition-all duration-200;
     }
 
-    /* アウトラインボタン */
+    /* アウトライン（バイオレット） */
     .btn-outline {
-        @apply px-6 py-2.5 border-2 border-primary-600 text-primary-600 font-medium rounded-lg hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200;
+        @apply inline-flex items-center justify-center gap-2
+               px-6 py-2.5
+               bg-transparent text-primary-600
+               font-semibold text-sm
+               rounded-xl border-2 border-primary-600
+               hover:bg-primary-50
+               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+               transition-all duration-200;
     }
 
     .btn-outline-sm {
-        @apply px-4 py-2 text-sm border-2 border-primary-600 text-primary-600 font-medium rounded-lg hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200;
+        @apply inline-flex items-center justify-center gap-1.5
+               px-4 py-2
+               bg-transparent text-primary-600
+               font-medium text-xs
+               rounded-lg border-2 border-primary-600
+               hover:bg-primary-50
+               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+               transition-all duration-200;
     }
 
-    /* アクセントボタン（ピンク - モデル用） */
+    /* アクセント（クリムゾン — モデル向け） */
     .btn-accent {
-        @apply px-6 py-2.5 bg-accent-500 text-white font-medium rounded-lg hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 transition-colors duration-200;
+        @apply inline-flex items-center justify-center gap-2
+               px-6 py-2.5
+               bg-accent-600 text-white
+               font-semibold text-sm
+               rounded-xl
+               shadow-sm hover:shadow-glow-accent
+               hover:bg-accent-700
+               focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2
+               transition-all duration-200;
     }
 
-    /* グレーボタン（画家用） */
+    /* ゴーストボタン */
+    .btn-ghost {
+        @apply inline-flex items-center justify-center gap-2
+               px-4 py-2
+               bg-transparent text-secondary-600
+               font-medium text-sm
+               rounded-lg
+               hover:bg-secondary-100 hover:text-secondary-900
+               focus:outline-none focus:ring-2 focus:ring-secondary-300 focus:ring-offset-2
+               transition-all duration-200;
+    }
+
+    /* ダンジャー */
+    .btn-danger {
+        @apply inline-flex items-center justify-center gap-2
+               px-6 py-2.5
+               bg-error-600 text-white
+               font-semibold text-sm
+               rounded-xl
+               hover:bg-error-700
+               focus:outline-none focus:ring-2 focus:ring-error-500 focus:ring-offset-2
+               transition-all duration-200;
+    }
+
+    .btn-danger-sm {
+        @apply inline-flex items-center justify-center gap-1.5
+               px-4 py-2
+               bg-error-600 text-white
+               font-medium text-xs
+               rounded-lg
+               hover:bg-error-700
+               transition-all duration-200;
+    }
+
+    /* 後方互換 */
     .btn-gray {
-        @apply px-6 py-2.5 bg-secondary-700 text-white font-medium rounded-lg hover:bg-secondary-800 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 transition-colors duration-200;
+        @apply btn-secondary;
     }
 
-    /* カードコンポーネント */
+    /* ─────────────────────────────────────────
+       カード
+    ───────────────────────────────────────── */
     .card {
-        @apply bg-white border border-secondary-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
+        @apply bg-white rounded-2xl shadow-card
+               hover:shadow-card-hover hover:-translate-y-0.5
+               transition-all duration-300 overflow-hidden;
     }
 
     .card-body {
-        @apply p-6;
+        @apply p-5 sm:p-6;
     }
 
     .card-hover {
-        @apply hover:-translate-y-0.5;
+        @apply hover:-translate-y-1 hover:shadow-card-hover;
     }
 
     .card-media {
-        @apply bg-secondary-200 overflow-hidden;
+        @apply overflow-hidden bg-secondary-100;
     }
 
     .card-media img {
-        @apply w-full h-full object-cover;
+        @apply w-full h-full object-cover transition-transform duration-500 group-hover:scale-105;
     }
 
     .card-title {
-        @apply font-semibold text-lg text-secondary-900;
+        @apply font-semibold text-base text-secondary-900 leading-snug;
     }
 
     .card-meta {
-        @apply text-sm text-secondary-600;
+        @apply text-xs text-secondary-500;
     }
 
     .card-price {
-        @apply text-sm font-semibold text-primary-600;
+        @apply text-sm font-bold text-primary-600;
     }
 
     .card-header {
-        @apply px-6 py-4 border-b border-secondary-200;
+        @apply px-6 py-4 border-b border-secondary-100;
     }
 
     .card-footer {
-        @apply px-6 py-4 border-t border-secondary-200 bg-secondary-50;
+        @apply px-6 py-4 border-t border-secondary-100 bg-secondary-50;
     }
 
-    /* フォームコンポーネント */
+    /* ─────────────────────────────────────────
+       モデルカード（縦長ポートレート）
+    ───────────────────────────────────────── */
+    .model-card {
+        @apply group relative bg-white rounded-xl overflow-hidden
+               border-2 border-secondary-200
+               shadow-card hover:shadow-card-hover
+               hover:-translate-y-1
+               transition-all duration-300 cursor-pointer;
+    }
+
+    /* 性別ボーダーカラー */
+    .model-card-male   { @apply border-blue-400; }
+    .model-card-female { @apply border-rose-400; }
+    .model-card-other  { @apply border-secondary-300; }
+
+    .model-card-image {
+        /* aspect-ratio で縦横比を常に 2:3 に固定 — 画像サイズ依存ゼロ */
+        @apply relative overflow-hidden bg-secondary-100;
+        aspect-ratio: 2 / 3;
+    }
+
+    .model-card-image img {
+        @apply absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105;
+    }
+
+    .model-card-overlay {
+        @apply absolute inset-0 bg-card-gradient opacity-0 group-hover:opacity-100 transition-opacity duration-300;
+    }
+
+    .model-card-info {
+        @apply p-3;
+    }
+
+    /* ─────────────────────────────────────────
+       求人カード（高さ均等 flex）
+    ───────────────────────────────────────── */
+    .job-card {
+        @apply group relative bg-white rounded-2xl overflow-hidden
+               border-2 border-secondary-200
+               shadow-card hover:shadow-card-hover hover:-translate-y-1
+               transition-all duration-300
+               flex flex-col;   /* ← 高さ均等のため */
+    }
+
+    .job-card-body {
+        @apply p-5 flex flex-col flex-1;  /* ← 内部もflex */
+    }
+
+    /* ─────────────────────────────────────────
+       フォーム
+    ───────────────────────────────────────── */
     .form-input {
-        @apply w-full px-4 py-2.5 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200;
+        @apply w-full px-4 py-2.5
+               bg-white border border-secondary-200
+               rounded-xl text-secondary-900 text-sm
+               placeholder:text-secondary-400
+               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+               transition-colors duration-200
+               disabled:opacity-50 disabled:bg-secondary-50;
+    }
+
+    .form-select {
+        @apply form-input pr-10 cursor-pointer;
+    }
+
+    .form-textarea {
+        @apply form-input resize-none;
     }
 
     .form-label {
@@ -122,77 +326,174 @@
     }
 
     .form-error {
-        @apply mt-1 text-sm text-error-600;
+        @apply mt-1.5 text-xs text-error-600 flex items-center gap-1;
     }
 
     .form-help {
-        @apply mt-1 text-sm text-secondary-500;
+        @apply mt-1.5 text-xs text-secondary-400;
     }
 
-    /* バッジ・タグ */
+    /* ─────────────────────────────────────────
+       バッジ・タグ
+    ───────────────────────────────────────── */
     .badge {
-        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
     }
 
     .badge-primary {
-        @apply bg-primary-100 text-primary-800;
+        @apply bg-primary-100 text-primary-700;
+    }
+
+    .badge-accent {
+        @apply bg-accent-100 text-accent-700;
+    }
+
+    .badge-gold {
+        @apply bg-gold-100 text-gold-700;
     }
 
     .badge-success {
-        @apply bg-success-100 text-success-800;
+        @apply bg-success-100 text-success-700;
     }
 
     .badge-warning {
-        @apply bg-warning-100 text-warning-800;
+        @apply bg-warning-100 text-warning-700;
     }
 
     .badge-error {
-        @apply bg-error-100 text-error-800;
+        @apply bg-error-100 text-error-700;
     }
 
     .badge-secondary {
-        @apply bg-secondary-100 text-secondary-800;
+        @apply bg-secondary-100 text-secondary-600;
     }
 
-    /* セクションタイトル */
-    .section-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #111827;
-        margin-bottom: 1.5rem;
-        font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', 'MS PGothic', 'Yu Gothic', 'YuGothic', sans-serif;
+    /* タグ（スタイル・ジャンル） */
+    .tag {
+        @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium
+               bg-primary-50 text-primary-700 border border-primary-100;
     }
 
-    .section-subtitle {
-        @apply text-lg font-semibold text-secondary-800 mb-4;
-    }
-
-    /* リンク */
+    /* ─────────────────────────────────────────
+       リンク
+    ───────────────────────────────────────── */
     .link-primary {
-        @apply text-primary-600 hover:text-primary-700 underline transition-colors duration-200;
+        @apply text-primary-600 hover:text-primary-700
+               font-medium
+               underline underline-offset-2
+               transition-colors duration-200;
     }
 
     .link-secondary {
-        @apply text-secondary-600 hover:text-secondary-700 underline transition-colors duration-200;
+        @apply text-secondary-500 hover:text-secondary-700
+               transition-colors duration-200;
     }
 
-    /* 可愛い青色ボタン */
-    .btn-cute-blue {
-        @apply px-8 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:bg-blue-600 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 active:scale-95;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
+    .link-arrow {
+        @apply inline-flex items-center gap-1 text-sm font-medium text-primary-600
+               hover:text-primary-700 hover:gap-2 transition-all duration-200;
     }
 
-    /* スクロールバー非表示 */
+    /* ─────────────────────────────────────────
+       ヒーローバナー
+    ───────────────────────────────────────── */
+    .hero {
+        @apply relative overflow-hidden;
+        background-image: theme('backgroundImage.hero-gradient');
+    }
+
+    .hero-content {
+        @apply relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36;
+    }
+
+    .hero-title {
+        @apply font-display font-bold text-white leading-tight;
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+        @apply text-lg sm:text-xl text-white/70 font-normal mt-4 max-w-xl leading-relaxed;
+    }
+
+    /* ─────────────────────────────────────────
+       ページヘッダー（内部ページ）
+    ───────────────────────────────────────── */
+    .page-header {
+        @apply bg-secondary-900 text-white py-10 sm:py-14;
+    }
+
+    .page-header-inner {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+
+    .page-header-title {
+        @apply font-display text-3xl sm:text-4xl font-bold text-white;
+        letter-spacing: -0.02em;
+    }
+
+    .page-header-subtitle {
+        @apply mt-2 text-secondary-400 text-sm font-medium tracking-wider uppercase;
+        letter-spacing: 0.12em;
+    }
+
+    /* ─────────────────────────────────────────
+       スクロールバー非表示
+    ───────────────────────────────────────── */
     .scrollbar-hide {
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
-
     .scrollbar-hide::-webkit-scrollbar {
         display: none;
     }
-}
 
+    /* ─────────────────────────────────────────
+       ディバイダー（装飾区切り線）
+    ───────────────────────────────────────── */
+    .divider-ornament {
+        @apply flex items-center gap-4 my-8;
+    }
+    .divider-ornament::before,
+    .divider-ornament::after {
+        content: '';
+        @apply flex-1 h-px bg-secondary-200;
+    }
+    .divider-ornament span {
+        @apply text-secondary-300 text-xs tracking-widest uppercase;
+    }
+
+    /* ─────────────────────────────────────────
+       お気に入りボタン
+    ───────────────────────────────────────── */
+    .fav-btn {
+        @apply p-1.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm
+               text-secondary-400 hover:text-accent-500 hover:bg-white
+               transition-all duration-200;
+    }
+
+    .fav-btn-active {
+        @apply p-1.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm
+               text-accent-500 hover:bg-white
+               transition-all duration-200;
+    }
+
+    /* ─────────────────────────────────────────
+       プロフィールアバター
+    ───────────────────────────────────────── */
+    .avatar {
+        @apply rounded-full overflow-hidden bg-secondary-200 flex-shrink-0 flex items-center justify-center;
+    }
+
+    .avatar-sm  { @apply w-8 h-8; }
+    .avatar-md  { @apply w-12 h-12; }
+    .avatar-lg  { @apply w-16 h-16; }
+    .avatar-xl  { @apply w-24 h-24; }
+
+    /* ─────────────────────────────────────────
+       ステータスバッジ（求人用）
+    ───────────────────────────────────────── */
+    .status-open     { @apply badge bg-success-100 text-success-700; }
+    .status-closed   { @apply badge bg-secondary-100 text-secondary-500; }
+    .status-done     { @apply badge bg-primary-100 text-primary-700; }
+}

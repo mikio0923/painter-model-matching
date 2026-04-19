@@ -7,6 +7,12 @@ use App\Models\User;
 use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\Message;
+use App\Mail\ApplicationReceivedMail;
+use App\Mail\ApplicationAcceptedMail;
+use App\Mail\ApplicationRejectedMail;
+use App\Mail\MessageReceivedMail;
+use App\Mail\ReviewReceivedMail;
+use Illuminate\Support\Facades\Mail;
 
 class NotificationService
 {
@@ -17,7 +23,7 @@ class NotificationService
     {
         $job = $application->job;
         $model = $application->model;
-        
+
         Notification::create([
             'user_id' => $job->painter_id,
             'type' => 'application_received',
@@ -26,6 +32,12 @@ class NotificationService
             'related_id' => $application->id,
             'related_type' => JobApplication::class,
         ]);
+
+        // 画家にメール通知
+        $painter = User::find($job->painter_id);
+        if ($painter) {
+            Mail::to($painter->email)->queue(new ApplicationReceivedMail($application));
+        }
     }
 
     /**
@@ -34,7 +46,7 @@ class NotificationService
     public static function notifyApplicationAccepted(JobApplication $application): void
     {
         $job = $application->job;
-        
+
         Notification::create([
             'user_id' => $application->model_id,
             'type' => 'application_accepted',
@@ -43,6 +55,12 @@ class NotificationService
             'related_id' => $application->id,
             'related_type' => JobApplication::class,
         ]);
+
+        // モデルにメール通知
+        $model = User::find($application->model_id);
+        if ($model) {
+            Mail::to($model->email)->queue(new ApplicationAcceptedMail($application));
+        }
     }
 
     /**
@@ -51,7 +69,7 @@ class NotificationService
     public static function notifyApplicationRejected(JobApplication $application): void
     {
         $job = $application->job;
-        
+
         Notification::create([
             'user_id' => $application->model_id,
             'type' => 'application_rejected',
@@ -60,6 +78,12 @@ class NotificationService
             'related_id' => $application->id,
             'related_type' => JobApplication::class,
         ]);
+
+        // モデルにメール通知
+        $model = User::find($application->model_id);
+        if ($model) {
+            Mail::to($model->email)->queue(new ApplicationRejectedMail($application));
+        }
     }
 
     /**
@@ -69,7 +93,7 @@ class NotificationService
     {
         $job = $message->job;
         $sender = $message->sender;
-        
+
         Notification::create([
             'user_id' => $message->receiver_id,
             'type' => 'message_received',
@@ -78,6 +102,12 @@ class NotificationService
             'related_id' => $message->id,
             'related_type' => Message::class,
         ]);
+
+        // 受信者にメール通知
+        $receiver = User::find($message->receiver_id);
+        if ($receiver) {
+            Mail::to($receiver->email)->queue(new MessageReceivedMail($message));
+        }
     }
 
     /**
@@ -87,7 +117,7 @@ class NotificationService
     {
         $reviewer = $review->reviewer;
         $job = $review->job;
-        
+
         Notification::create([
             'user_id' => $review->reviewed_user_id,
             'type' => 'review_received',
@@ -96,5 +126,11 @@ class NotificationService
             'related_id' => $review->id,
             'related_type' => \App\Models\Review::class,
         ]);
+
+        // レビュー対象者にメール通知
+        $reviewedUser = User::find($review->reviewed_user_id);
+        if ($reviewedUser) {
+            Mail::to($reviewedUser->email)->queue(new ReviewReceivedMail($review));
+        }
     }
 }

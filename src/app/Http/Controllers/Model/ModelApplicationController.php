@@ -50,7 +50,7 @@ class ModelApplicationController extends Controller
             'job_id' => $job->id,
             'model_id' => $user->id,
             'message' => $request->input('message'),
-            'status' => 'applied',
+            'status' => 'pending',
         ]);
 
         // 通知を作成（画家に通知）

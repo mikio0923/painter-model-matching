@@ -76,7 +76,7 @@ class Job extends Model
         return match($this->status) {
             'open' => '公開中',
             'closed' => '締切',
-            'completed' => '完了',
+            'done' => '完了',
             default => '不明',
         };
     }

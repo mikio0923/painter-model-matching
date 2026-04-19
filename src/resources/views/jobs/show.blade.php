@@ -1,296 +1,334 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-5xl">
-    <div class="mb-6">
-        <a href="{{ route('jobs.index') }}" class="text-secondary-600 hover:text-secondary-900 text-sm">
-            ← 依頼一覧に戻る
-        </a>
-    </div>
 
-    {{-- タイトル・お気に入り --}}
-    <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-        <h1 class="text-2xl md:text-3xl font-bold text-secondary-900">{{ $job->title }}</h1>
-        @auth
-            @if($isFavorite)
-                <form action="{{ route('favorites.destroy.job', $job) }}" method="POST" class="inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-red-500 text-red-600 hover:bg-red-50 text-sm font-medium">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/></svg>
-                        お気に入り解除
-                    </button>
-                </form>
-            @else
-                <form action="{{ route('favorites.store.job', $job) }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-secondary-300 bg-white hover:bg-secondary-50 text-secondary-700 text-sm font-medium">
-                        <svg class="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                        Good（お気に入りに追加）
-                    </button>
-                </form>
-            @endif
-        @endauth
-    </div>
-
-    {{-- 依頼内容（本文） --}}
-    <div class="bg-white rounded-lg border border-secondary-200 shadow-sm overflow-hidden mb-8">
-        <div class="p-6 md:p-8">
-            <div class="prose prose-secondary max-w-none">
-                <div class="whitespace-pre-wrap text-secondary-700 leading-relaxed">{{ $job->description }}</div>
-            </div>
-            @if($job->usage_purpose)
-                <div class="mt-6 pt-6 border-t border-secondary-200">
-                    <h3 class="text-sm font-semibold text-secondary-800 mb-2">用途</h3>
-                    <p class="text-secondary-700">{{ $job->usage_purpose }}</p>
-                </div>
+{{-- ページヘッダー --}}
+<div class="page-header">
+    <div class="page-header-inner">
+        <div class="flex items-center gap-2 mb-3">
+            <a href="{{ route('jobs.index') }}" class="text-secondary-400 hover:text-white text-xs flex items-center gap-1 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                依頼一覧
+            </a>
+            <span class="text-secondary-600 text-xs">/</span>
+            <span class="text-secondary-400 text-xs truncate max-w-xs">{{ $job->title }}</span>
+        </div>
+        @php
+            $painter       = $job->painter;
+            $painterProfile = $painter->painterProfile;
+            $painterName   = $painterProfile?->display_name ?? $painter->name;
+            $goodCount     = $job->favorites()->count();
+            $areaLabel     = $job->location_type === 'online' ? 'オンライン' : 'オフライン';
+            $areaDetail    = trim(($job->prefecture ?? '') . ' ' . ($job->city ?? ''));
+            $rewardLabel   = null;
+            if ($job->reward_amount) {
+                $rewardLabel = number_format($job->reward_amount) . '円' . ($job->reward_unit === 'per_hour' ? '/時間' : '/回');
+            }
+        @endphp
+        <div class="flex flex-wrap items-center gap-2 mt-1">
+            <span class="{{ $job->status === 'open' ? 'status-open' : 'status-closed' }}">{{ $job->status_label }}</span>
+            @if($job->category)
+                <span class="badge badge-secondary">{{ $job->category }}</span>
             @endif
         </div>
+        <h1 class="page-header-title mt-3">{{ $job->title }}</h1>
+        <p class="text-secondary-400 text-xs mt-2">投稿日：{{ $job->created_at->format('Y.m.d') }}</p>
     </div>
+</div>
 
-    {{-- モデル募集要項（表形式） --}}
-    <div class="bg-white rounded-lg border border-secondary-200 shadow-sm overflow-hidden mb-8">
-        <h2 class="px-6 py-4 bg-secondary-50 border-b border-secondary-200 text-lg font-bold text-secondary-900">モデル募集要項</h2>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <tbody class="divide-y divide-secondary-200">
-                    @if($job->category)
-                    <tr>
-                        <th class="px-6 py-3 w-40 flex-shrink-0 bg-secondary-50 text-sm font-semibold text-secondary-700">カテゴリ</th>
-                        <td class="px-6 py-3 text-secondary-900">{{ $job->category }}</td>
-                    </tr>
-                    @endif
-                    <tr>
-                        <th class="px-6 py-3 w-40 flex-shrink-0 bg-secondary-50 text-sm font-semibold text-secondary-700">エリア</th>
-                        <td class="px-6 py-3 text-secondary-900">
-                            {{ $job->location_type === 'online' ? 'オンライン' : 'オフライン' }}
-                            @if($job->prefecture)
-                                <span class="text-secondary-600">（{{ $job->prefecture }}）</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @if($job->scheduled_date)
-                    <tr>
-                        <th class="px-6 py-3 bg-secondary-50 text-sm font-semibold text-secondary-700">日時</th>
-                        <td class="px-6 py-3 text-secondary-900">{{ $job->scheduled_date->format('Y年n月j日') }}</td>
-                    </tr>
-                    @endif
-                    <tr>
-                        <th class="px-6 py-3 bg-secondary-50 text-sm font-semibold text-secondary-700">場所</th>
-                        <td class="px-6 py-3 text-secondary-900">
-                            @if($job->location_type === 'online')
-                                オンライン
-                            @else
-                                @if($job->prefecture){{ $job->prefecture }}@endif
-                                @if($job->city) {{ $job->city }}@endif
-                                @if(!$job->prefecture && !$job->city)—@endif
-                            @endif
-                        </td>
-                    </tr>
-                    @if($job->reward_amount)
-                    <tr>
-                        <th class="px-6 py-3 bg-secondary-50 text-sm font-semibold text-secondary-700">参考報酬金額</th>
-                        <td class="px-6 py-3 text-secondary-900">
-                            {{ number_format($job->reward_amount) }}円
-                            @if($job->reward_unit === 'per_hour')/時間@else/回@endif
-                        </td>
-                    </tr>
-                    @endif
-                    @if($job->transportation_fee)
-                    <tr>
-                        <th class="px-6 py-3 bg-secondary-50 text-sm font-semibold text-secondary-700">交通費の支給</th>
-                        <td class="px-6 py-3 text-secondary-900">{{ $job->transportation_fee }}</td>
-                    </tr>
-                    @endif
-                    @if($job->costume_provided)
-                    <tr>
-                        <th class="px-6 py-3 bg-secondary-50 text-sm font-semibold text-secondary-700">衣装の提供</th>
-                        <td class="px-6 py-3 text-secondary-900">{{ $job->costume_provided }}</td>
-                    </tr>
-                    @endif
-                    @if($job->target)
-                    <tr>
-                        <th class="px-6 py-3 bg-secondary-50 text-sm font-semibold text-secondary-700">募集対象</th>
-                        <td class="px-6 py-3 text-secondary-900">{{ $job->target }}</td>
-                    </tr>
-                    @endif
-                    @if($job->recruitment_number)
-                    <tr>
-                        <th class="px-6 py-3 bg-secondary-50 text-sm font-semibold text-secondary-700">募集人数</th>
-                        <td class="px-6 py-3 text-secondary-900">{{ number_format($job->recruitment_number) }}名</td>
-                    </tr>
-                    @endif
-                    @if($job->apply_deadline)
-                    <tr>
-                        <th class="px-6 py-3 bg-secondary-50 text-sm font-semibold text-secondary-700">募集期限</th>
-                        <td class="px-6 py-3 text-secondary-900">{{ $job->apply_deadline->format('Y年n月j日') }}まで</td>
-                    </tr>
-                    @endif
-                    <tr>
-                        <th class="px-6 py-3 bg-secondary-50 text-sm font-semibold text-secondary-700">投稿者</th>
-                        <td class="px-6 py-3 text-secondary-900">
-                            {{ $job->painter->painterProfile?->display_name ?? $job->painter->name }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div class="page">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-    {{-- 場所・アクセス --}}
-    @if($job->location_type === 'offline' && ($job->prefecture || $job->city || $job->address || $job->access))
-    <div class="bg-white rounded-lg border border-secondary-200 shadow-sm overflow-hidden mb-8">
-        <h2 class="px-6 py-4 bg-secondary-50 border-b border-secondary-200 text-lg font-bold text-secondary-900">場所・アクセス</h2>
-        <div class="p-6 text-secondary-700">
-            @if($job->prefecture){{ $job->prefecture }}@endif
-            @if($job->city) {{ $job->city }}@endif
-            @if($job->address)
-                <div class="mt-2 text-secondary-800">{{ $job->address }}</div>
-            @endif
-            @if($job->access)
-                <div class="mt-3 whitespace-pre-wrap text-sm text-secondary-600">{{ $job->access }}</div>
-            @endif
-        </div>
-    </div>
-    @endif
+        {{-- ========== メインコンテンツ ========== --}}
+        <div class="lg:col-span-2 space-y-6">
 
-    {{-- ENTRY LIST / エントリーコメント --}}
-    <div class="bg-white rounded-lg border border-secondary-200 shadow-sm overflow-hidden mb-8">
-        <h2 class="px-6 py-4 bg-secondary-50 border-b border-secondary-200 text-lg font-bold text-secondary-900">ENTRY LIST / エントリーコメント</h2>
-        <div class="p-6">
-            @if($job->applications->count() > 0)
-                <div class="space-y-4">
-                    @foreach($job->applications->sortByDesc('created_at') as $app)
-                        <div class="border-b border-secondary-100 pb-4 last:border-b-0 last:pb-0">
-                            <p class="text-sm text-secondary-500 mb-1">{{ $app->created_at->format('Y.m.d H:i') }}</p>
-                            <p class="font-semibold text-secondary-900">
-                                {{ $app->model->modelProfile?->display_name ?? $app->model->name }}
-                                @if($app->model->modelProfile?->prefecture)
-                                    <span class="text-secondary-600 font-normal text-sm">［{{ $app->model->modelProfile->prefecture }}］</span>
-                                @endif
-                            </p>
-                            @if($app->message)
-                                <p class="mt-2 text-secondary-700 whitespace-pre-wrap text-sm">{{ $app->message }}</p>
-                            @endif
+            {{-- 依頼内容 --}}
+            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+                <div class="p-6 md:p-8">
+                    <h2 class="font-display text-xl font-bold text-secondary-900 mb-4 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-primary-600 rounded-full inline-block"></span>
+                        依頼内容
+                    </h2>
+                    <div class="prose-custom whitespace-pre-wrap text-secondary-700 leading-relaxed text-sm">{{ $job->description }}</div>
+                    @if($job->usage_purpose)
+                        <div class="mt-6 pt-6 border-t border-secondary-100 bg-primary-50/50 -mx-6 md:-mx-8 px-6 md:px-8 py-4 rounded-b-2xl">
+                            <p class="text-xs font-semibold text-primary-700 uppercase tracking-wider mb-1">用途</p>
+                            <p class="text-sm text-secondary-700">{{ $job->usage_purpose }}</p>
                         </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- 募集要項テーブル --}}
+            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+                <div class="px-6 py-4 border-b border-secondary-100 flex items-center gap-2">
+                    <span class="w-1 h-5 bg-accent-500 rounded-full inline-block"></span>
+                    <h2 class="font-display text-lg font-bold text-secondary-900">モデル募集要項</h2>
+                </div>
+                <div class="divide-y divide-secondary-100">
+                    @php
+                    $requirements = [
+                        ['label' => 'エリア', 'value' => $areaLabel . ($job->prefecture ? '（' . $job->prefecture . '）' : '')],
+                        ['label' => '日時', 'value' => $job->scheduled_date ? $job->scheduled_date->format('Y年n月j日') : null],
+                        ['label' => '場所', 'value' => $job->location_type === 'online' ? 'オンライン' : ($areaDetail ?: '—')],
+                        ['label' => '参考報酬', 'value' => $rewardLabel],
+                        ['label' => '交通費', 'value' => $job->transportation_fee],
+                        ['label' => '衣装提供', 'value' => $job->costume_provided],
+                        ['label' => '募集対象', 'value' => $job->target],
+                        ['label' => '募集人数', 'value' => $job->recruitment_number ? number_format($job->recruitment_number) . '名' : null],
+                        ['label' => '応募期限', 'value' => $job->apply_deadline ? $job->apply_deadline->format('Y年n月j日') . 'まで' : null],
+                        ['label' => '投稿者', 'value' => $painterName],
+                    ];
+                    @endphp
+                    @foreach($requirements as $row)
+                        @if($row['value'])
+                        <div class="flex items-start px-6 py-3.5">
+                            <dt class="w-32 shrink-0 text-xs font-semibold text-secondary-500 uppercase tracking-wide pt-0.5">{{ $row['label'] }}</dt>
+                            <dd class="text-sm text-secondary-800 flex-1">{{ $row['value'] }}</dd>
+                        </div>
+                        @endif
                     @endforeach
                 </div>
-                <p class="mt-4 text-sm text-secondary-500">{{ $job->applications->count() }} 件中 1-{{ $job->applications->count() }} 件</p>
-            @else
-                <p class="text-secondary-500">まだエントリーがありません。</p>
-            @endif
-        </div>
-    </div>
-
-    {{-- 応募フォーム（モデルユーザーのみ） --}}
-    @auth
-        @if(auth()->user()->role === 'model')
-            @if($hasApplied)
-                <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8">
-                    <p class="text-amber-800 font-semibold">この依頼には既に応募済みです</p>
-                </div>
-            @else
-                <div class="bg-white rounded-lg border border-secondary-200 shadow-sm overflow-hidden mb-8">
-                    <h2 class="px-6 py-4 bg-secondary-50 border-b border-secondary-200 text-lg font-bold text-secondary-900">この依頼に応募する</h2>
-                    <div class="p-6">
-                        <form action="{{ route('model.jobs.apply', $job) }}" method="POST">
-                            @csrf
-                            <div class="mb-4">
-                                <label for="message" class="block text-sm font-medium text-secondary-700 mb-1">メッセージ（任意）</label>
-                                <textarea id="message" name="message" rows="5" placeholder="応募メッセージを入力してください"
-                                    class="w-full px-4 py-2 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"></textarea>
-                            </div>
-                            <button type="submit" class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-                                応募する
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @endif
-        @else
-            <div class="bg-secondary-50 border border-secondary-200 rounded-lg p-6 mb-8">
-                <p class="text-secondary-600">モデルアカウントでログインすると応募できます</p>
             </div>
-        @endif
-    @else
-        <div class="bg-secondary-50 border border-secondary-200 rounded-lg p-6 mb-8">
-            <p class="text-secondary-600 mb-4">この依頼に応募するにはログインが必要です</p>
-            <a href="{{ route('login-register') }}" class="inline-block px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg">
-                ログインする
-            </a>
-        </div>
-    @endauth
 
-    {{-- 投稿者（画家）情報カード --}}
-    <div class="bg-white rounded-lg border border-secondary-200 shadow-sm overflow-hidden mb-8">
-        <h2 class="px-6 py-4 bg-secondary-50 border-b border-secondary-200 text-lg font-bold text-secondary-900">投稿者</h2>
-        <div class="p-6">
-            @php
-                $painter = $job->painter;
-                $painterProfile = $painter->painterProfile;
-                $painterName = $painterProfile?->display_name ?? $painter->name;
-                $goodCount = $job->favorites()->count();
-            @endphp
-            <div class="flex flex-wrap gap-4">
-                @if($painterProfile?->profile_image_path)
-                    <img src="{{ Storage::url($painterProfile->profile_image_path) }}" alt="{{ $painterName }}" class="w-16 h-16 rounded-full object-cover border-2 border-secondary-200">
+            {{-- 場所・アクセス --}}
+            @if($job->location_type === 'offline' && ($job->prefecture || $job->city || $job->address || $job->access))
+            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+                <div class="px-6 py-4 border-b border-secondary-100 flex items-center gap-2">
+                    <span class="w-1 h-5 bg-gold-500 rounded-full inline-block"></span>
+                    <h2 class="font-display text-lg font-bold text-secondary-900">場所・アクセス</h2>
+                </div>
+                <div class="p-6 text-sm text-secondary-700 leading-relaxed">
+                    <p class="font-medium text-secondary-900">
+                        @if($job->prefecture){{ $job->prefecture }}@endif
+                        @if($job->city) {{ $job->city }}@endif
+                    </p>
+                    @if($job->address)<p class="mt-2">{{ $job->address }}</p>@endif
+                    @if($job->access)<p class="mt-3 text-secondary-500 whitespace-pre-wrap">{{ $job->access }}</p>@endif
+                </div>
+            </div>
+            @endif
+
+            {{-- エントリーコメント --}}
+            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+                <div class="px-6 py-4 border-b border-secondary-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-1 h-5 bg-success-500 rounded-full inline-block"></span>
+                        <h2 class="font-display text-lg font-bold text-secondary-900">エントリーコメント</h2>
+                    </div>
+                    <span class="badge badge-secondary">{{ $job->applications->count() }}件</span>
+                </div>
+                <div class="p-6">
+                    @if($job->applications->count() > 0)
+                        <div class="space-y-5">
+                            @foreach($job->applications->sortByDesc('created_at') as $app)
+                            <div class="flex gap-3">
+                                <div class="avatar avatar-sm border border-secondary-200 shrink-0">
+                                    <svg class="w-3.5 h-3.5 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-baseline gap-2 mb-1">
+                                        <span class="text-sm font-semibold text-secondary-900">
+                                            {{ $app->model->modelProfile?->display_name ?? $app->model->name }}
+                                        </span>
+                                        @if($app->model->modelProfile?->prefecture)
+                                            <span class="text-xs text-secondary-400">{{ $app->model->modelProfile->prefecture }}</span>
+                                        @endif
+                                        <span class="text-xs text-secondary-400 ml-auto">{{ $app->created_at->format('Y.m.d H:i') }}</span>
+                                    </div>
+                                    @if($app->message)
+                                        <p class="text-sm text-secondary-600 leading-relaxed whitespace-pre-wrap">{{ $app->message }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-sm text-secondary-400 text-center py-8">まだエントリーがありません</p>
+                    @endif
+                </div>
+            </div>
+
+            {{-- 応募フォーム --}}
+            @auth
+                @if(auth()->user()->role === 'model')
+                    @if($hasApplied)
+                        <div class="bg-gold-50 border border-gold-200 rounded-2xl p-6 flex items-center gap-3">
+                            <svg class="w-5 h-5 text-gold-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <p class="text-sm font-semibold text-gold-800">この依頼には既に応募済みです</p>
+                        </div>
+                    @else
+                        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+                            <div class="px-6 py-4 border-b border-secondary-100 flex items-center gap-2">
+                                <span class="w-1 h-5 bg-primary-600 rounded-full inline-block"></span>
+                                <h2 class="font-display text-lg font-bold text-secondary-900">この依頼に応募する</h2>
+                            </div>
+                            <div class="p-6">
+                                <form action="{{ route('model.jobs.apply', $job) }}" method="POST">
+                                    @csrf
+                                    <div class="mb-4">
+                                        <label for="message" class="form-label">メッセージ <span class="text-secondary-400 font-normal">（任意）</span></label>
+                                        <textarea id="message" name="message" rows="5"
+                                                  placeholder="自己紹介やこの依頼への意気込みを書いてください"
+                                                  class="form-textarea"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn-primary">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                                        応募する
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endif
                 @else
-                    <div class="w-16 h-16 rounded-full bg-secondary-200 flex items-center justify-center text-secondary-500">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <div class="bg-secondary-50 rounded-2xl border border-secondary-200 p-6">
+                        <p class="text-sm text-secondary-500">モデルアカウントでログインすると応募できます</p>
                     </div>
                 @endif
-                <div>
-                    <p class="font-bold text-secondary-900 text-lg">{{ $painterName }}</p>
-                    <p class="text-sm text-secondary-600 mt-1">Good（{{ $goodCount }}）</p>
-                    @if($painterProfile?->bio ?? false)
-                        <p class="mt-3 text-secondary-700 text-sm leading-relaxed">{{ $painterProfile->bio }}</p>
+            @else
+                <div class="bg-white rounded-2xl shadow-card p-8 text-center">
+                    <p class="text-secondary-600 mb-4 font-medium">この依頼に応募するにはログインが必要です</p>
+                    <a href="{{ route('login-register') }}" class="btn-primary">
+                        ログインして応募する
+                    </a>
+                </div>
+            @endauth
+
+            {{-- レビュー --}}
+            @if($job->reviews->count() > 0)
+            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+                <div class="px-6 py-4 border-b border-secondary-100 flex items-center gap-2">
+                    <span class="w-1 h-5 bg-gold-500 rounded-full inline-block"></span>
+                    <h2 class="font-display text-lg font-bold text-secondary-900">レビュー</h2>
+                </div>
+                <div class="p-6 space-y-5">
+                    @foreach($job->reviews as $review)
+                    <div class="flex gap-4 pb-5 border-b border-secondary-100 last:border-b-0 last:pb-0">
+                        <div class="avatar avatar-sm border border-secondary-200 shrink-0">
+                            <svg class="w-3.5 h-3.5 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <span class="text-sm font-semibold text-secondary-900">
+                                    {{ $review->reviewer->painterProfile?->display_name ?? $review->reviewer->modelProfile?->display_name ?? $review->reviewer->name }}
+                                    <span class="text-secondary-400 font-normal">→</span>
+                                    {{ $review->reviewedUser->painterProfile?->display_name ?? $review->reviewedUser->modelProfile?->display_name ?? $review->reviewedUser->name }}
+                                </span>
+                                <span class="badge badge-success">{{ $review->rating_label }}</span>
+                                <span class="text-xs text-secondary-400 ml-auto">{{ $review->created_at->format('Y年n月j日') }}</span>
+                            </div>
+                            @if($review->comment)
+                                <p class="text-sm text-secondary-600 leading-relaxed whitespace-pre-wrap">{{ $review->comment }}</p>
+                            @endif
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            @auth
+                @if($canReview && $reviewTarget)
+                    @php
+                        $existingReview = $job->reviews()->where('reviewer_id', Auth::id())->where('reviewed_user_id', $reviewTarget->id)->first();
+                    @endphp
+                    @if(!$existingReview)
+                        <div>
+                            <a href="{{ route('reviews.create', $job) }}" class="btn-accent">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                レビューを投稿する
+                            </a>
+                        </div>
+                    @endif
+                @endif
+            @endauth
+
+        </div>
+
+        {{-- ========== サイドバー ========== --}}
+        <div class="space-y-5 lg:sticky lg:top-24 lg:self-start">
+
+            {{-- 概要カード --}}
+            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+                <div class="p-5 space-y-3">
+                    @if($rewardLabel)
+                    <div class="text-center py-4 border-b border-secondary-100">
+                        <p class="text-xs text-secondary-400 uppercase tracking-wider mb-1">報酬</p>
+                        <p class="font-display text-3xl font-bold text-primary-600">{{ $rewardLabel }}</p>
+                    </div>
+                    @endif
+                    <dl class="space-y-2.5 text-sm">
+                        <div class="flex items-start justify-between gap-2">
+                            <dt class="text-secondary-400 shrink-0">エリア</dt>
+                            <dd class="font-medium text-secondary-800 text-right">{{ $areaLabel }}@if($job->prefecture)（{{ $job->prefecture }}）@endif</dd>
+                        </div>
+                        @if($job->scheduled_date)
+                        <div class="flex items-start justify-between gap-2">
+                            <dt class="text-secondary-400 shrink-0">日時</dt>
+                            <dd class="font-medium text-secondary-800">{{ $job->scheduled_date->format('Y年n月j日') }}</dd>
+                        </div>
+                        @endif
+                        @if($job->apply_deadline)
+                        <div class="flex items-start justify-between gap-2">
+                            <dt class="text-secondary-400 shrink-0">募集期限</dt>
+                            <dd class="font-medium text-secondary-800">{{ $job->apply_deadline->format('Y年n月j日') }}</dd>
+                        </div>
+                        @endif
+                        <div class="flex items-start justify-between gap-2">
+                            <dt class="text-secondary-400 shrink-0">エントリー</dt>
+                            <dd class="font-semibold text-secondary-800">{{ number_format($job->applications->count()) }}件</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                {{-- お気に入りボタン --}}
+                @auth
+                <div class="px-5 pb-5">
+                    @if($isFavorite)
+                        <form action="{{ route('favorites.destroy.job', $job) }}" method="POST" class="w-full">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-accent-400 text-accent-600 hover:bg-accent-50 text-sm font-semibold transition-all duration-200">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/></svg>
+                                お気に入り解除（{{ $goodCount }}）
+                            </button>
+                        </form>
+                    @else
+                        <form action="{{ route('favorites.store.job', $job) }}" method="POST" class="w-full">
+                            @csrf
+                            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-secondary-200 bg-white hover:bg-secondary-50 text-secondary-600 hover:text-accent-600 text-sm font-medium transition-all duration-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                お気に入りに追加（{{ $goodCount }}）
+                            </button>
+                        </form>
+                    @endif
+                </div>
+                @endauth
+            </div>
+
+            {{-- 投稿者カード --}}
+            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+                <div class="p-5">
+                    <p class="text-xs font-semibold text-secondary-400 uppercase tracking-wider mb-4">投稿者</p>
+                    <div class="flex items-center gap-3">
+                        <div class="avatar avatar-lg border-2 border-primary-100 shrink-0">
+                            @if($painterProfile?->profile_image_path)
+                                <img src="{{ Storage::url($painterProfile->profile_image_path) }}" alt="{{ $painterName }}" class="w-full h-full object-cover">
+                            @else
+                                <svg class="w-7 h-7 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            @endif
+                        </div>
+                        <div class="min-w-0">
+                            <p class="font-bold text-secondary-900 truncate">{{ $painterName }}</p>
+                            <p class="text-xs text-secondary-400 mt-0.5">画家</p>
+                        </div>
+                    </div>
+                    @if($painterProfile?->bio)
+                        <p class="mt-4 text-sm text-secondary-600 leading-relaxed line-clamp-4">{{ $painterProfile->bio }}</p>
                     @endif
                 </div>
             </div>
         </div>
     </div>
-
-    {{-- レビュー --}}
-    @if($job->reviews->count() > 0)
-        <div class="bg-white rounded-lg border border-secondary-200 shadow-sm overflow-hidden mb-8">
-            <h2 class="px-6 py-4 bg-secondary-50 border-b border-secondary-200 text-lg font-bold text-secondary-900">レビュー</h2>
-            <div class="p-6 space-y-4">
-                @foreach($job->reviews as $review)
-                    <div class="border-b border-secondary-100 pb-4 last:border-b-0 last:pb-0">
-                        <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
-                            <p class="font-semibold text-secondary-900">
-                                {{ $review->reviewer->painterProfile?->display_name ?? $review->reviewer->modelProfile?->display_name ?? $review->reviewer->name }} → {{ $review->reviewedUser->painterProfile?->display_name ?? $review->reviewedUser->modelProfile?->display_name ?? $review->reviewedUser->name }}
-                            </p>
-                            <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                {{ $review->rating_label }}
-                            </span>
-                        </div>
-                        <p class="text-sm text-secondary-500">{{ $review->created_at->format('Y年n月j日') }}</p>
-                        @if($review->comment)
-                            <p class="mt-2 text-secondary-700 text-sm whitespace-pre-wrap">{{ $review->comment }}</p>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
-    @auth
-        @if($canReview && $reviewTarget)
-            @php
-                $existingReview = $job->reviews()
-                    ->where('reviewer_id', Auth::id())
-                    ->where('reviewed_user_id', $reviewTarget->id)
-                    ->first();
-            @endphp
-            @if(!$existingReview)
-                <div class="mb-8">
-                    <a href="{{ route('reviews.create', $job) }}" class="inline-block px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                        レビューを投稿する
-                    </a>
-                </div>
-            @endif
-        @endif
-    @endauth
 </div>
+
 @endsection

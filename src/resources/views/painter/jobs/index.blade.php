@@ -119,10 +119,16 @@
                             @endif
                         </a>
                         <span class="text-gray-300">|</span>
-                        <a href="{{ route('painter.jobs.edit', $job) }}" 
+                        <a href="{{ route('painter.jobs.edit', $job) }}"
                            class="text-gray-600 hover:text-gray-800">
                             編集
                         </a>
+                        <span class="text-gray-300">|</span>
+                        <form method="POST" action="{{ route('painter.jobs.destroy', $job) }}" class="inline" onsubmit="return confirm('この依頼を削除しますか？この操作は取り消せません。')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-500 hover:text-red-700">削除</button>
+                        </form>
                     </div>
 
                     <div class="text-xs text-gray-500 mt-2">

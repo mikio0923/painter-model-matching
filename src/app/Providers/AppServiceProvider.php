@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use App\Models\ModelProfile;
 use App\Models\Job;
@@ -23,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // 本番環境では HTTPS を強制（リバースプロキシ経由対応）
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         // Observerを登録
         ModelProfile::observe(ModelProfileObserver::class);
         Job::observe(JobObserver::class);

@@ -144,6 +144,7 @@ Route::middleware(['auth', 'role:painter'])->prefix('painter')->name('painter.')
     Route::put('/jobs/{job}', [PainterJobController::class, 'update'])
         ->middleware('throttle:10,1')
         ->name('jobs.update');
+    Route::delete('/jobs/{job}', [PainterJobController::class, 'destroy'])->name('jobs.destroy');
 
     Route::get('/jobs/{job}/applications', [PainterJobApplicationController::class, 'index'])->name('jobs.applications.index');
     Route::post('/jobs/{job}/applications/{application}/accept', [PainterJobApplicationController::class, 'accept'])->name('jobs.applications.accept');

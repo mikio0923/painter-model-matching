@@ -187,6 +187,9 @@ class RegisteredUserController extends Controller
                             if ($date->isFuture()) {
                                 $fail('生年月日は今日以前の日付である必要があります。');
                             }
+                            if ($date->age < 18) {
+                                $fail('18歳未満の方はご登録いただけません。');
+                            }
                         } catch (\Exception $e) {
                             $fail('無効な日付です。');
                         }

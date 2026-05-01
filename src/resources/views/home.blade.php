@@ -2,47 +2,49 @@
 
 @section('content')
 
-{{-- ========== HERO ========== --}}
-<section class="hero" style="background-image: linear-gradient(135deg, #1e0a3c 0%, #3b0764 30%, #6d28d9 65%, #be123c 100%);">
-    {{-- 装飾ドット --}}
-    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+{{-- ========== HERO（美術館トーン） ========== --}}
+<section class="hero">
+    {{-- 背景アートレイヤー（名画がゆっくり Ken Burns で循環） --}}
+    <div class="art-bg-stage">
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/great-wave.jpg') }}');"></div>
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/starry-night.jpg') }}');"></div>
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/pearl-earring.jpg') }}');"></div>
+        <div class="art-bg-veil"></div>
+    </div>
+
     <div class="hero-content text-center">
-        <p class="font-display tracking-[0.2em] text-xs sm:text-sm uppercase text-white/50 mb-4">Art × Portrait Matching Platform</p>
-        <h1 class="hero-title mb-5">
-            画家とモデルを<br class="sm:hidden">つなぐ場所
+        <p class="museum-label">An Art × Portrait Matching Platform</p>
+        <h1 class="hero-title mb-6 mt-2">
+            画家とモデルを、<br class="sm:hidden">静かにつなぐ
         </h1>
         <p class="hero-subtitle mx-auto text-center">
-            ポートレート・人物画の制作に特化した<br>クリエイター同士のマッチングサービス
+            ポートレート・人物画の制作に特化した<br>クリエイター同士のマッチング。
         </p>
-        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="{{ route('models.index') }}"
-               class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white text-primary-800 font-bold text-base rounded-xl shadow-lg hover:bg-canvas-50 hover:-translate-y-0.5 transition-all duration-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="{{ route('models.index') }}" class="btn-museum-dark w-full sm:w-auto">
                 モデルを探す
             </a>
-            <a href="{{ route('jobs.index') }}"
-               class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white/10 backdrop-blur-sm text-white font-bold text-base rounded-xl border border-white/30 hover:bg-white/20 hover:-translate-y-0.5 transition-all duration-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <a href="{{ route('jobs.index') }}" class="btn-museum-outline w-full sm:w-auto">
                 依頼を見る
             </a>
         </div>
-    </div>
-    {{-- ヒーロー下部ウェーブ --}}
-    <div class="absolute bottom-0 left-0 right-0 overflow-hidden leading-none">
-        <svg viewBox="0 0 1440 56" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="w-full h-14" style="display:block;">
-            <path d="M0,32 C240,56 480,0 720,28 C960,56 1200,8 1440,32 L1440,56 L0,56 Z" fill="#f9f7f5"/>
-        </svg>
+
+        {{-- キュレーター・キャプション --}}
+        <div class="mt-20 max-w-md mx-auto art-caption text-left">
+            ポートレートは、被写体と画家の対話の記録である。
+            <span class="block mt-2 text-xs text-secondary-400 not-italic tracking-[0.2em] uppercase">— Curator's Note</span>
+        </div>
     </div>
 </section>
 
-<div class="page space-y-20">
+<div class="page space-y-24">
 
     {{-- ========== PICKUP MODELS ========== --}}
     @if($pickupModels->count() > 0)
     <section class="animate-fade-in">
         <div class="section-header">
             <div>
-                <p class="section-title-en mb-2">Pickup Model</p>
+                <p class="museum-label">Pickup Model</p>
                 <h2 class="section-title">注目のモデル</h2>
             </div>
             <a href="{{ route('models.index') }}" class="link-arrow shrink-0 text-sm">
@@ -124,7 +126,7 @@
     <section>
         <div class="section-header">
             <div>
-                <p class="section-title-en mb-2">Pickup Job</p>
+                <p class="museum-label">Pickup Job</p>
                 <h2 class="section-title">注目の依頼</h2>
             </div>
             <a href="{{ route('jobs.index') }}" class="link-arrow shrink-0 text-sm">
@@ -203,7 +205,7 @@
     <section>
         <div class="section-header">
             <div>
-                <p class="section-title-en mb-1">Review</p>
+                <p class="museum-label">Review</p>
                 <h2 class="section-title">新着レビュー</h2>
             </div>
         </div>
@@ -257,7 +259,7 @@
     <section>
         <div class="section-header">
             <div>
-                <p class="section-title-en mb-2">New Models</p>
+                <p class="museum-label">New Models</p>
                 <h2 class="section-title">新着モデル</h2>
             </div>
             <a href="{{ route('models.index') }}" class="link-arrow shrink-0 text-sm">
@@ -327,7 +329,7 @@
     <section>
         <div class="section-header">
             <div>
-                <p class="section-title-en mb-1">Voices</p>
+                <p class="museum-label">Voices</p>
                 <h2 class="section-title">高評価レビュー</h2>
             </div>
         </div>

@@ -395,25 +395,98 @@
     }
 
     /* ─────────────────────────────────────────
-       ヒーローバナー
+       ヒーローバナー（美術館トーン）
     ───────────────────────────────────────── */
     .hero {
-        @apply relative overflow-hidden;
-        background-image: theme('backgroundImage.hero-gradient');
+        @apply relative overflow-hidden bg-canvas-50;
     }
 
     .hero-content {
-        @apply relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36;
+        @apply relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40;
     }
 
     .hero-title {
-        @apply font-display font-bold text-white leading-tight;
-        font-size: clamp(2.5rem, 6vw, 4.5rem);
-        letter-spacing: -0.02em;
+        @apply font-display font-bold text-secondary-900 leading-tight;
+        font-size: clamp(2.25rem, 5vw, 3.75rem);
+        letter-spacing: -0.01em;
     }
 
     .hero-subtitle {
-        @apply text-lg sm:text-xl text-white/70 font-normal mt-4 max-w-xl leading-relaxed;
+        @apply text-base sm:text-lg text-secondary-600 font-normal mt-5 max-w-xl leading-relaxed;
+    }
+
+    /* ─────────────────────────────────────────
+       背景アートレイヤー（美術館トーンの核）
+       透過度・グレースケール処理・ゆっくりした Ken Burns
+    ───────────────────────────────────────── */
+    .art-bg-stage {
+        @apply absolute inset-0 hidden md:block pointer-events-none overflow-hidden;
+    }
+
+    .art-bg-veil {
+        @apply absolute inset-0;
+        background-color: rgb(253 250 246 / 0.55);
+    }
+
+    .art-bg-layer {
+        @apply absolute inset-0 bg-no-repeat bg-cover bg-center;
+        opacity: 0;
+        filter: grayscale(0.4) sepia(0.15);
+        animation: artFade 60s ease-in-out infinite;
+        will-change: transform, opacity;
+    }
+
+    /* 3枚のレイヤーで連続クロスフェード */
+    .art-bg-layer:nth-child(1) {
+        animation-delay: 0s;
+    }
+    .art-bg-layer:nth-child(2) {
+        animation-delay: 20s;
+    }
+    .art-bg-layer:nth-child(3) {
+        animation-delay: 40s;
+    }
+
+    @keyframes artFade {
+        0%, 33.33%, 100% { opacity: 0; transform: scale(1.0) translate(0, 0); }
+        5%               { opacity: 0.10; }
+        15%              { opacity: 0.10; }
+        28%              { opacity: 0; transform: scale(1.06) translate(-1.5%, -1%); }
+    }
+
+    /* キュレーター・キャプション風 */
+    .art-caption {
+        @apply font-display italic text-sm text-secondary-500 leading-relaxed border-l-2 border-secondary-300 pl-4;
+    }
+
+    /* 美術館ラベル風セクションラベル（ピル形状の代替） */
+    .museum-label {
+        @apply inline-block py-1 px-3 mb-3 text-[10px] font-medium uppercase
+               text-secondary-500 border-y border-secondary-300;
+        letter-spacing: 0.3em;
+    }
+
+    /* 黒ボタン（美術館トーン用メインアクション） */
+    .btn-museum-dark {
+        @apply inline-flex items-center justify-center gap-2
+               px-7 py-3
+               bg-secondary-900 text-canvas-50
+               font-medium text-sm
+               border border-secondary-900
+               hover:bg-canvas-50 hover:text-secondary-900
+               focus:outline-none focus:ring-2 focus:ring-secondary-700 focus:ring-offset-2
+               transition-colors duration-300;
+    }
+
+    .btn-museum-outline {
+        @apply inline-flex items-center justify-center gap-2
+               px-7 py-3
+               bg-transparent text-secondary-900
+               font-medium text-sm
+               border border-secondary-900
+               hover:bg-secondary-900 hover:text-canvas-50
+               focus:outline-none focus:ring-2 focus:ring-secondary-700 focus:ring-offset-2
+               transition-colors duration-300;
     }
 
     /* ─────────────────────────────────────────

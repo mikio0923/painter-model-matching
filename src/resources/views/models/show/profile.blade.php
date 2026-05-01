@@ -56,7 +56,14 @@
                         </div>
                         <div class="flex justify-between items-center px-4 py-3 text-sm">
                             <span class="text-secondary-600">本人確認</span>
-                            <span class="text-secondary-900 font-medium">{{ $modelProfile->identity_verified ? '済' : '未' }}</span>
+                            @if($modelProfile->identity_verified)
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success-100 text-success-700 text-xs font-bold">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                    確認済み
+                                </span>
+                            @else
+                                <span class="text-secondary-400 text-xs">未確認</span>
+                            @endif
                         </div>
                         <div class="flex justify-between items-center px-4 py-3 text-sm">
                             <span class="text-secondary-600">取引条件</span>

@@ -8,11 +8,12 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -33,6 +34,10 @@ class User extends Authenticatable
         'city',
         'street_number',
         'building_name',
+        'deletion_requested_at',
+        'anonymized_at',
+        'deletion_reason',
+        'deletion_feedback',
     ];
 
     /**
@@ -55,6 +60,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'deletion_requested_at' => 'datetime',
+            'anonymized_at' => 'datetime',
         ];
     }
 
@@ -122,6 +129,18 @@ class User extends Authenticatable
     public function favorites(): HasMany
     {
         return $this->hasMany(Favorite::class);
+    }
+
+    // 本人確認申請（1:N）
+    public function identityVerifications(): HasMany
+    {
+        return $this->hasMany(IdentityVerification::class);
+    }
+
+    // 最新の本人確認申請
+    public function latestIdentityVerification(): ?IdentityVerification
+    {
+        return $this->identityVerifications()->latest()->first();
     }
 
     // 便利メソッド（任意）

@@ -38,17 +38,14 @@ class PublicPageTest extends TestCase
         $this->get(route('faq'))->assertStatus(200);
     }
 
-    public function test_terms_route_exists(): void
+    public function test_terms_page_loads(): void
     {
-        // ビューが未作成のためステータスコードのみ確認（500=ビュー不在）
-        $response = $this->get(route('terms'));
-        $this->assertTrue(in_array($response->getStatusCode(), [200, 500]));
+        $this->get(route('terms'))->assertStatus(200);
     }
 
-    public function test_privacy_route_exists(): void
+    public function test_privacy_page_loads(): void
     {
-        $response = $this->get(route('privacy'));
-        $this->assertTrue(in_array($response->getStatusCode(), [200, 500]));
+        $this->get(route('privacy'))->assertStatus(200);
     }
 
     public function test_guideline_page_loads(): void

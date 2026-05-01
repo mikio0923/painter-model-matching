@@ -64,6 +64,13 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // 退会フロー
+    Route::get('/account/delete', [\App\Http\Controllers\AccountDeletionController::class, 'show'])
+        ->name('account.delete.show');
+    Route::delete('/account/delete', [\App\Http\Controllers\AccountDeletionController::class, 'destroy'])
+        ->middleware('throttle:3,1')
+        ->name('account.delete');
+
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/job/{job}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/job/{job}', [MessageController::class, 'store'])
@@ -117,8 +124,13 @@ Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->grou
     Route::post('/questions/{modelProfileQuestion}/answer', [ModelQuestionController::class, 'answer'])->name('questions.answer');
     Route::get('/questions/{modelProfileQuestion}/edit', [ModelQuestionController::class, 'edit'])->name('questions.edit');
 
-    // 本人確認・決済関連
-    Route::get('/identity-verification', [ModelAccountController::class, 'identityVerification'])->name('identity-verification');
+    // 本人確認
+    Route::get('/identity-verification', [\App\Http\Controllers\Model\IdentityVerificationController::class, 'show'])->name('identity-verification');
+    Route::post('/identity-verification', [\App\Http\Controllers\Model\IdentityVerificationController::class, 'store'])
+        ->middleware('throttle:5,10')
+        ->name('identity-verification.store');
+
+    // 決済関連（実装待ち）
     Route::get('/paid-options', [ModelAccountController::class, 'paidOptions'])->name('paid-options');
     Route::get('/billing-history', [ModelAccountController::class, 'billingHistory'])->name('billing-history');
     Route::get('/payment-method', [ModelAccountController::class, 'paymentMethod'])->name('payment-method');
@@ -174,6 +186,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/contacts/{contact}', [\App\Http\Controllers\Admin\AdminContactController::class, 'show'])->name('contacts.show');
     Route::post('/contacts/{contact}/read', [\App\Http\Controllers\Admin\AdminContactController::class, 'markAsRead'])->name('contacts.read');
     Route::delete('/contacts/{contact}', [\App\Http\Controllers\Admin\AdminContactController::class, 'destroy'])->name('contacts.destroy');
+
+    // 本人確認管理
+    Route::get('/identity-verifications', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'index'])->name('identity-verifications.index');
+    Route::get('/identity-verifications/{verification}', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'show'])->name('identity-verifications.show');
+    Route::get('/identity-verifications/{verification}/image/{field}', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'image'])->name('identity-verifications.image');
+    Route::post('/identity-verifications/{verification}/approve', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'approve'])->name('identity-verifications.approve');
+    Route::post('/identity-verifications/{verification}/reject', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'reject'])->name('identity-verifications.reject');
 
     // お知らせ管理
     Route::get('/information', [\App\Http\Controllers\Admin\AdminInformationController::class, 'index'])->name('information.index');

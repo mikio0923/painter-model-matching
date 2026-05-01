@@ -19,5 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // 本番環境のみ Sentry に例外を送信
+        \Sentry\Laravel\Integration::handles($exceptions);
     })->create();

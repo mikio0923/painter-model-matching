@@ -35,8 +35,17 @@
                                 <a href="{{ route('admin.jobs.index') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors">
                                     依頼管理
                                 </a>
-                                <a href="{{ route('admin.contacts.index') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors">
+                                <a href="{{ route('admin.identity-verifications.index') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors inline-flex items-center gap-1.5">
+                                    本人確認
+                                    @if(($adminNavBadges['identity'] ?? 0) > 0)
+                                        <span class="inline-flex items-center justify-center min-w-[18px] h-4 px-1 bg-warning-500 text-white text-[10px] font-bold rounded-full">{{ $adminNavBadges['identity'] > 99 ? '99+' : $adminNavBadges['identity'] }}</span>
+                                    @endif
+                                </a>
+                                <a href="{{ route('admin.contacts.index') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors inline-flex items-center gap-1.5">
                                     お問い合わせ
+                                    @if(($adminNavBadges['contacts'] ?? 0) > 0)
+                                        <span class="inline-flex items-center justify-center min-w-[18px] h-4 px-1 bg-error-500 text-white text-[10px] font-bold rounded-full">{{ $adminNavBadges['contacts'] > 99 ? '99+' : $adminNavBadges['contacts'] }}</span>
+                                    @endif
                                 </a>
                                 <a href="{{ route('admin.information.index') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors">
                                     お知らせ管理

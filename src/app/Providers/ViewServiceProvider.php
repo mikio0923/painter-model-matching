@@ -6,20 +6,16 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Notification;
+use App\Models\IdentityVerification;
+use App\Models\Contact;
 
 class ViewServiceProvider extends ServiceProvider
 {
-    /**
-     * Register services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap services.
-     */
     public function boot(): void
     {
         // ナビゲーションバーに未読通知数を渡す
@@ -31,6 +27,16 @@ class ViewServiceProvider extends ServiceProvider
                     ->count();
             }
             $view->with('unreadNotificationsCount', $unreadNotificationsCount);
+        });
+
+        // 管理画面ナビに対応待ち件数を渡す
+        View::composer('admin.layouts.app', function ($view) {
+            $view->with('adminNavBadges', [
+                'identity' => IdentityVerification::whereIn('status', ['pending', 'reviewing'])->count(),
+                'contacts' => Contact::where(function ($q) {
+                    $q->where('is_read', false)->orWhereNull('is_read');
+                })->count(),
+            ]);
         });
     }
 }

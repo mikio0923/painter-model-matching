@@ -282,8 +282,11 @@
 
               {{-- 情報 --}}
               <div class="p-2">
-                <div class="card-title mb-0.5 text-sm">
-                  {{ $model->display_name }}
+                <div class="card-title mb-0.5 text-sm flex items-center gap-1">
+                  <span class="truncate">{{ $model->display_name }}</span>
+                  @if($model->identity_verified)
+                    <svg class="w-3.5 h-3.5 text-success-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" title="本人確認済み"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                  @endif
                 </div>
 
                 <div class="card-meta mb-1 text-xs">

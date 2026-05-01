@@ -9,7 +9,7 @@ use App\Models\JobApplication;
 use App\Models\Contact;
 use App\Models\Review;
 use App\Models\Message;
-use Illuminate\Http\Request;
+use App\Models\IdentityVerification;
 
 class AdminDashboardController extends Controller
 {
@@ -28,6 +28,7 @@ class AdminDashboardController extends Controller
             'unread_contacts' => Contact::where('is_read', false)->orWhereNull('is_read')->count(),
             'total_reviews' => Review::count(),
             'total_messages' => Message::count(),
+            'pending_identity_verifications' => IdentityVerification::whereIn('status', ['pending', 'reviewing'])->count(),
         ];
 
         // 最近のアクティビティ
@@ -45,7 +46,15 @@ class AdminDashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'recentJobs', 'recentApplications', 'recentContacts'));
+        $recentVerifications = IdentityVerification::with('user')
+            ->whereIn('status', ['pending', 'reviewing'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'stats', 'recentJobs', 'recentApplications', 'recentContacts', 'recentVerifications'
+        ));
     }
 }
 

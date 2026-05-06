@@ -1,238 +1,309 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-6xl">
-    {{-- ヘッダー --}}
-    <h1 class="text-2xl font-bold mb-2">
-        <span class="text-gray-400">&gt;</span> MYPAGE <span class="text-gray-400 text-base font-normal">/ マイページ</span>
-    </h1>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {{-- Row 1: メニュー | 警告+プロフィール --}}
-        <div class="flex flex-col">
-            {{-- メインメニュー（3x3グリッド） --}}
-            <div class="grid grid-cols-3 gap-0">
-                {{-- モデルのお仕事 --}}
-                <a href="{{ route('jobs.index') }}" class="bg-gray-800 hover:bg-gray-700 text-white p-3 flex flex-col items-center justify-center text-center border-r border-b border-gray-700 transition-colors">
-                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <span class="text-xs">モデルのお仕事</span>
-                </a>
-                {{-- メッセージBOX --}}
-                <a href="{{ route('messages.index') }}" class="bg-gray-700 hover:bg-gray-600 text-white p-3 flex flex-col items-center justify-center text-center border-r border-b border-gray-600 transition-colors relative">
-                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    <span class="text-xs">メッセージBOX</span>
-                    @if($unreadMessages > 0)<span class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $unreadMessages }}</span>@endif
-                </a>
-                {{-- プロフィール --}}
-                <a href="{{ route('model.profile.edit') }}" class="bg-gray-800 hover:bg-gray-700 text-white p-3 flex flex-col items-center justify-center text-center border-b border-gray-700 transition-colors">
-                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                    <span class="text-xs">プロフィール</span>
-                </a>
-                {{-- モデルになるガイド --}}
-                <a href="{{ route('guide.model') }}" class="bg-gray-700 hover:bg-gray-600 text-white p-3 flex flex-col items-center justify-center text-center border-r border-b border-gray-600 transition-colors">
-                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span class="text-xs">モデルになるガイド</span>
-                </a>
-                {{-- あなたへの質問 --}}
-                <a href="{{ route('model.questions.index') }}" class="bg-gray-800 hover:bg-gray-700 text-white p-3 flex flex-col items-center justify-center text-center border-r border-b border-gray-700 transition-colors">
-                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span class="text-xs">あなたへの質問</span>
-                </a>
-                {{-- PHOTO（ポートフォリオ） --}}
-                <a href="{{ route('model.profile.edit') }}#photos" class="bg-gray-700 hover:bg-gray-600 text-white p-3 flex flex-col items-center justify-center text-center border-b border-gray-600 transition-colors">
-                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <span class="text-xs">PHOTO<br>(ポートフォリオ)</span>
-                </a>
-                {{-- ご利用ガイドライン --}}
-                <a href="{{ route('guideline') }}" class="bg-gray-800 hover:bg-gray-700 text-white p-3 flex flex-col items-center justify-center text-center border-r border-gray-700 transition-colors">
-                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
-                    <span class="text-xs">ご利用ガイドライン</span>
-                </a>
-                {{-- エントリー履歴 --}}
-                <a href="{{ route('model.applications.index') }}" class="bg-gray-700 hover:bg-gray-600 text-white p-3 flex flex-col items-center justify-center text-center border-r border-gray-600 transition-colors">
-                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                    <span class="text-xs">エントリー履歴</span>
-                </a>
-                {{-- 他のメニュー（折りたたみトリガー） --}}
-                <button type="button" onclick="toggleOtherMenu()" class="bg-gray-800 hover:bg-gray-700 text-white p-3 flex flex-col items-center justify-center text-center transition-colors" id="otherMenuBtn">
-                    <svg class="w-6 h-6 mb-1 transition-transform duration-300" id="otherMenuIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    <span class="text-xs">他のメニュー</span>
-                </button>
-            </div>
-            {{-- 折りたたみメニュー --}}
-            <div id="otherMenu" class="grid grid-cols-3 gap-0 transition-all duration-300 max-h-0 overflow-hidden opacity-0 pointer-events-none" aria-hidden="true" data-closed="true">
-                <a href="{{ route('model.identity-verification') }}" class="bg-gray-600 hover:bg-gray-500 text-white p-3 flex flex-col items-center justify-center text-center border-r border-b border-gray-500 transition-colors">
-                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span class="text-xs">本人確認</span>
-                </a>
-                <a href="{{ route('profile.edit') }}" class="bg-gray-700 hover:bg-gray-600 text-white p-3 flex flex-col items-center justify-center text-center border-b border-gray-600 transition-colors">
-                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    <span class="text-xs">アカウント<br>(登録情報)</span>
-                </a>
-                {{-- 有料オプション・課金・カード情報は決済機能実装後に有効化 --}}
-                <div class="bg-gray-700 p-3"></div>
-                <div class="bg-gray-600 p-3"></div>
-                <div class="bg-gray-700 p-3"></div>
-            </div>
-        </div>
-
-        {{-- 右側 Row 1: 警告+プロフィール（メニューと高さ揃え） --}}
-        <div class="flex flex-col space-y-4">
-            <div class="bg-white border border-gray-200 rounded-lg p-4">
-                <p class="text-sm text-gray-700 mb-2">
-                    本人確認の設定は<a href="{{ route('model.identity-verification') }}" class="text-blue-600 hover:underline">こちら</a>から。オファー率を高めるためにご利用ください。
-                </p>
-                <a href="{{ route('model.profile.edit') }}" class="block text-sm text-red-500 hover:text-red-600 hover:underline transition-colors">モデルプロフィールの登録がまだのようです。ジョブへエントリーするのに必要となります。</a>
-            </div>
-            @if($modelProfile)
-                <div class="bg-white border border-gray-200 rounded-lg p-4 mt-auto">
-                    <div class="flex items-start gap-4 mb-4">
-                        @if($modelProfile->profile_image_path)
-                            <img src="{{ Storage::url($modelProfile->profile_image_path) }}" alt="{{ $modelProfile->display_name }}" class="w-16 h-16 object-cover rounded-full">
-                        @else
-                            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                            </div>
-                        @endif
-                        <div>
-                            <h3 class="font-semibold">{{ $modelProfile->display_name }}</h3>
-                            <div class="text-xs text-gray-500">@if($modelProfile->prefecture){{ $modelProfile->prefecture }}@endif @if($modelProfile->age) {{ $modelProfile->age }}歳@endif</div>
-                            <div class="text-xs mt-1">
-                                <span class="inline-block px-2 py-0.5 rounded {{ $modelProfile->is_public ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">{{ $modelProfile->is_public ? '公開中' : '非公開' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="{{ route('model.profile.edit') }}" class="block w-full text-center bg-blue-600 text-white text-sm py-2 rounded hover:bg-blue-700 transition-colors">プロフィールを編集</a>
-                </div>
-            @else
-                <div class="bg-white border border-gray-200 rounded-lg p-4 mt-auto">
-                    <p class="text-sm text-gray-600 mb-4">プロフィールを作成すると、画家からの依頼を受けられます。</p>
-                    <a href="{{ route('model.profile.edit') }}" class="block w-full text-center bg-blue-600 text-white text-sm py-2 rounded hover:bg-blue-700 transition-colors">プロフィールを作成する</a>
-                </div>
-            @endif
-        </div>
-
-        {{-- Row 2 左: 広告 --}}
-        <div>
-            <div class="bg-pink-500 text-white p-4 rounded-t-lg lg:mt-0">
-                <h3 class="font-bold">おすすめのお仕事</h3>
-            </div>
-            <div class="bg-white border border-t-0 border-gray-200 p-4 rounded-b-lg mb-6">
-                <p class="text-pink-500 text-sm mb-4">モデルに興味がある女性なら必見！ 登録済みならごめんなさい！</p>
-                
-                @if($recentJobs->isEmpty())
-                    <p class="text-gray-500 text-sm">現在おすすめのお仕事はありません</p>
-                @else
-                    <div class="space-y-3">
-                        @foreach($recentJobs as $index => $job)
-                            <div class="flex items-start gap-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center text-sm font-bold">
-                                    {{ $index + 1 }}
-                                </span>
-                                <a href="{{ route('jobs.show', $job) }}" class="text-sm text-gray-700 hover:text-pink-500 transition-colors">
-                                    {{ Str::limit($job->title, 50) }}
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-
-            {{-- サイトからのお知らせ --}}
-            <div class="mb-6">
-                <h2 class="text-xl font-bold mb-4">
-                    <span class="text-gray-400">&gt;</span> ModelTownからモデルの皆さまへ
-                </h2>
-                @if($siteNotices->isEmpty())
-                    <p class="text-gray-500 text-sm">お知らせはありません</p>
-                @else
-                    <div class="space-y-2">
-                        @foreach($siteNotices as $notice)
-                            <div class="flex items-center gap-4 py-2 border-b border-gray-200">
-                                <span class="text-sm text-gray-500">{{ $notice->created_at->format('Y.n.j') }}</span>
-                                <a href="{{ route('information.show', $notice) }}" class="text-sm text-blue-600 hover:text-blue-800">
-                                    {{ $notice->title }}
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        {{-- Row 2 右: お知らせ・統計 --}}
-        <div class="space-y-6">
-            {{-- お知らせセクション --}}
-            <div>
-                <h2 class="text-xl font-bold mb-4">
-                    <span class="text-gray-400">&gt;</span> INFORMATION <span class="text-gray-400 text-sm font-normal">/ お知らせ</span>
-                </h2>
-                @if($information->isEmpty())
-                    <p class="text-gray-500 text-sm">お知らせはありません</p>
-                @else
-                    <div class="space-y-3">
-                        @foreach($information as $info)
-                            <div class="flex items-start gap-3">
-                                <span class="text-sm text-gray-500 whitespace-nowrap">{{ $info->created_at->format('Y.n.j') }}</span>
-                                <a href="{{ route('information.show', $info) }}" class="text-sm text-gray-700 hover:text-blue-600">
-                                    {{ $info->title }}
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="text-right mt-4">
-                        <a href="{{ route('information.index') }}" class="text-sm text-gray-500 hover:text-gray-700">
-                            すべて表示
-                        </a>
-                    </div>
-                @endif
-            </div>
-
-            {{-- 統計情報 --}}
-            <div class="bg-white border border-gray-200 rounded-lg p-4">
-                <h3 class="font-semibold mb-3">あなたの活動状況</h3>
-                <div class="grid grid-cols-2 gap-3 text-center">
-                    <div class="bg-blue-50 rounded p-3">
-                        <div class="text-xl font-bold text-blue-600">{{ $totalApplications }}</div>
-                        <div class="text-xs text-gray-600">総応募数</div>
-                    </div>
-                    <div class="bg-green-50 rounded p-3">
-                        <div class="text-xl font-bold text-green-600">{{ $acceptedApplications }}</div>
-                        <div class="text-xs text-gray-600">承認済み</div>
-                    </div>
-                    <div class="bg-purple-50 rounded p-3">
-                        <div class="text-xl font-bold text-purple-600">{{ $completedJobs }}</div>
-                        <div class="text-xs text-gray-600">完了した依頼</div>
-                    </div>
-                    <div class="bg-pink-50 rounded p-3">
-                        <div class="text-xl font-bold text-pink-600">{{ $totalFavorites }}</div>
-                        <div class="text-xs text-gray-600">お気に入り数</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{{-- ページヘッダー --}}
+<div class="page-header">
+    <div class="art-bg-stage">
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/pearl-earring.jpg') }}');"></div>
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/great-wave.jpg') }}');"></div>
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/starry-night.jpg') }}');"></div>
+        <div class="art-bg-veil"></div>
+    </div>
+    <div class="page-header-inner">
+        <p class="page-header-subtitle">My Page</p>
+        <h1 class="page-header-title mt-2">マイページ</h1>
+        @if($modelProfile)
+            <p class="text-secondary-500 text-sm mt-3">{{ $modelProfile->display_name }} さんの活動拠点です。</p>
+        @else
+            <p class="text-secondary-500 text-sm mt-3">アカウント情報を整え、活動を開始しましょう。</p>
+        @endif
     </div>
 </div>
 
-<script>
-function toggleOtherMenu() {
-    const menu = document.getElementById('otherMenu');
-    const icon = document.getElementById('otherMenuIcon');
-    const closed = menu.getAttribute('data-closed') === 'true';
-    
-    if (closed) {
-        menu.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none');
-        menu.classList.add('max-h-[500px]', 'opacity-100', 'pointer-events-auto');
-        menu.setAttribute('data-closed', 'false');
-        menu.setAttribute('aria-hidden', 'false');
-        icon.classList.add('rotate-180');
-    } else {
-        menu.classList.add('max-h-0', 'opacity-0', 'pointer-events-none');
-        menu.classList.remove('max-h-[500px]', 'opacity-100', 'pointer-events-auto');
-        menu.setAttribute('data-closed', 'true');
-        menu.setAttribute('aria-hidden', 'true');
-        icon.classList.remove('rotate-180');
-    }
-}
-</script>
+<div class="page space-y-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        {{-- ========== 左カラム: プロフィール + 統計 ========== --}}
+        <aside class="space-y-8 lg:col-span-1">
+
+            {{-- プロフィールカード --}}
+            @if($modelProfile)
+                <div class="bg-canvas-50 border border-secondary-200">
+                    <div class="aspect-[3/4] bg-secondary-100 overflow-hidden">
+                        @if($modelProfile->profile_image_path)
+                            <img src="{{ Storage::url($modelProfile->profile_image_path) }}" alt="{{ $modelProfile->display_name }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center">
+                                <svg class="w-12 h-12 text-secondary-300" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="p-5">
+                        <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Profile</p>
+                        <h3 class="font-display text-xl font-semibold text-secondary-900 mb-2">{{ $modelProfile->display_name }}</h3>
+                        <p class="text-xs text-secondary-500 mb-4">
+                            @if($modelProfile->prefecture){{ $modelProfile->prefecture }}@endif
+                            @if($modelProfile->age) ・ {{ $modelProfile->age }}歳@endif
+                        </p>
+                        <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] mb-4 pt-4 border-t border-secondary-200">
+                            <span class="text-secondary-500">Status</span>
+                            <span class="{{ $modelProfile->is_public ? 'text-success-700' : 'text-secondary-600' }}">
+                                {{ $modelProfile->is_public ? '● 公開中' : '○ 非公開' }}
+                            </span>
+                        </div>
+                        @if($modelProfile->identity_verified)
+                            <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] mb-4">
+                                <span class="text-secondary-500">Identity</span>
+                                <span class="text-success-700">✓ 確認済み</span>
+                            </div>
+                        @endif
+                        <a href="{{ route('model.profile.edit') }}" class="block w-full text-center py-2.5 border border-secondary-900 text-secondary-900 text-xs uppercase tracking-[0.2em] hover:bg-secondary-900 hover:text-canvas-50 transition-colors duration-300">
+                            Edit Profile
+                        </a>
+                    </div>
+                </div>
+            @else
+                <div class="bg-canvas-50 border border-secondary-300 p-6">
+                    <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-2">Profile</p>
+                    <h3 class="font-display text-lg font-semibold text-secondary-900 mb-3">未作成</h3>
+                    <p class="text-sm text-secondary-600 mb-5 leading-relaxed">
+                        プロフィールを作成すると、画家からの依頼を受けられるようになります。
+                    </p>
+                    <a href="{{ route('model.profile.edit') }}" class="block w-full text-center py-2.5 bg-secondary-900 text-canvas-50 text-xs uppercase tracking-[0.2em] hover:bg-canvas-50 hover:text-secondary-900 border border-secondary-900 transition-colors duration-300">
+                        プロフィールを作成
+                    </a>
+                </div>
+            @endif
+
+            {{-- 活動統計 --}}
+            <div class="border border-secondary-200">
+                <div class="px-5 py-3 border-b border-secondary-200">
+                    <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Activity</p>
+                </div>
+                <div class="grid grid-cols-2 divide-x divide-y divide-secondary-200">
+                    <div class="p-5 text-center">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $totalApplications }}</div>
+                        <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">総応募</div>
+                    </div>
+                    <div class="p-5 text-center">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $acceptedApplications }}</div>
+                        <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">承認</div>
+                    </div>
+                    <div class="p-5 text-center">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $completedJobs }}</div>
+                        <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">完了</div>
+                    </div>
+                    <div class="p-5 text-center">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $totalFavorites }}</div>
+                        <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">お気に入り</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        {{-- ========== 中央 & 右カラム: メニュー + お知らせ ========== --}}
+        <div class="lg:col-span-2 space-y-12">
+
+            {{-- 警告（プロフィール未作成 or 本人確認未完了） --}}
+            @if(!$modelProfile || !$modelProfile->identity_verified)
+                <div class="bg-canvas-50 border-l-2 border-warning-500 px-5 py-4">
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-warning-700 mb-2">Notice</p>
+                    @if(!$modelProfile)
+                        <p class="text-sm text-secondary-700">
+                            <a href="{{ route('model.profile.edit') }}" class="link-primary">モデルプロフィールの登録</a>がまだ完了していません。依頼への応募にはプロフィール登録が必要です。
+                        </p>
+                    @elseif(!$modelProfile->identity_verified)
+                        <p class="text-sm text-secondary-700">
+                            <a href="{{ route('model.identity-verification') }}" class="link-primary">本人確認</a>を完了すると、画家からのオファー率が高まります。
+                        </p>
+                    @endif
+                </div>
+            @endif
+
+            {{-- メニュー --}}
+            <section>
+                <div class="flex items-baseline justify-between mb-6">
+                    <div>
+                        <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Menu</p>
+                        <h2 class="font-display text-2xl font-semibold text-secondary-900">アクション</h2>
+                    </div>
+                </div>
+
+                @php
+                    $menuItems = [
+                        [
+                            'href' => route('jobs.index'),
+                            'label' => '依頼を探す',
+                            'sub' => 'Browse Jobs',
+                            'desc' => '画家からの依頼を一覧から探す',
+                        ],
+                        [
+                            'href' => route('messages.index'),
+                            'label' => 'メッセージ',
+                            'sub' => 'Messages',
+                            'desc' => '画家とのやり取りを確認する',
+                            'badge' => $unreadMessages ?? 0,
+                        ],
+                        [
+                            'href' => route('model.applications.index'),
+                            'label' => 'エントリー履歴',
+                            'sub' => 'Applications',
+                            'desc' => '応募状況・承認状況を確認',
+                        ],
+                        [
+                            'href' => route('model.profile.edit'),
+                            'label' => 'プロフィール編集',
+                            'sub' => 'Edit Profile',
+                            'desc' => '表示名・身体情報・経歴を編集',
+                        ],
+                        [
+                            'href' => route('model.profile.edit') . '#photos',
+                            'label' => 'ポートフォリオ',
+                            'sub' => 'Portfolio',
+                            'desc' => '掲載写真の追加・並び替え',
+                        ],
+                        [
+                            'href' => route('model.questions.index'),
+                            'label' => 'あなたへの質問',
+                            'sub' => 'Q&A',
+                            'desc' => '画家からの質問に回答する',
+                        ],
+                        [
+                            'href' => route('model.identity-verification'),
+                            'label' => '本人確認',
+                            'sub' => 'Identity',
+                            'desc' => '書類提出・確認状況の管理',
+                        ],
+                        [
+                            'href' => route('profile.edit'),
+                            'label' => 'アカウント設定',
+                            'sub' => 'Account',
+                            'desc' => 'メール・パスワード・退会',
+                        ],
+                        [
+                            'href' => route('account.email-preferences.edit'),
+                            'label' => 'メール配信設定',
+                            'sub' => 'Email',
+                            'desc' => '受信したいメールの種類を選択',
+                        ],
+                        [
+                            'href' => route('guide.model'),
+                            'label' => 'モデルガイド',
+                            'sub' => 'Guide',
+                            'desc' => 'はじめての方に',
+                        ],
+                        [
+                            'href' => route('guideline'),
+                            'label' => '利用ガイドライン',
+                            'sub' => 'Guidelines',
+                            'desc' => 'サービス利用上の注意',
+                        ],
+                    ];
+                @endphp
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 border-t-2 border-l-2 border-secondary-400">
+                    @foreach($menuItems as $item)
+                        <a href="{{ $item['href'] }}"
+                           class="group block px-5 py-5 border-r-2 border-b-2 border-secondary-400 hover:bg-secondary-200 hover:border-secondary-700 transition-colors duration-200 relative">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-[9px] tracking-[0.3em] uppercase text-secondary-400 mb-1">{{ $item['sub'] }}</p>
+                                    <p class="font-display text-base font-semibold text-secondary-900 mb-1 flex items-center gap-2">
+                                        {{ $item['label'] }}
+                                        @if(!empty($item['badge']) && $item['badge'] > 0)
+                                            <span class="inline-flex items-center justify-center min-w-[18px] h-4 px-1 bg-secondary-900 text-canvas-50 text-[9px] font-medium">{{ $item['badge'] > 99 ? '99+' : $item['badge'] }}</span>
+                                        @endif
+                                    </p>
+                                    <p class="text-xs text-secondary-500 leading-relaxed">{{ $item['desc'] }}</p>
+                                </div>
+                                <svg class="w-4 h-4 text-secondary-300 group-hover:text-secondary-900 transition-colors duration-300 flex-shrink-0 mt-1" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+
+            {{-- おすすめのお仕事 --}}
+            @if($recentJobs->isNotEmpty())
+            <section>
+                <div class="flex items-baseline justify-between mb-6">
+                    <div>
+                        <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Recommended</p>
+                        <h2 class="font-display text-2xl font-semibold text-secondary-900">おすすめの依頼</h2>
+                    </div>
+                    <a href="{{ route('jobs.index') }}" class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 hover:text-secondary-900 transition-colors">
+                        View All →
+                    </a>
+                </div>
+
+                <div class="border-t border-secondary-200">
+                    @foreach($recentJobs as $job)
+                        <a href="{{ route('jobs.show', $job) }}"
+                           class="group flex items-baseline justify-between gap-4 px-1 py-4 border-b border-secondary-200 hover:bg-secondary-50 transition-colors duration-300">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-[10px] tracking-[0.2em] uppercase text-secondary-400 mb-1">
+                                    {{ $job->created_at->format('Y . n . j') }}
+                                </p>
+                                <p class="text-sm text-secondary-900 group-hover:text-secondary-700 transition-colors line-clamp-1">
+                                    {{ $job->title }}
+                                </p>
+                            </div>
+                            <svg class="w-3 h-3 text-secondary-300 group-hover:text-secondary-900 transition-colors duration-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+            @endif
+
+            {{-- お知らせ --}}
+            @if($information->isNotEmpty() || $siteNotices->isNotEmpty())
+            <section>
+                <div class="flex items-baseline justify-between mb-6">
+                    <div>
+                        <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Information</p>
+                        <h2 class="font-display text-2xl font-semibold text-secondary-900">お知らせ</h2>
+                    </div>
+                    @if($information->isNotEmpty())
+                        <a href="{{ route('information.index') }}" class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 hover:text-secondary-900 transition-colors">
+                            View All →
+                        </a>
+                    @endif
+                </div>
+
+                @php
+                    $allNotices = $siteNotices->merge($information)->sortByDesc('created_at')->take(5);
+                @endphp
+
+                @if($allNotices->isEmpty())
+                    <p class="text-sm text-secondary-500">現在お知らせはありません。</p>
+                @else
+                    <div class="border-t border-secondary-200">
+                        @foreach($allNotices as $notice)
+                            <a href="{{ route('information.show', $notice) }}"
+                               class="group flex items-baseline justify-between gap-4 px-1 py-4 border-b border-secondary-200 hover:bg-secondary-50 transition-colors duration-300">
+                                <div class="min-w-0 flex-1 flex items-baseline gap-4">
+                                    <span class="text-[10px] tracking-[0.2em] uppercase text-secondary-400 whitespace-nowrap">
+                                        {{ $notice->created_at->format('Y . n . j') }}
+                                    </span>
+                                    <span class="text-sm text-secondary-900 group-hover:text-secondary-700 transition-colors line-clamp-1">
+                                        {{ $notice->title }}
+                                    </span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+            </section>
+            @endif
+
+        </div>
+    </div>
+</div>
 @endsection

@@ -1,128 +1,126 @@
 <x-guest-layout>
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
-        {{-- ログインフォーム --}}
-        <section class="mb-12">
-            <h2 class="section-subtitle">> LOGIN / ログインフォーム</h2>
-            <p class="text-sm text-secondary-600 mb-6">
-                メールアドレス・パスワードを入力して、「ログイン」ボタンをクリックして下さい。
-            </p>
+    {{-- ページヘッダー（背景アート） --}}
+    <div class="page-header">
+        <div class="art-bg-stage">
+            <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/great-wave.jpg') }}');"></div>
+            <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/starry-night.jpg') }}');"></div>
+            <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/pearl-earring.jpg') }}');"></div>
+            <div class="art-bg-veil"></div>
+        </div>
+        <div class="page-header-inner text-center">
+            <p class="page-header-subtitle">Sign in / Register</p>
+            <h1 class="page-header-title mt-2">ようこそ</h1>
+            <p class="text-secondary-500 text-sm mt-3">既にアカウントをお持ちの方はログイン、初めての方は登録へ。</p>
+        </div>
+    </div>
 
-            <form method="POST" action="{{ route('login') }}" class="card w-full">
+    <div class="page-narrow space-y-16">
+
+        {{-- ========== ログインフォーム ========== --}}
+        <section>
+            <div class="mb-8">
+                <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Sign in</p>
+                <h2 class="font-display text-2xl font-semibold text-secondary-900">ログイン</h2>
+            </div>
+
+            <form method="POST" action="{{ route('login') }}" class="border border-secondary-200 bg-canvas-50 p-6 sm:p-8 space-y-6">
                 @csrf
-                <div class="card-body px-6 sm:px-8">
-                    <table class="w-full mb-4" style="table-layout: fixed;">
-                        <colgroup>
-                            <col style="width: 10rem; min-width: 10rem;">
-                            <col style="width: auto;">
-                        </colgroup>
-                        <tr class="border-b border-secondary-200">
-                            <td class="py-3 pr-6 text-sm font-medium text-secondary-700 align-top" style="white-space: nowrap;">メールアドレス</td>
-                            <td class="py-3">
-                                <input type="email" 
-                                       name="email" 
-                                       id="email"
-                                       value="{{ old('email') }}" 
-                                       required 
-                                       autofocus 
-                                       autocomplete="username"
-                                       class="form-input">
-                                @error('email')
-                                    <p class="form-error">{{ $message }}</p>
-                                @enderror
-                            </td>
-                        </tr>
-                        <tr class="border-b border-secondary-200">
-                            <td class="py-3 pr-6 text-sm font-medium text-secondary-700 align-top" style="white-space: nowrap;">パスワード</td>
-                            <td class="py-3">
-                                <input type="password" 
-                                       name="password" 
-                                       id="password"
-                                       required 
-                                       autocomplete="current-password"
-                                       class="form-input">
-                                @error('password')
-                                    <p class="form-error">{{ $message }}</p>
-                                @enderror
-                                <div class="mt-2">
-                                    <a href="{{ route('password.request') }}" class="link-primary text-sm">
-                                        パスワードをお忘れですか?
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-secondary-200">
-                            <td class="py-3 pr-6 text-sm font-medium text-secondary-700 align-top" style="white-space: nowrap;">ログイン種別</td>
-                            <td class="py-3">
-                                <div class="flex gap-4">
-                                    <label class="flex items-center whitespace-nowrap">
-                                        <input type="radio" 
-                                               name="role" 
-                                               value="model"
-                                               {{ old('role', 'model') === 'model' ? 'checked' : '' }}
-                                               class="rounded border-secondary-300 text-primary-600 focus:ring-primary-500">
-                                        <span class="ml-2 text-sm text-secondary-700 whitespace-nowrap">モデル</span>
-                                    </label>
-                                    <label class="flex items-center whitespace-nowrap">
-                                        <input type="radio" 
-                                               name="role" 
-                                               value="painter"
-                                               {{ old('role') === 'painter' ? 'checked' : '' }}
-                                               class="rounded border-secondary-300 text-primary-600 focus:ring-primary-500">
-                                        <span class="ml-2 text-sm text-secondary-700 whitespace-nowrap">クライアント（画家）</span>
-                                    </label>
-                                </div>
-                                @error('role')
-                                    <p class="form-error">{{ $message }}</p>
-                                @enderror
-                                <p class="text-xs text-secondary-500 mt-2">
-                                    同じメールアドレスでモデルとクライアントの両方のアカウントをお持ちの場合は、どちらでログインするか選択してください。
-                                </p>
-                            </td>
-                        </tr>
-                    </table>
 
-                    <div class="flex items-center justify-end mb-4">
-                        <label class="flex items-center">
-                            <input type="checkbox" 
-                                   name="remember" 
-                                   id="remember_me"
-                                   class="rounded border-secondary-300 text-primary-600 shadow-sm focus:ring-primary-500">
-                            <span class="ml-2 text-sm text-secondary-600">次回から自動的にログイン</span>
+                <div>
+                    <label for="email" class="block text-[10px] uppercase tracking-[0.25em] text-secondary-500 mb-2">Email</label>
+                    <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus autocomplete="username"
+                           class="w-full px-4 py-3 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm
+                                  focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900
+                                  transition-colors duration-200">
+                    @error('email')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
+                </div>
+
+                <div>
+                    <label for="password" class="block text-[10px] uppercase tracking-[0.25em] text-secondary-500 mb-2">Password</label>
+                    <input type="password" name="password" id="password" required autocomplete="current-password"
+                           class="w-full px-4 py-3 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm
+                                  focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900
+                                  transition-colors duration-200">
+                    @error('password')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
+                    <div class="mt-2">
+                        <a href="{{ route('password.request') }}" class="text-xs text-secondary-500 hover:text-secondary-900 underline underline-offset-2 transition-colors">
+                            パスワードをお忘れですか?
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-[10px] uppercase tracking-[0.25em] text-secondary-500 mb-3">Account Type</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="role" value="model" {{ old('role', 'model') === 'model' ? 'checked' : '' }} class="peer sr-only">
+                            <span class="block text-center py-3 border border-secondary-300 text-sm text-secondary-700 peer-checked:border-secondary-900 peer-checked:bg-secondary-900 peer-checked:text-canvas-50 transition-colors duration-200">
+                                Model<span class="block text-[9px] tracking-[0.2em] uppercase text-secondary-500 peer-checked:text-secondary-300">モデル</span>
+                            </span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="role" value="painter" {{ old('role') === 'painter' ? 'checked' : '' }} class="peer sr-only">
+                            <span class="block text-center py-3 border border-secondary-300 text-sm text-secondary-700 peer-checked:border-secondary-900 peer-checked:bg-secondary-900 peer-checked:text-canvas-50 transition-colors duration-200">
+                                Painter<span class="block text-[9px] tracking-[0.2em] uppercase text-secondary-500 peer-checked:text-secondary-300">画家</span>
+                            </span>
                         </label>
                     </div>
+                    @error('role')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
+                    <p class="text-xs text-secondary-500 mt-3 leading-relaxed">
+                        同じメールアドレスでモデル・画家の両方をお持ちの場合は、どちらでログインするかをお選びください。
+                    </p>
+                </div>
 
-                    <div class="flex justify-end">
-                        <button type="submit" class="px-20 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
-                            ログイン
-                        </button>
-                    </div>
+                <div class="flex items-center justify-between pt-4 border-t border-secondary-200">
+                    <label class="flex items-center gap-2 text-xs text-secondary-600 cursor-pointer">
+                        <input type="checkbox" name="remember" id="remember_me" class="w-3.5 h-3.5 border-secondary-400">
+                        次回から自動的にログイン
+                    </label>
+                    <button type="submit" class="px-8 py-3 bg-secondary-900 text-canvas-50 text-xs uppercase tracking-[0.25em] border border-secondary-900 hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+                        Sign in
+                    </button>
                 </div>
             </form>
         </section>
 
-        {{-- 新規会員登録セクション --}}
+        {{-- ========== 新規会員登録 ========== --}}
         <section>
-            <h2 class="section-subtitle">> 新規会員登録</h2>
-            <p class="text-sm text-secondary-600 mb-6">
-                ModelTownをご利用いただくには、会員登録(無料)が必要です。初めての方は、以下のページに進んで会員登録を行ってください。
-            </p>
+            <div class="mb-8">
+                <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">New Account</p>
+                <h2 class="font-display text-2xl font-semibold text-secondary-900">新規登録</h2>
+                <p class="text-sm text-secondary-500 mt-3">
+                    {{ config('app.name', 'Palette') }} のご利用には会員登録（無料）が必要です。お役割をお選びください。
+                </p>
+            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- モデルの新規登録 --}}
-                <a href="{{ route('register', ['role' => 'model']) }}" 
-                   class="block bg-accent-500 hover:bg-accent-600 text-white text-center py-8 px-6 rounded-xl transition-colors shadow-md hover:shadow-lg">
-                    <div class="text-lg font-semibold mb-2">モデルの方の</div>
-                    <div class="text-base">新規会員登録はこちら</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 border-t border-l border-secondary-200">
+                {{-- モデル登録 --}}
+                <a href="{{ route('register', ['role' => 'model']) }}"
+                   class="group block px-6 py-10 border-r border-b border-secondary-200 hover:bg-secondary-50 transition-colors duration-300 relative">
+                    <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-2">For Model</p>
+                    <h3 class="font-display text-2xl font-semibold text-secondary-900 mb-3">モデルとして登録</h3>
+                    <p class="text-xs text-secondary-500 leading-relaxed">
+                        画家からの依頼を受け、ポートレートのモデルとして活動するためのアカウントです。
+                    </p>
+                    <div class="mt-6 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-secondary-700 group-hover:text-secondary-900 transition-colors">
+                        Sign up
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </div>
                 </a>
-
-                {{-- 画家の新規登録 --}}
-                <a href="{{ route('register', ['role' => 'painter']) }}" 
-                   class="block bg-secondary-700 hover:bg-secondary-800 text-white text-center py-8 px-6 rounded-xl transition-colors shadow-md hover:shadow-lg">
-                    <div class="text-lg font-semibold mb-2">クライアントの方の</div>
-                    <div class="text-base">新規会員登録はこちら</div>
+                {{-- 画家登録 --}}
+                <a href="{{ route('register', ['role' => 'painter']) }}"
+                   class="group block px-6 py-10 border-r border-b border-secondary-200 hover:bg-secondary-50 transition-colors duration-300 relative">
+                    <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-2">For Painter</p>
+                    <h3 class="font-display text-2xl font-semibold text-secondary-900 mb-3">画家として登録</h3>
+                    <p class="text-xs text-secondary-500 leading-relaxed">
+                        モデルへ依頼を出し、人物画・ポートレート制作を行うためのアカウントです。
+                    </p>
+                    <div class="mt-6 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-secondary-700 group-hover:text-secondary-900 transition-colors">
+                        Sign up
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </div>
                 </a>
             </div>
         </section>
     </div>
 </x-guest-layout>
-

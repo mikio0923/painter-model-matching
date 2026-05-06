@@ -2,18 +2,25 @@
 
 @section('content')
 
-{{-- ページヘッダー --}}
+{{-- ページヘッダー（背景に名画が静かに循環） --}}
 <div class="page-header">
+    <div class="art-bg-stage">
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/great-wave.jpg') }}');"></div>
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/starry-night.jpg') }}');"></div>
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/pearl-earring.jpg') }}');"></div>
+        <div class="art-bg-veil"></div>
+    </div>
     <div class="page-header-inner">
         <p class="page-header-subtitle">Job Listings</p>
-        <h1 class="page-header-title">依頼一覧</h1>
+        <h1 class="page-header-title mt-2">依頼一覧</h1>
+        <p class="text-secondary-500 text-sm mt-3">画家からの撮影・モデリング依頼を一覧でご覧いただけます。</p>
     </div>
 </div>
 
 <div class="page">
 
     {{-- 検索フォーム --}}
-    <div class="bg-white rounded-2xl shadow-card p-6 mb-8">
+    <div class="bg-canvas-50 rounded-xl border border-secondary-200 p-6 mb-8">
         <form method="GET" action="{{ route('jobs.index') }}" id="job-search-form">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {{-- キーワード --}}
@@ -90,7 +97,7 @@
     @endif
 
     @if($jobs->count() === 0)
-        <div class="bg-white rounded-2xl shadow-card p-16 text-center">
+        <div class="bg-canvas-50 rounded-xl border border-secondary-200 p-16 text-center">
             <div class="w-16 h-16 rounded-full bg-secondary-100 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
@@ -165,19 +172,9 @@
                     </div>
                 </a>
 
-                @auth
                 <div class="absolute top-3 right-3 z-10">
-                    @if($isFavJob)
-                    <form method="POST" action="{{ route('favorites.destroy.job', $job) }}" class="inline">@csrf @method('DELETE')
-                        <button type="submit" class="fav-btn-active"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></button>
-                    </form>
-                    @else
-                    <form method="POST" action="{{ route('favorites.store.job', $job) }}" class="inline">@csrf
-                        <button type="submit" class="fav-btn"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
-                    </form>
-                    @endif
+                    <x-favorite-button type="job" :id="$job->id" :favorited="$isFavJob" />
                 </div>
-                @endauth
             </div>
             @endforeach
         </div>

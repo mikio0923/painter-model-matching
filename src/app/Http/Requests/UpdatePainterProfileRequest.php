@@ -22,11 +22,22 @@ class UpdatePainterProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'display_name' => ['required', 'string', 'max:255'],
-            'art_styles' => ['nullable', 'array'],
-            'art_styles.*' => ['string', 'max:50'],
-            'portfolio_url' => ['nullable', 'url', 'max:255'],
-            'prefecture' => ['nullable', 'string', 'max:255'],
+            'display_name'    => ['required', 'string', 'max:255'],
+            'gender'          => ['nullable', 'string', 'in:male,female,other'],
+            'bio'             => ['nullable', 'string', 'max:2000'],
+            'experience'      => ['nullable', 'string', 'max:2000'],
+            'years_active'    => ['nullable', 'integer', 'min:0', 'max:80'],
+            'accepts_offers'  => ['nullable', 'boolean'],
+            'art_styles'      => ['nullable', 'array'],
+            'art_styles.*'    => ['string', 'max:50'],
+            'specialties'     => ['nullable', 'array'],
+            'specialties.*'   => ['string', 'max:50'],
+            'portfolio_url'   => ['nullable', 'url', 'max:255'],
+            'sns_links'       => ['nullable', 'array'],
+            'sns_links.*'     => ['url', 'max:255'],
+            'prefecture'      => ['nullable', 'string', 'max:255'],
+            'activity_regions'=> ['nullable', 'array'],
+            'activity_regions.*' => ['string', 'max:255'],
         ];
     }
 

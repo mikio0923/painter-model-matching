@@ -25,6 +25,9 @@ use App\Http\Controllers\ProfileController;
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// SEO
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+
 Route::get('/models', [ModelProfileController::class, 'index'])->name('models.index');
 Route::get('/models/{modelProfile}', [ModelProfileController::class, 'show'])->name('models.show');
 Route::post('/models/{modelProfile}/questions', [\App\Http\Controllers\ModelProfileQuestionController::class, 'store'])
@@ -71,6 +74,13 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('throttle:3,1')
         ->name('account.delete');
 
+    // メール配信設定（オプトアウト）
+    Route::get('/account/email-preferences', [\App\Http\Controllers\EmailPreferenceController::class, 'edit'])
+        ->name('account.email-preferences.edit');
+    Route::put('/account/email-preferences', [\App\Http\Controllers\EmailPreferenceController::class, 'update'])
+        ->middleware('throttle:10,1')
+        ->name('account.email-preferences.update');
+
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/job/{job}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/job/{job}', [MessageController::class, 'store'])
@@ -88,6 +98,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
 
     Route::get('/favorites', [\App\Http\Controllers\FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites/toggle', [\App\Http\Controllers\FavoriteController::class, 'toggle'])
+        ->middleware('throttle:60,1')
+        ->name('favorites.toggle');
     Route::post('/favorites/models/{modelProfile}', [\App\Http\Controllers\FavoriteController::class, 'storeModel'])
         ->middleware('throttle:20,1')
         ->name('favorites.store.model');
@@ -161,6 +174,23 @@ Route::middleware(['auth', 'role:painter'])->prefix('painter')->name('painter.')
     Route::get('/jobs/{job}/applications', [PainterJobApplicationController::class, 'index'])->name('jobs.applications.index');
     Route::post('/jobs/{job}/applications/{application}/accept', [PainterJobApplicationController::class, 'accept'])->name('jobs.applications.accept');
     Route::post('/jobs/{job}/applications/{application}/reject', [PainterJobApplicationController::class, 'reject'])->name('jobs.applications.reject');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin login (guest only)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [\App\Http\Controllers\Admin\AdminLoginController::class, 'create'])->name('login');
+        Route::post('/login', [\App\Http\Controllers\Admin\AdminLoginController::class, 'store'])
+            ->middleware('throttle:10,1');
+    });
+
+    Route::middleware('auth')->group(function () {
+        Route::post('/logout', [\App\Http\Controllers\Admin\AdminLoginController::class, 'destroy'])->name('logout');
+    });
 });
 
 /*

@@ -12,10 +12,22 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
-        // ▼ ここを追加
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        // 全Webリクエストでログイン中ユーザーのアクティビティを記録
+        $middleware->web(append: [
+            \App\Http\Middleware\TrackUserActivity::class,
+        ]);
+
+        // 未認証ユーザーのリダイレクト先を /admin/* と通常で分ける
+        $middleware->redirectGuestsTo(function ($request) {
+            if ($request->is('admin/*') || $request->is('admin')) {
+                return route('admin.login');
+            }
+            return route('login');
+        });
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {

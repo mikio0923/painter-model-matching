@@ -137,6 +137,12 @@ class User extends Authenticatable
         return $this->hasMany(IdentityVerification::class);
     }
 
+    // メール配信設定（1:1）
+    public function emailPreference(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(EmailPreference::class);
+    }
+
     // 最新の本人確認申請
     public function latestIdentityVerification(): ?IdentityVerification
     {

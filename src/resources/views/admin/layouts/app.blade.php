@@ -4,99 +4,119 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="robots" content="noindex, nofollow">
 
-        <title>管理画面 - {{ config('app.name', 'Laravel') }}</title>
+        <title>Admin — {{ config('app.name', 'Palette') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-secondary-100">
-            {{-- 管理画面ナビゲーション --}}
-            <nav class="bg-secondary-800 text-white">
+    <body class="font-sans antialiased bg-canvas-50 text-secondary-900">
+        <div class="min-h-screen flex flex-col">
+
+            {{-- 管理画面ナビゲーション（黒背景・美術館的） --}}
+            <nav class="bg-secondary-900 text-canvas-50">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex items-center justify-between h-16">
-                        <div class="flex items-center space-x-4">
-                            <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold">
-                                管理画面
+                    <div class="flex items-center justify-between h-14">
+                        <div class="flex items-center gap-6">
+                            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 group">
+                                <span class="font-display text-base font-semibold tracking-wide">{{ config('app.name', 'Palette') }}</span>
+                                <span class="text-[9px] tracking-[0.3em] uppercase text-secondary-500 border border-secondary-700 px-1.5 py-0.5">Admin</span>
                             </a>
-                            <div class="h-6 w-px bg-secondary-600"></div>
-                            <div class="flex items-center space-x-2 text-sm">
-                                <a href="{{ route('admin.dashboard') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors">
-                                    ダッシュボード
-                                </a>
-                                <a href="{{ route('admin.users.index') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors">
-                                    ユーザー管理
-                                </a>
-                                <a href="{{ route('admin.jobs.index') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors">
-                                    依頼管理
-                                </a>
-                                <a href="{{ route('admin.identity-verifications.index') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors inline-flex items-center gap-1.5">
-                                    本人確認
-                                    @if(($adminNavBadges['identity'] ?? 0) > 0)
-                                        <span class="inline-flex items-center justify-center min-w-[18px] h-4 px-1 bg-warning-500 text-white text-[10px] font-bold rounded-full">{{ $adminNavBadges['identity'] > 99 ? '99+' : $adminNavBadges['identity'] }}</span>
-                                    @endif
-                                </a>
-                                <a href="{{ route('admin.contacts.index') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors inline-flex items-center gap-1.5">
-                                    お問い合わせ
-                                    @if(($adminNavBadges['contacts'] ?? 0) > 0)
-                                        <span class="inline-flex items-center justify-center min-w-[18px] h-4 px-1 bg-error-500 text-white text-[10px] font-bold rounded-full">{{ $adminNavBadges['contacts'] > 99 ? '99+' : $adminNavBadges['contacts'] }}</span>
-                                    @endif
-                                </a>
-                                <a href="{{ route('admin.information.index') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors">
-                                    お知らせ管理
-                                </a>
+
+                            <div class="hidden lg:flex items-center gap-0.5 text-sm">
+                                @php
+                                    $navItems = [
+                                        ['href' => route('admin.dashboard'),                       'label' => 'Dashboard',  'active' => request()->routeIs('admin.dashboard')],
+                                        ['href' => route('admin.users.index'),                     'label' => 'Users',      'active' => request()->routeIs('admin.users.*')],
+                                        ['href' => route('admin.jobs.index'),                      'label' => 'Jobs',       'active' => request()->routeIs('admin.jobs.*')],
+                                        ['href' => route('admin.identity-verifications.index'),    'label' => 'Identity',   'active' => request()->routeIs('admin.identity-verifications.*'), 'badge' => $adminNavBadges['identity'] ?? 0, 'badgeColor' => 'warning'],
+                                        ['href' => route('admin.contacts.index'),                  'label' => 'Contacts',   'active' => request()->routeIs('admin.contacts.*'), 'badge' => $adminNavBadges['contacts'] ?? 0, 'badgeColor' => 'error'],
+                                        ['href' => route('admin.information.index'),               'label' => 'Information','active' => request()->routeIs('admin.information.*')],
+                                    ];
+                                @endphp
+                                @foreach($navItems as $item)
+                                    <a href="{{ $item['href'] }}"
+                                       class="relative px-3 py-2 text-xs uppercase tracking-[0.2em] transition-colors duration-200 inline-flex items-center gap-2
+                                              {{ $item['active'] ? 'text-canvas-50' : 'text-secondary-400 hover:text-canvas-50' }}">
+                                        {{ $item['label'] }}
+                                        @if(!empty($item['badge']) && $item['badge'] > 0)
+                                            <span class="inline-flex items-center justify-center min-w-[16px] h-3.5 px-1 bg-canvas-50 text-secondary-900 text-[9px] font-medium">
+                                                {{ $item['badge'] > 99 ? '99+' : $item['badge'] }}
+                                            </span>
+                                        @endif
+                                        @if($item['active'])
+                                            <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-px bg-canvas-50"></span>
+                                        @endif
+                                    </a>
+                                @endforeach
                             </div>
                         </div>
-                        <div class="flex items-center space-x-2 text-sm">
-                            <a href="{{ route('home') }}" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors">
-                                サイトに戻る
+
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('home') }}" class="text-[10px] uppercase tracking-[0.25em] text-secondary-400 hover:text-canvas-50 transition-colors">
+                                ← Site
                             </a>
-                            <form method="POST" action="{{ route('logout') }}" class="inline">
+                            <span class="hidden sm:inline-block w-px h-4 bg-secondary-700"></span>
+                            <form method="POST" action="{{ route('admin.logout') }}" class="hidden sm:inline">
                                 @csrf
-                                <button type="submit" class="px-3 py-2 rounded hover:bg-secondary-700 transition-colors">
-                                    ログアウト
+                                <button type="submit" class="text-[10px] uppercase tracking-[0.25em] text-secondary-400 hover:text-canvas-50 transition-colors">
+                                    Logout
                                 </button>
                             </form>
                         </div>
+                    </div>
+
+                    {{-- モバイルナビ --}}
+                    <div class="lg:hidden flex items-center gap-0.5 overflow-x-auto pb-2 scrollbar-hide">
+                        @foreach($navItems as $item)
+                            <a href="{{ $item['href'] }}"
+                               class="shrink-0 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] inline-flex items-center gap-1.5 transition-colors
+                                      {{ $item['active'] ? 'text-canvas-50 border-b border-canvas-50' : 'text-secondary-400 hover:text-canvas-50' }}">
+                                {{ $item['label'] }}
+                                @if(!empty($item['badge']) && $item['badge'] > 0)
+                                    <span class="inline-flex items-center justify-center min-w-[14px] h-3 px-0.5 bg-canvas-50 text-secondary-900 text-[8px] font-medium">{{ $item['badge'] }}</span>
+                                @endif
+                            </a>
+                        @endforeach
                     </div>
                 </div>
             </nav>
 
             <!-- Page Content -->
-            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
                 {{-- フラッシュメッセージ --}}
                 @if(session('success'))
-                    <div class="mb-6 bg-success-100 border border-success-400 text-success-700 px-4 py-3 rounded-lg relative" role="alert">
-                        <span class="block sm:inline">{{ session('success') }}</span>
-                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
-                            <svg class="fill-current h-6 w-6 text-success-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <title>Close</title>
-                                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
-                            </svg>
-                        </span>
+                    <div class="mb-6 border-l-2 border-success-500 bg-canvas-50 px-4 py-3 text-sm text-secondary-700 flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-[10px] uppercase tracking-[0.3em] text-success-700 mb-1">Success</p>
+                            {{ session('success') }}
+                        </div>
+                        <button type="button" onclick="this.parentElement.remove()" class="text-secondary-400 hover:text-secondary-700 text-xs">✕</button>
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="mb-6 bg-error-100 border border-error-400 text-error-700 px-4 py-3 rounded-lg relative" role="alert">
-                        <span class="block sm:inline">{{ session('error') }}</span>
-                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
-                            <svg class="fill-current h-6 w-6 text-error-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <title>Close</title>
-                                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
-                            </svg>
-                        </span>
+                    <div class="mb-6 border-l-2 border-error-500 bg-canvas-50 px-4 py-3 text-sm text-secondary-700 flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-[10px] uppercase tracking-[0.3em] text-error-700 mb-1">Error</p>
+                            {{ session('error') }}
+                        </div>
+                        <button type="button" onclick="this.parentElement.remove()" class="text-secondary-400 hover:text-secondary-700 text-xs">✕</button>
                     </div>
                 @endif
 
                 @yield('content')
             </main>
+
+            <footer class="border-t border-secondary-200 px-4 py-6 text-center">
+                <p class="text-[10px] text-secondary-400 tracking-[0.2em] uppercase">
+                    &copy; {{ date('Y') }} {{ config('app.name', 'Palette') }} · Admin
+                </p>
+            </footer>
         </div>
     </body>
 </html>
-

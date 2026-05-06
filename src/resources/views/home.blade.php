@@ -14,13 +14,13 @@
 
     <div class="hero-content text-center">
         <p class="museum-label">An Art × Portrait Matching Platform</p>
-        <h1 class="hero-title mb-6 mt-2">
+        <h1 class="hero-title mb-4 mt-2">
             画家とモデルを、<br class="sm:hidden">静かにつなぐ
         </h1>
         <p class="hero-subtitle mx-auto text-center">
             ポートレート・人物画の制作に特化した<br>クリエイター同士のマッチング。
         </p>
-        <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="{{ route('models.index') }}" class="btn-museum-dark w-full sm:w-auto">
                 モデルを探す
             </a>
@@ -30,7 +30,7 @@
         </div>
 
         {{-- キュレーター・キャプション --}}
-        <div class="mt-20 max-w-md mx-auto art-caption text-left">
+        <div class="mt-10 max-w-md mx-auto art-caption text-left">
             ポートレートは、被写体と画家の対話の記録である。
             <span class="block mt-2 text-xs text-secondary-400 not-italic tracking-[0.2em] uppercase">— Curator's Note</span>
         </div>
@@ -98,23 +98,9 @@
                         @endif
                     </div>
                 </a>
-                @auth
-                <div class="absolute top-2 right-2 z-10" onclick="event.stopPropagation();">
-                    @if($isFav)
-                    <form method="POST" action="{{ route('favorites.destroy.model', $model) }}" class="inline js-ajax-favorite-home">@csrf @method('DELETE')
-                        <button type="submit" class="fav-btn-active" title="お気に入り解除">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
-                        </button>
-                    </form>
-                    @else
-                    <form method="POST" action="{{ route('favorites.store.model', $model) }}" class="inline js-ajax-favorite-home">@csrf
-                        <button type="submit" class="fav-btn" title="お気に入りに追加">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                        </button>
-                    </form>
-                    @endif
+                <div class="absolute top-2 right-2 z-10">
+                    <x-favorite-button type="model" :id="$model->id" :favorited="$isFav" />
                 </div>
-                @endauth
             </div>
             @endforeach
         </div>
@@ -181,19 +167,9 @@
                         @endif
                     </div>
                 </a>
-                @auth
                 <div class="absolute top-3 right-3 z-10">
-                    @if($isFavJob)
-                    <form method="POST" action="{{ route('favorites.destroy.job', $job) }}" class="inline js-ajax-favorite-home">@csrf @method('DELETE')
-                        <button type="submit" class="fav-btn-active" title="お気に入り解除"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></button>
-                    </form>
-                    @else
-                    <form method="POST" action="{{ route('favorites.store.job', $job) }}" class="inline js-ajax-favorite-home">@csrf
-                        <button type="submit" class="fav-btn" title="お気に入りに追加"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
-                    </form>
-                    @endif
+                    <x-favorite-button type="job" :id="$job->id" :favorited="$isFavJob" />
                 </div>
-                @endauth
             </div>
             @endforeach
         </div>
@@ -222,7 +198,7 @@
                 $starCount    = match($review->rating) { 'very_good' => 5, 'good' => 3, 'bad' => 1, default => 0 };
                 $reviewerName = $review->reviewer->modelProfile?->display_name ?? $review->reviewer->painterProfile?->display_name ?? $review->reviewer->name;
             @endphp
-            <div class="bg-white rounded-2xl shadow-card p-5 flex flex-col gap-3">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 p-5 flex flex-col gap-3">
                 {{-- ユーザー情報 --}}
                 <div class="flex items-center gap-3">
                     @if($revieweeUrl)<a href="{{ $revieweeUrl }}" class="block avatar avatar-md hover:opacity-80 transition-opacity">@else<div class="avatar avatar-md">@endif
@@ -305,19 +281,9 @@
                         @endif
                     </div>
                 </a>
-                @auth
-                <div class="absolute top-2 right-2 z-10" onclick="event.stopPropagation();">
-                    @if($isFavNew)
-                    <form method="POST" action="{{ route('favorites.destroy.model', $model) }}" class="inline js-ajax-favorite-home">@csrf @method('DELETE')
-                        <button type="submit" class="fav-btn-active"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></button>
-                    </form>
-                    @else
-                    <form method="POST" action="{{ route('favorites.store.model', $model) }}" class="inline js-ajax-favorite-home">@csrf
-                        <button type="submit" class="fav-btn"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
-                    </form>
-                    @endif
+                <div class="absolute top-2 right-2 z-10">
+                    <x-favorite-button type="model" :id="$model->id" :favorited="$isFavNew" />
                 </div>
-                @endauth
             </div>
             @endforeach
         </div>
@@ -345,7 +311,7 @@
                     $reviewerName = $review->reviewer->painterProfile->display_name;
                 }
             @endphp
-            <div class="bg-white rounded-2xl shadow-card p-6 flex gap-4">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 p-6 flex gap-4">
                 <div class="avatar avatar-md shrink-0 border-2 border-primary-100">
                     @if($profileImage)
                         <img src="{{ Storage::url($profileImage) }}" alt="{{ $reviewerName }}" class="w-full h-full object-cover">
@@ -379,7 +345,7 @@
     <section>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @if($hasInfo)
-            <div class="bg-white rounded-2xl shadow-card p-6">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 p-6">
                 <h3 class="font-display text-lg font-bold text-secondary-900 border-b border-secondary-100 pb-3 mb-4">
                     <span class="text-primary-600 mr-2">—</span> お知らせ
                 </h3>
@@ -397,7 +363,7 @@
             @endif
 
             @if($hasPress)
-            <div class="bg-white rounded-2xl shadow-card p-6">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 p-6">
                 <h3 class="font-display text-lg font-bold text-secondary-900 border-b border-secondary-100 pb-3 mb-4">
                     <span class="text-accent-600 mr-2">—</span> プレスリリース
                 </h3>
@@ -415,7 +381,7 @@
             @endif
 
             @if($hasNewJobs)
-            <div class="bg-white rounded-2xl shadow-card p-6">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 p-6">
                 <h3 class="font-display text-lg font-bold text-secondary-900 border-b border-secondary-100 pb-3 mb-4">
                     <span class="text-gold-600 mr-2">—</span> 新着依頼
                 </h3>

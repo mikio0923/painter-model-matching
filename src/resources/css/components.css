@@ -210,9 +210,12 @@
        カード
     ───────────────────────────────────────── */
     .card {
-        @apply bg-white rounded-2xl shadow-card
-               hover:shadow-card-hover hover:-translate-y-0.5
-               transition-all duration-300 overflow-hidden;
+        @apply bg-canvas-50 rounded-xl border border-secondary-200
+               transition-colors duration-500 overflow-hidden;
+    }
+
+    .card:hover {
+        @apply border-secondary-300;
     }
 
     .card-body {
@@ -220,7 +223,7 @@
     }
 
     .card-hover {
-        @apply hover:-translate-y-1 hover:shadow-card-hover;
+        @apply hover:border-secondary-400;
     }
 
     .card-media {
@@ -228,7 +231,7 @@
     }
 
     .card-media img {
-        @apply w-full h-full object-cover transition-transform duration-500 group-hover:scale-105;
+        @apply w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02];
     }
 
     .card-title {
@@ -240,32 +243,34 @@
     }
 
     .card-price {
-        @apply text-sm font-bold text-primary-600;
+        @apply text-sm font-semibold text-secondary-900;
     }
 
     .card-header {
-        @apply px-6 py-4 border-b border-secondary-100;
+        @apply px-6 py-4 border-b border-secondary-200;
     }
 
     .card-footer {
-        @apply px-6 py-4 border-t border-secondary-100 bg-secondary-50;
+        @apply px-6 py-4 border-t border-secondary-200 bg-secondary-50;
     }
 
     /* ─────────────────────────────────────────
        モデルカード（縦長ポートレート）
     ───────────────────────────────────────── */
     .model-card {
-        @apply group relative bg-white rounded-xl overflow-hidden
-               border-2 border-secondary-200
-               shadow-card hover:shadow-card-hover
-               hover:-translate-y-1
-               transition-all duration-300 cursor-pointer;
+        @apply relative bg-canvas-50 overflow-hidden
+               border border-secondary-200
+               transition-colors duration-500 ease-out cursor-pointer;
     }
 
-    /* 性別ボーダーカラー */
-    .model-card-male   { @apply border-blue-400; }
-    .model-card-female { @apply border-rose-400; }
-    .model-card-other  { @apply border-secondary-300; }
+    .model-card:hover {
+        @apply border-secondary-400;
+    }
+
+    /* 性別ボーダーカラー（控えめ・美術館調） */
+    .model-card-male   { @apply border-slate-300; }
+    .model-card-female { @apply border-rose-200; }
+    .model-card-other  { @apply border-secondary-200; }
 
     .model-card-image {
         /* aspect-ratio で縦横比を常に 2:3 に固定 — 画像サイズ依存ゼロ */
@@ -274,11 +279,11 @@
     }
 
     .model-card-image img {
-        @apply absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105;
+        @apply absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03];
     }
 
     .model-card-overlay {
-        @apply absolute inset-0 bg-card-gradient opacity-0 group-hover:opacity-100 transition-opacity duration-300;
+        @apply absolute inset-0 bg-card-gradient opacity-0 group-hover:opacity-60 transition-opacity duration-500;
     }
 
     .model-card-info {
@@ -289,15 +294,18 @@
        求人カード（高さ均等 flex）
     ───────────────────────────────────────── */
     .job-card {
-        @apply group relative bg-white rounded-2xl overflow-hidden
-               border-2 border-secondary-200
-               shadow-card hover:shadow-card-hover hover:-translate-y-1
-               transition-all duration-300
+        @apply relative bg-canvas-50 overflow-hidden
+               border border-secondary-200
+               transition-colors duration-500 ease-out
                flex flex-col;   /* ← 高さ均等のため */
     }
 
+    .job-card:hover {
+        @apply border-secondary-400;
+    }
+
     .job-card-body {
-        @apply p-5 flex flex-col flex-1;  /* ← 内部もflex */
+        @apply p-6 flex flex-col flex-1;  /* ← 内部もflex */
     }
 
     /* ─────────────────────────────────────────
@@ -402,7 +410,7 @@
     }
 
     .hero-content {
-        @apply relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40;
+        @apply relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20;
     }
 
     .hero-title {
@@ -454,6 +462,26 @@
         28%              { opacity: 0; transform: scale(1.06) translate(-1.5%, -1%); }
     }
 
+    /* ヘッダー用に少しだけ透過度を上げ、ベールを薄く（縦が短いので） */
+    .page-header .art-bg-layer {
+        animation-name: artFadeHeader;
+        animation-duration: 45s;
+    }
+
+    .page-header .art-bg-layer:nth-child(2) { animation-delay: 15s; }
+    .page-header .art-bg-layer:nth-child(3) { animation-delay: 30s; }
+
+    .page-header .art-bg-veil {
+        background-color: rgb(253 250 246 / 0.45);
+    }
+
+    @keyframes artFadeHeader {
+        0%, 33.33%, 100% { opacity: 0; transform: scale(1.0) translate(0, 0); }
+        5%               { opacity: 0.14; }
+        20%              { opacity: 0.14; }
+        28%              { opacity: 0; transform: scale(1.05) translate(-1%, -0.5%); }
+    }
+
     /* キュレーター・キャプション風 */
     .art-caption {
         @apply font-display italic text-sm text-secondary-500 leading-relaxed border-l-2 border-secondary-300 pl-4;
@@ -490,24 +518,41 @@
     }
 
     /* ─────────────────────────────────────────
-       ページヘッダー（内部ページ）
+       ページヘッダー（美術館トーン・内部ページ用）
     ───────────────────────────────────────── */
     .page-header {
-        @apply bg-secondary-900 text-white py-10 sm:py-14;
+        @apply relative overflow-hidden bg-canvas-50 border-b border-secondary-200 py-12 sm:py-16 lg:py-20;
     }
 
     .page-header-inner {
-        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+        @apply relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
     }
 
     .page-header-title {
-        @apply font-display text-3xl sm:text-4xl font-bold text-white;
-        letter-spacing: -0.02em;
+        @apply font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary-900;
+        letter-spacing: -0.01em;
     }
 
     .page-header-subtitle {
-        @apply mt-2 text-secondary-400 text-sm font-medium tracking-wider uppercase;
-        letter-spacing: 0.12em;
+        @apply mt-2 text-secondary-500 text-xs font-medium uppercase;
+        letter-spacing: 0.3em;
+    }
+
+    /* ヘッダー内のパンくずリンク（旧ダーク背景前提のスタイルから生成り背景用へ） */
+    .page-header-breadcrumb {
+        @apply text-secondary-500 hover:text-secondary-900 text-xs flex items-center gap-1 transition-colors;
+    }
+
+    .page-header-breadcrumb-sep {
+        @apply text-secondary-300 text-xs;
+    }
+
+    .page-header-breadcrumb-current {
+        @apply text-secondary-700 text-xs truncate;
+    }
+
+    .page-header-meta {
+        @apply text-secondary-500 text-xs;
     }
 
     /* ─────────────────────────────────────────

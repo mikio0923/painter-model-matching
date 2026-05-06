@@ -21,6 +21,7 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Handle an incoming authentication request.
+     * （管理者は別の /admin/login からのみログイン可能）
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -28,13 +29,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // 管理者の場合は管理画面にリダイレクト
-        $user = Auth::user();
-        if ($user && $user->role === 'admin') {
-            return redirect()->intended(route('admin.dashboard', absolute: false));
-        }
-
-        // マイページにリダイレクト
         return redirect()->intended(route('mypage', absolute: false));
     }
 

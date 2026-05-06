@@ -30,12 +30,14 @@ class Job extends Model
         'access',
         'scheduled_date',
         'apply_deadline',
+        'deadline_reminder_sent_at',
         'status',
     ];
 
     protected $casts = [
         'scheduled_date' => 'date',
         'apply_deadline' => 'date',
+        'deadline_reminder_sent_at' => 'datetime',
     ];
 
     public function painter(): BelongsTo

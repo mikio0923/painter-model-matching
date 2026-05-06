@@ -1,6 +1,22 @@
 @extends('layouts.app')
 
 @section('content')
+
+{{-- ページヘッダー（背景に名画が静かに循環） --}}
+<div class="page-header">
+    <div class="art-bg-stage">
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/pearl-earring.jpg') }}');"></div>
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/great-wave.jpg') }}');"></div>
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/starry-night.jpg') }}');"></div>
+        <div class="art-bg-veil"></div>
+    </div>
+    <div class="page-header-inner">
+        <p class="page-header-subtitle">Models</p>
+        <h1 class="page-header-title mt-2">モデル一覧</h1>
+        <p class="text-secondary-500 text-sm mt-3">人物画・ポートレート制作にご協力いただけるモデルをお探しください。</p>
+    </div>
+</div>
+
 <div class="page">
   <script>
     function resetSearchForm() {
@@ -36,195 +52,123 @@
   </script>
 
   {{-- 検索フォーム --}}
-  <div class="section-panel mb-6">
-    <div class="section-panel-inner px-8 sm:px-10 lg:px-12">
-      <form method="GET" action="{{ route('models.index') }}" class="space-y-6">
-        <div class="border border-secondary-300 rounded-lg p-6">
-          <div class="space-y-4">
-            {{-- キーワード --}}
-            <div class="flex items-center gap-4">
-              <label for="keyword" class="form-label w-32 flex-shrink-0 text-left">
-                キーワード
-              </label>
-              <input type="text"
-                     id="keyword"
-                     name="keyword"
-                     value="{{ request('keyword') }}"
-                     placeholder="表示名で検索"
-                     class="form-input flex-1">
-            </div>
+  <div class="border border-secondary-200 bg-canvas-50 mb-8 p-4 sm:p-6">
+    <form method="GET" action="{{ route('models.index') }}" class="space-y-5">
 
-            {{-- 性別・年齢（横並び） --}}
-            <div class="flex items-center gap-4">
-              <label class="form-label w-32 flex-shrink-0 text-left">
-                性別
-              </label>
-              <div class="flex gap-4 flex-1">
-                <label class="flex items-center">
-                  <input type="radio"
-                         name="gender"
-                         value="male"
-                         {{ request('gender') === 'male' ? 'checked' : '' }}
-                         class="rounded border-secondary-300 text-primary-600 focus:ring-primary-500">
-                  <span class="ml-2 text-sm text-secondary-700">男性</span>
-                </label>
-                <label class="flex items-center">
-                  <input type="radio"
-                         name="gender"
-                         value="female"
-                         {{ request('gender') === 'female' ? 'checked' : '' }}
-                         class="rounded border-secondary-300 text-primary-600 focus:ring-primary-500">
-                  <span class="ml-2 text-sm text-secondary-700">女性</span>
-                </label>
-                <label class="flex items-center">
-                  <input type="radio"
-                         name="gender"
-                         value="other"
-                         {{ request('gender') === 'other' ? 'checked' : '' }}
-                         class="rounded border-secondary-300 text-primary-600 focus:ring-primary-500">
-                  <span class="ml-2 text-sm text-secondary-700">その他</span>
-                </label>
-              </div>
-              <label class="form-label w-32 flex-shrink-0 text-left">
-                年齢
-              </label>
-              <div class="flex gap-2 flex-1">
-                <input type="number"
-                       id="age_min"
-                       name="age_min"
-                       value="{{ request('age_min') }}"
-                       placeholder="最小"
-                       min="1"
-                       max="150"
-                       class="form-input">
-                <span class="self-center text-secondary-600">〜</span>
-                <input type="number"
-                       id="age_max"
-                       name="age_max"
-                       value="{{ request('age_max') }}"
-                       placeholder="最大"
-                       min="1"
-                       max="150"
-                       class="form-input">
-              </div>
-            </div>
+      {{-- キーワード --}}
+      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
+        <label for="keyword" class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">キーワード</label>
+        <input type="text" id="keyword" name="keyword" value="{{ request('keyword') }}"
+               placeholder="表示名で検索"
+               class="form-input">
+      </div>
 
-            {{-- 身長・体重（横並び） --}}
-            <div class="flex items-center gap-4">
-              <label class="form-label w-32 flex-shrink-0 text-left">
-                身長
-              </label>
-              <div class="flex gap-2 flex-1">
-                <input type="number"
-                       id="height_min"
-                       name="height_min"
-                       value="{{ request('height_min') }}"
-                       placeholder="最小"
-                       min="1"
-                       max="300"
-                       class="form-input">
-                <span class="self-center text-secondary-600">〜</span>
-                <input type="number"
-                       id="height_max"
-                       name="height_max"
-                       value="{{ request('height_max') }}"
-                       placeholder="最大"
-                       min="1"
-                       max="300"
-                       class="form-input">
-                <span class="self-center text-secondary-600 text-sm">cm</span>
-              </div>
-              <label class="form-label w-32 flex-shrink-0 text-left">
-                体重
-              </label>
-              <div class="flex gap-2 flex-1">
-                <input type="number"
-                       id="weight_min"
-                       name="weight_min"
-                       value="{{ request('weight_min') }}"
-                       placeholder="最小"
-                       min="1"
-                       max="300"
-                       class="form-input">
-                <span class="self-center text-secondary-600">〜</span>
-                <input type="number"
-                       id="weight_max"
-                       name="weight_max"
-                       value="{{ request('weight_max') }}"
-                       placeholder="最大"
-                       min="1"
-                       max="300"
-                       class="form-input">
-                <span class="self-center text-secondary-600 text-sm">kg</span>
-              </div>
-            </div>
-
-            {{-- 参考価格（報酬下限） --}}
-            <div class="flex items-center gap-4">
-              <label for="reward_min" class="form-label w-32 flex-shrink-0 text-left">
-                参考価格
-              </label>
-              <input type="number"
-                     id="reward_min"
-                     name="reward_min"
-                     value="{{ request('reward_min') }}"
-                     placeholder="例：5000"
-                     min="0"
-                     class="form-input flex-1">
-              <span class="text-sm text-secondary-600 ml-2">円</span>
-            </div>
-
-            {{-- 体型（全て表示） --}}
-            <div class="flex items-start gap-4">
-              <label class="form-label w-32 flex-shrink-0 text-left pt-2">
-                体型
-              </label>
-              <div class="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                @foreach($bodyTypes as $bodyType)
-                  <label class="flex items-center">
-                    <input type="checkbox"
-                           name="body_type[]"
-                           value="{{ $bodyType }}"
-                           {{ in_array($bodyType, (array)request('body_type', [])) ? 'checked' : '' }}
-                           class="rounded border-secondary-300 text-primary-600 focus:ring-primary-500">
-                    <span class="ml-2 text-sm text-secondary-700">{{ $bodyType }}</span>
-                  </label>
-                @endforeach
-              </div>
-            </div>
-
-            {{-- タグ（全て表示） --}}
-            <div class="flex items-start gap-4">
-              <label class="form-label w-32 flex-shrink-0 text-left pt-2">
-                タグ
-              </label>
-              <div class="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                @foreach($allTags as $tag)
-                  <label class="flex items-center">
-                    <input type="checkbox"
-                           name="tag[]"
-                           value="{{ $tag }}"
-                           {{ in_array($tag, (array)request('tag', [])) ? 'checked' : '' }}
-                           class="rounded border-secondary-300 text-primary-600 focus:ring-primary-500">
-                    <span class="ml-2 text-sm text-secondary-700">{{ $tag }}</span>
-                  </label>
-                @endforeach
-              </div>
-            </div>
-          </div>
-
-          {{-- ボタン --}}
-          <div class="flex gap-2 justify-end mt-6 pt-4 border-t border-secondary-200">
-            <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
-              検索
-            </button>
-            <button type="button" onclick="resetSearchForm();" class="px-6 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200">
-              リセット
-            </button>
-          </div>
+      {{-- 性別 --}}
+      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
+        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">性別</label>
+        <div class="flex flex-wrap gap-x-5 gap-y-2">
+          @foreach([['male','男性'], ['female','女性'], ['other','その他']] as $g)
+            <label class="flex items-center cursor-pointer">
+              <input type="radio" name="gender" value="{{ $g[0] }}"
+                     {{ request('gender') === $g[0] ? 'checked' : '' }}
+                     class="border-secondary-400 text-secondary-900 focus:ring-secondary-700">
+              <span class="ml-2 text-sm text-secondary-700">{{ $g[1] }}</span>
+            </label>
+          @endforeach
         </div>
+      </div>
+
+      {{-- 年齢 --}}
+      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
+        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">年齢</label>
+        <div class="flex items-center gap-2">
+          <input type="number" id="age_min" name="age_min" value="{{ request('age_min') }}"
+                 placeholder="最小" min="1" max="150" class="form-input min-w-0 flex-1">
+          <span class="text-secondary-500 shrink-0">〜</span>
+          <input type="number" id="age_max" name="age_max" value="{{ request('age_max') }}"
+                 placeholder="最大" min="1" max="150" class="form-input min-w-0 flex-1">
+          <span class="text-sm text-secondary-500 shrink-0">歳</span>
+        </div>
+      </div>
+
+      {{-- 身長 --}}
+      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
+        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">身長</label>
+        <div class="flex items-center gap-2">
+          <input type="number" id="height_min" name="height_min" value="{{ request('height_min') }}"
+                 placeholder="最小" min="1" max="300" class="form-input min-w-0 flex-1">
+          <span class="text-secondary-500 shrink-0">〜</span>
+          <input type="number" id="height_max" name="height_max" value="{{ request('height_max') }}"
+                 placeholder="最大" min="1" max="300" class="form-input min-w-0 flex-1">
+          <span class="text-sm text-secondary-500 shrink-0">cm</span>
+        </div>
+      </div>
+
+      {{-- 体重 --}}
+      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
+        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">体重</label>
+        <div class="flex items-center gap-2">
+          <input type="number" id="weight_min" name="weight_min" value="{{ request('weight_min') }}"
+                 placeholder="最小" min="1" max="300" class="form-input min-w-0 flex-1">
+          <span class="text-secondary-500 shrink-0">〜</span>
+          <input type="number" id="weight_max" name="weight_max" value="{{ request('weight_max') }}"
+                 placeholder="最大" min="1" max="300" class="form-input min-w-0 flex-1">
+          <span class="text-sm text-secondary-500 shrink-0">kg</span>
+        </div>
+      </div>
+
+      {{-- 参考価格 --}}
+      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
+        <label for="reward_min" class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">参考価格</label>
+        <div class="flex items-center gap-2">
+          <input type="number" id="reward_min" name="reward_min" value="{{ request('reward_min') }}"
+                 placeholder="例：5000" min="0" class="form-input min-w-0 flex-1">
+          <span class="text-sm text-secondary-500 shrink-0">円</span>
+        </div>
+      </div>
+
+      {{-- 体型 --}}
+      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-2 sm:gap-4 sm:items-start">
+        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500 sm:pt-2">体型</label>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-3 gap-y-2">
+          @foreach($bodyTypes as $bodyType)
+            <label class="flex items-center cursor-pointer min-w-0">
+              <input type="checkbox" name="body_type[]" value="{{ $bodyType }}"
+                     {{ in_array($bodyType, (array)request('body_type', [])) ? 'checked' : '' }}
+                     class="border-secondary-400 text-secondary-900 focus:ring-secondary-700 shrink-0">
+              <span class="ml-2 text-sm text-secondary-700 truncate">{{ $bodyType }}</span>
+            </label>
+          @endforeach
+        </div>
+      </div>
+
+      {{-- タグ --}}
+      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-2 sm:gap-4 sm:items-start">
+        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500 sm:pt-2">タグ</label>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-3 gap-y-2">
+          @foreach($allTags as $tag)
+            <label class="flex items-center cursor-pointer min-w-0">
+              <input type="checkbox" name="tag[]" value="{{ $tag }}"
+                     {{ in_array($tag, (array)request('tag', [])) ? 'checked' : '' }}
+                     class="border-secondary-400 text-secondary-900 focus:ring-secondary-700 shrink-0">
+              <span class="ml-2 text-sm text-secondary-700 truncate">{{ $tag }}</span>
+            </label>
+          @endforeach
+        </div>
+      </div>
+
+      {{-- ボタン --}}
+      <div class="flex flex-col sm:flex-row gap-3 sm:justify-end pt-5 border-t border-secondary-200">
+        <button type="button" onclick="resetSearchForm();"
+                class="order-2 sm:order-1 px-6 py-2.5 border border-secondary-400 text-secondary-700 text-xs uppercase tracking-[0.2em] hover:bg-secondary-100 transition-colors duration-200">
+          Reset
+        </button>
+        <button type="submit"
+                class="order-1 sm:order-2 px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.2em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+          Search
+        </button>
+      </div>
     </form>
-    </div>
   </div>
 
   {{-- 検索結果数 --}}
@@ -246,7 +190,11 @@
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-3">
           @foreach($models as $model)
             @php $isFavModel = in_array($model->id, $favoriteModelIds ?? []); @endphp
-            <div class="rounded-xl border-2 border-secondary-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="relative rounded-xl border-2 border-secondary-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            {{-- お気に入りボタン（リンクの外に配置） --}}
+            <div class="absolute top-1 right-1 z-20">
+                <x-favorite-button type="model" :id="$model->id" :favorited="$isFavModel" />
+            </div>
             <a href="{{ route('models.show', $model) }}" class="block relative">
               {{-- 画像 --}}
               <div class="aspect-[3/4] card-media relative">
@@ -262,23 +210,6 @@
                   </div>
                 @endif
               </div>
-              @auth
-              <div class="absolute top-1 right-1 z-10" onclick="event.stopPropagation();">
-                @if($isFavModel)
-                  <form method="POST" action="{{ route('favorites.destroy.model', $model) }}" class="inline">@csrf @method('DELETE')
-                    <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-red-500" title="お気に入り解除">
-                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
-                    </button>
-                  </form>
-                @else
-                  <form method="POST" action="{{ route('favorites.store.model', $model) }}" class="inline">@csrf
-                    <button type="submit" class="p-1 rounded-full bg-white/90 shadow hover:bg-red-50 text-gray-400 hover:text-red-500" title="お気に入りに追加">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                    </button>
-                  </form>
-                @endif
-              </div>
-              @endauth
 
               {{-- 情報 --}}
               <div class="p-2">

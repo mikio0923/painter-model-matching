@@ -207,33 +207,22 @@
                     最終更新: {{ $modelProfile->updated_at->format('n月j日') }} ({{ $modelProfile->updated_at->diffForHumans() }})
                 </div>
 
-                {{-- いいね（Good）--}}
+                {{-- お気に入り --}}
                 <div class="flex flex-col gap-3">
                     @auth
-                        @if($isFavorite)
-                            <form action="{{ route('favorites.destroy.model', $modelProfile) }}" method="POST" class="w-full">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        class="w-full px-4 py-3 bg-accent-500 hover:bg-accent-600 text-white font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/></svg>
-                                    Good ({{ $favoritesCount }})
-                                </button>
-                            </form>
-                        @else
-                            <form action="{{ route('favorites.store.model', $modelProfile) }}" method="POST" class="w-full">
-                                @csrf
-                                <button type="submit"
-                                        class="w-full px-4 py-3 bg-accent-500 hover:bg-accent-600 text-white font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
-                                    Good ({{ $favoritesCount }})
-                                </button>
-                            </form>
-                        @endif
+                        <x-favorite-button
+                            type="model"
+                            :id="$modelProfile->id"
+                            :favorited="$isFavorite"
+                            variant="large"
+                            :label-on="'お気に入り解除 (' . $favoritesCount . ')'"
+                            :label-off="'お気に入りに追加 (' . $favoritesCount . ')'" />
                     @else
-                        <div class="px-4 py-3 bg-accent-500 text-white font-semibold rounded-lg flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/></svg>
-                            Good ({{ $favoritesCount }})
+                        <div class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 border border-secondary-300 text-sm text-secondary-500">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            お気に入り ({{ $favoritesCount }})
                         </div>
                     @endauth
 

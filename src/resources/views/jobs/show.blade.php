@@ -6,12 +6,12 @@
 <div class="page-header">
     <div class="page-header-inner">
         <div class="flex items-center gap-2 mb-3">
-            <a href="{{ route('jobs.index') }}" class="text-secondary-400 hover:text-white text-xs flex items-center gap-1 transition-colors">
+            <a href="{{ route('jobs.index') }}" class="page-header-breadcrumb">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 依頼一覧
             </a>
-            <span class="text-secondary-600 text-xs">/</span>
-            <span class="text-secondary-400 text-xs truncate max-w-xs">{{ $job->title }}</span>
+            <span class="page-header-breadcrumb-sep">/</span>
+            <span class="page-header-breadcrumb-current max-w-xs">{{ $job->title }}</span>
         </div>
         @php
             $painter       = $job->painter;
@@ -32,7 +32,7 @@
             @endif
         </div>
         <h1 class="page-header-title mt-3">{{ $job->title }}</h1>
-        <p class="text-secondary-400 text-xs mt-2">投稿日：{{ $job->created_at->format('Y.m.d') }}</p>
+        <p class="page-header-meta mt-2">投稿日：{{ $job->created_at->format('Y.m.d') }}</p>
     </div>
 </div>
 
@@ -43,7 +43,7 @@
         <div class="lg:col-span-2 space-y-6">
 
             {{-- 依頼内容 --}}
-            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                 <div class="p-6 md:p-8">
                     <h2 class="font-display text-xl font-bold text-secondary-900 mb-4 flex items-center gap-2">
                         <span class="w-1 h-6 bg-primary-600 rounded-full inline-block"></span>
@@ -60,7 +60,7 @@
             </div>
 
             {{-- 募集要項テーブル --}}
-            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-secondary-100 flex items-center gap-2">
                     <span class="w-1 h-5 bg-accent-500 rounded-full inline-block"></span>
                     <h2 class="font-display text-lg font-bold text-secondary-900">モデル募集要項</h2>
@@ -93,7 +93,7 @@
 
             {{-- 場所・アクセス --}}
             @if($job->location_type === 'offline' && ($job->prefecture || $job->city || $job->address || $job->access))
-            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-secondary-100 flex items-center gap-2">
                     <span class="w-1 h-5 bg-gold-500 rounded-full inline-block"></span>
                     <h2 class="font-display text-lg font-bold text-secondary-900">場所・アクセス</h2>
@@ -110,7 +110,7 @@
             @endif
 
             {{-- エントリーコメント --}}
-            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-secondary-100 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="w-1 h-5 bg-success-500 rounded-full inline-block"></span>
@@ -158,7 +158,7 @@
                             <p class="text-sm font-semibold text-gold-800">この依頼には既に応募済みです</p>
                         </div>
                     @else
-                        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+                        <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                             <div class="px-6 py-4 border-b border-secondary-100 flex items-center gap-2">
                                 <span class="w-1 h-5 bg-primary-600 rounded-full inline-block"></span>
                                 <h2 class="font-display text-lg font-bold text-secondary-900">この依頼に応募する</h2>
@@ -186,7 +186,7 @@
                     </div>
                 @endif
             @else
-                <div class="bg-white rounded-2xl shadow-card p-8 text-center">
+                <div class="bg-canvas-50 rounded-xl border border-secondary-200 p-8 text-center">
                     <p class="text-secondary-600 mb-4 font-medium">この依頼に応募するにはログインが必要です</p>
                     <a href="{{ route('login-register') }}" class="btn-primary">
                         ログインして応募する
@@ -196,7 +196,7 @@
 
             {{-- レビュー --}}
             @if($job->reviews->count() > 0)
-            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-secondary-100 flex items-center gap-2">
                     <span class="w-1 h-5 bg-gold-500 rounded-full inline-block"></span>
                     <h2 class="font-display text-lg font-bold text-secondary-900">レビュー</h2>
@@ -249,7 +249,7 @@
         <div class="space-y-5 lg:sticky lg:top-24 lg:self-start">
 
             {{-- 概要カード --}}
-            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                 <div class="p-5 space-y-3">
                     @if($rewardLabel)
                     <div class="text-center py-4 border-b border-secondary-100">
@@ -284,29 +284,19 @@
                 {{-- お気に入りボタン --}}
                 @auth
                 <div class="px-5 pb-5">
-                    @if($isFavorite)
-                        <form action="{{ route('favorites.destroy.job', $job) }}" method="POST" class="w-full">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-accent-400 text-accent-600 hover:bg-accent-50 text-sm font-semibold transition-all duration-200">
-                                <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/></svg>
-                                お気に入り解除（{{ $goodCount }}）
-                            </button>
-                        </form>
-                    @else
-                        <form action="{{ route('favorites.store.job', $job) }}" method="POST" class="w-full">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-secondary-200 bg-white hover:bg-secondary-50 text-secondary-600 hover:text-accent-600 text-sm font-medium transition-all duration-200">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                お気に入りに追加（{{ $goodCount }}）
-                            </button>
-                        </form>
-                    @endif
+                    <x-favorite-button
+                        type="job"
+                        :id="$job->id"
+                        :favorited="$isFavorite"
+                        variant="large"
+                        :label-on="'お気に入り解除 (' . $goodCount . ')'"
+                        :label-off="'お気に入りに追加 (' . $goodCount . ')'" />
                 </div>
                 @endauth
             </div>
 
             {{-- 投稿者カード --}}
-            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                 <div class="p-5">
                     <p class="text-xs font-semibold text-secondary-400 uppercase tracking-wider mb-4">投稿者</p>
                     <div class="flex items-center gap-3">

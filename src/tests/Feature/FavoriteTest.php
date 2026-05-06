@@ -104,6 +104,88 @@ class FavoriteTest extends TestCase
         ]);
     }
 
+    public function test_toggle_endpoint_creates_favorite_when_absent(): void
+    {
+        $response = $this->actingAs($this->painter)
+            ->postJson(route('favorites.toggle'), [
+                'target_type' => 'model',
+                'target_id' => $this->modelProfile->id,
+            ]);
+
+        $response->assertOk();
+        $response->assertJson(['success' => true, 'favorited' => true, 'count' => 1]);
+        $this->assertDatabaseHas('favorites', [
+            'user_id' => $this->painter->id,
+            'favoritable_id' => $this->modelProfile->id,
+        ]);
+    }
+
+    public function test_toggle_endpoint_removes_favorite_when_present(): void
+    {
+        Favorite::create([
+            'user_id' => $this->painter->id,
+            'favoritable_type' => ModelProfile::class,
+            'favoritable_id' => $this->modelProfile->id,
+        ]);
+
+        $response = $this->actingAs($this->painter)
+            ->postJson(route('favorites.toggle'), [
+                'target_type' => 'model',
+                'target_id' => $this->modelProfile->id,
+            ]);
+
+        $response->assertOk();
+        $response->assertJson(['success' => true, 'favorited' => false, 'count' => 0]);
+        $this->assertDatabaseMissing('favorites', [
+            'user_id' => $this->painter->id,
+            'favoritable_id' => $this->modelProfile->id,
+        ]);
+    }
+
+    public function test_toggle_endpoint_works_for_jobs(): void
+    {
+        $response = $this->actingAs($this->model)
+            ->postJson(route('favorites.toggle'), [
+                'target_type' => 'job',
+                'target_id' => $this->job->id,
+            ]);
+
+        $response->assertOk();
+        $response->assertJson(['success' => true, 'favorited' => true]);
+    }
+
+    public function test_toggle_endpoint_validates_input(): void
+    {
+        $response = $this->actingAs($this->painter)
+            ->postJson(route('favorites.toggle'), [
+                'target_type' => 'invalid',
+                'target_id' => 'abc',
+            ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_toggle_endpoint_returns_404_for_missing_target(): void
+    {
+        $response = $this->actingAs($this->painter)
+            ->postJson(route('favorites.toggle'), [
+                'target_type' => 'model',
+                'target_id' => 99999,
+            ]);
+
+        $response->assertStatus(404);
+    }
+
+    public function test_toggle_endpoint_requires_authentication(): void
+    {
+        $response = $this->postJson(route('favorites.toggle'), [
+            'target_type' => 'model',
+            'target_id' => $this->modelProfile->id,
+        ]);
+
+        $response->assertStatus(401);
+    }
+
     public function test_favorites_index_shows_only_own_favorites(): void
     {
         $other = User::factory()->create(['role' => 'painter']);

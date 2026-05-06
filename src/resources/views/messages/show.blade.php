@@ -1,45 +1,54 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-    <div class="mb-6">
-        <a href="{{ route('messages.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-            ← メッセージ一覧に戻る
-        </a>
-    </div>
 
-    <div class="bg-white border rounded-lg p-6 mb-6">
-        <h1 class="text-2xl font-bold mb-2">{{ $job->title }}</h1>
-        <p class="text-gray-600">
-            相手: <span class="font-semibold">{{ $otherUser->name }}</span>
+{{-- ページヘッダー --}}
+<div class="page-header">
+    <div class="page-header-inner">
+        <div class="flex items-center gap-2 mb-3">
+            <a href="{{ route('messages.index') }}" class="page-header-breadcrumb">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Messages
+            </a>
+            <span class="page-header-breadcrumb-sep">/</span>
+            <span class="page-header-breadcrumb-current max-w-xs">{{ $otherUser->name ?? '退会済みユーザー' }}</span>
+        </div>
+        <p class="page-header-subtitle">Conversation</p>
+        <h1 class="page-header-title mt-2">{{ $job->title }}</h1>
+        <p class="page-header-meta mt-2">
+            相手: <span class="text-secondary-700">{{ $otherUser->name ?? '退会済みユーザー' }}</span>
         </p>
     </div>
+</div>
 
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
+<div class="page-narrow space-y-6">
 
     {{-- メッセージ一覧 --}}
-    <div class="bg-white border rounded-lg p-6 mb-6" style="max-height: 500px; overflow-y: auto;">
+    <div class="border border-secondary-200 bg-canvas-50 p-5 sm:p-6 max-h-[600px] overflow-y-auto">
         @if($messages->isEmpty())
-            <p class="text-gray-600 text-center py-8">まだメッセージがありません</p>
+            <div class="text-center py-12">
+                <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-400 mb-2">No Messages</p>
+                <p class="text-secondary-500 text-sm">最初のメッセージを送ってください。</p>
+            </div>
         @else
-            <div class="space-y-4">
+            <div class="space-y-5">
                 @foreach($messages as $message)
-                    <div class="flex {{ $message->sender_id === Auth::id() ? 'justify-end' : 'justify-start' }}">
-                        <div class="max-w-xs lg:max-w-md">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-sm font-semibold">
-                                    {{ $message->sender->name }}
+                    @php $isMe = $message->sender_id === Auth::id(); @endphp
+                    <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }}">
+                        <div class="max-w-[85%] sm:max-w-md">
+                            <div class="flex items-center gap-2 mb-1.5 {{ $isMe ? 'justify-end' : '' }}">
+                                <span class="text-xs font-medium text-secondary-700">
+                                    {{ $message->sender->name ?? '退会済みユーザー' }}
                                 </span>
-                                <span class="text-xs text-gray-500">
+                                <span class="text-[10px] tracking-[0.15em] uppercase text-secondary-400">
                                     {{ $message->created_at->format('m/d H:i') }}
                                 </span>
                             </div>
-                            <div class="rounded-lg p-3 {{ $message->sender_id === Auth::id() ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800' }}">
-                                <p class="whitespace-pre-wrap text-sm">{{ $message->body }}</p>
+                            <div class="px-4 py-3 text-sm whitespace-pre-wrap leading-relaxed
+                                        {{ $isMe
+                                            ? 'bg-secondary-900 text-canvas-50 border border-secondary-900'
+                                            : 'bg-canvas-50 text-secondary-800 border border-secondary-300' }}">
+                                {{ $message->body }}
                             </div>
                         </div>
                     </div>
@@ -49,32 +58,28 @@
     </div>
 
     {{-- メッセージ送信フォーム --}}
-    <div class="bg-white border rounded-lg p-6">
-        <form action="{{ route('messages.store', $job) }}" method="POST">
+    <div class="border border-secondary-200 bg-canvas-50 p-5 sm:p-6">
+        <form action="{{ route('messages.store', $job) }}" method="POST" class="space-y-4">
             @csrf
-            <input type="hidden" name="receiver_id" value="{{ $otherUser->id }}">
-            
-            <div class="mb-4">
-                <label for="body" class="block text-sm font-medium text-gray-700 mb-2">
-                    メッセージ
+            <input type="hidden" name="receiver_id" value="{{ $otherUser->id ?? '' }}">
+
+            <div>
+                <label for="body" class="block text-[10px] uppercase tracking-[0.25em] text-secondary-500 mb-2">
+                    Send Message
                 </label>
-                <textarea id="body" 
-                          name="body" 
-                          rows="4"
-                          required
+                <textarea id="body" name="body" rows="4" required
                           placeholder="メッセージを入力してください"
-                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                @error('body')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                          class="form-textarea"></textarea>
+                @error('body')<p class="form-error">{{ $message }}</p>@enderror
             </div>
 
-            <button type="submit" 
-                    class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                送信
-            </button>
+            <div class="flex justify-end">
+                <button type="submit"
+                        class="px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.25em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+                    Send
+                </button>
+            </div>
         </form>
     </div>
 </div>
 @endsection
-

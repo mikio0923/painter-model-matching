@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // 退会済みユーザーの匿名化（毎日深夜2時）
 Schedule::command('users:anonymize-deleted')->dailyAt('02:00');
+
+// 応募締切3日前リマインド（毎日朝9時）
+Schedule::command('jobs:send-deadline-reminders')->dailyAt('09:00');

@@ -1,11 +1,27 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-    <h1 class="text-2xl font-bold mb-6">プロフィール編集</h1>
 
+{{-- ページヘッダー --}}
+<div class="page-header">
+    <div class="page-header-inner">
+        <div class="flex items-center gap-2 mb-3">
+            <a href="{{ route('mypage') }}" class="page-header-breadcrumb">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                My Page
+            </a>
+            <span class="page-header-breadcrumb-sep">/</span>
+            <span class="page-header-breadcrumb-current">プロフィール編集</span>
+        </div>
+        <p class="page-header-subtitle">Edit Profile</p>
+        <h1 class="page-header-title mt-2">プロフィール編集</h1>
+    </div>
+</div>
+
+<div class="page-narrow">
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div class="border-l-2 border-success-500 bg-canvas-50 px-4 py-3 mb-6 text-sm text-secondary-700">
+            <p class="text-[10px] uppercase tracking-[0.3em] text-success-700 mb-1">Saved</p>
             {{ session('success') }}
         </div>
     @endif

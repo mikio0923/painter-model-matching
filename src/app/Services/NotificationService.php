@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\EmailPreference;
+use App\Services\MessageNotificationThrottler;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\Job;
@@ -33,9 +35,9 @@ class NotificationService
             'related_type' => JobApplication::class,
         ]);
 
-        // 画家にメール通知
+        // 画家にメール通知（オプトアウト対応）
         $painter = User::find($job->painter_id);
-        if ($painter) {
+        if ($painter && EmailPreference::allows($painter, 'application')) {
             Mail::to($painter->email)->queue(new ApplicationReceivedMail($application));
         }
     }
@@ -56,9 +58,9 @@ class NotificationService
             'related_type' => JobApplication::class,
         ]);
 
-        // モデルにメール通知
+        // モデルにメール通知（オプトアウト対応）
         $model = User::find($application->model_id);
-        if ($model) {
+        if ($model && EmailPreference::allows($model, 'application')) {
             Mail::to($model->email)->queue(new ApplicationAcceptedMail($application));
         }
     }
@@ -79,9 +81,9 @@ class NotificationService
             'related_type' => JobApplication::class,
         ]);
 
-        // モデルにメール通知
+        // モデルにメール通知（オプトアウト対応）
         $model = User::find($application->model_id);
-        if ($model) {
+        if ($model && EmailPreference::allows($model, 'application')) {
             Mail::to($model->email)->queue(new ApplicationRejectedMail($application));
         }
     }
@@ -103,9 +105,11 @@ class NotificationService
             'related_type' => Message::class,
         ]);
 
-        // 受信者にメール通知
+        // 受信者にメール通知（オプトアウト + 頻度制御）
         $receiver = User::find($message->receiver_id);
-        if ($receiver) {
+        if ($receiver
+            && EmailPreference::allows($receiver, 'message')
+            && MessageNotificationThrottler::shouldSendMail($message, $receiver)) {
             Mail::to($receiver->email)->queue(new MessageReceivedMail($message));
         }
     }
@@ -127,9 +131,9 @@ class NotificationService
             'related_type' => \App\Models\Review::class,
         ]);
 
-        // レビュー対象者にメール通知
+        // レビュー対象者にメール通知（オプトアウト対応）
         $reviewedUser = User::find($review->reviewed_user_id);
-        if ($reviewedUser) {
+        if ($reviewedUser && EmailPreference::allows($reviewedUser, 'review')) {
             Mail::to($reviewedUser->email)->queue(new ReviewReceivedMail($review));
         }
     }

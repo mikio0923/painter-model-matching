@@ -1,2 +1,17 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /admin
+Disallow: /mypage
+Disallow: /messages
+Disallow: /favorites
+Disallow: /notifications
+Disallow: /profile
+Disallow: /account/
+Disallow: /model/
+Disallow: /painter/
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+
+Sitemap: /sitemap.xml

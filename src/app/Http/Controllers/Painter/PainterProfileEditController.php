@@ -48,13 +48,33 @@ class PainterProfileEditController extends Controller
 
         $validated = $request->validated();
 
-        // art_stylesを配列形式で保存
+        // カンマ区切り入力 → 配列に変換
+        $explode = function (?string $input): array {
+            if (!$input) {
+                return [];
+            }
+            return array_values(array_filter(array_map('trim', explode(',', $input))));
+        };
+
         if ($request->has('art_styles_input')) {
-            $styles = array_filter(array_map('trim', explode(',', $request->input('art_styles_input'))));
-            $validated['art_styles'] = array_values($styles);
-        } elseif (isset($validated['art_styles'])) {
-            $validated['art_styles'] = array_values(array_filter($validated['art_styles']));
+            $validated['art_styles'] = $explode($request->input('art_styles_input'));
         }
+        if ($request->has('specialties_input')) {
+            $validated['specialties'] = $explode($request->input('specialties_input'));
+        }
+        if ($request->has('activity_regions_input')) {
+            $validated['activity_regions'] = $explode($request->input('activity_regions_input'));
+        }
+        if ($request->has('sns_links_input')) {
+            $links = $explode($request->input('sns_links_input'));
+            $validated['sns_links'] = array_values(array_filter(
+                $links,
+                fn ($url) => filter_var($url, FILTER_VALIDATE_URL),
+            ));
+        }
+
+        // チェックボックス: 未送信なら false にする
+        $validated['accepts_offers'] = $request->boolean('accepts_offers');
 
         $painterProfile->fill($validated);
         $painterProfile->save();

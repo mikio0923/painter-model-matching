@@ -112,6 +112,59 @@ class FavoriteController extends Controller
     }
 
     /**
+     * お気に入りトグル（JS用・統一エンドポイント）
+     * - target_type: 'model' | 'job'
+     * - target_id: 数値
+     * 戻り値: { favorited: bool, count: int }
+     */
+    public function toggle(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'target_type' => ['required', 'string', 'in:model,job'],
+            'target_id' => ['required', 'integer'],
+        ]);
+
+        $user = Auth::user();
+
+        $modelClass = $validated['target_type'] === 'model'
+            ? ModelProfile::class
+            : Job::class;
+
+        // 対象が存在するか確認
+        $target = $modelClass::find($validated['target_id']);
+        if (!$target) {
+            return response()->json(['success' => false, 'message' => '対象が見つかりません'], 404);
+        }
+
+        $existing = Favorite::where('user_id', $user->id)
+            ->where('favoritable_type', $modelClass)
+            ->where('favoritable_id', $target->id)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            $favorited = false;
+        } else {
+            Favorite::create([
+                'user_id' => $user->id,
+                'favoritable_type' => $modelClass,
+                'favoritable_id' => $target->id,
+            ]);
+            $favorited = true;
+        }
+
+        $count = Favorite::where('favoritable_type', $modelClass)
+            ->where('favoritable_id', $target->id)
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'favorited' => $favorited,
+            'count' => $count,
+        ]);
+    }
+
+    /**
      * お気に入りを削除（モデル）
      */
     public function destroyModel(Request $request, ModelProfile $modelProfile): RedirectResponse|JsonResponse

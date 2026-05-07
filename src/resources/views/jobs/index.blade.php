@@ -117,7 +117,7 @@
             <div class="job-card group relative">
                 <a href="{{ route('jobs.show', $job) }}" class="block job-card-body">
                     {{-- 画家情報 --}}
-                    <div class="flex items-center gap-2.5 mb-3">
+                    <div class="flex items-center gap-2.5 mb-3 pr-9">
                         <div class="avatar avatar-sm border border-primary-100">
                             @if($painterImage)
                                 <img src="{{ Storage::url($painterImage) }}" alt="{{ $painterName }}" class="w-full h-full object-cover">
@@ -126,7 +126,6 @@
                             @endif
                         </div>
                         <p class="text-xs text-secondary-500 truncate flex-1">{{ $painterName }}</p>
-                        <span class="status-open shrink-0">公開</span>
                     </div>
 
                     {{-- タイトル・説明 --}}
@@ -150,8 +149,8 @@
                         @if($job->reward_amount)
                         <div class="flex items-center justify-between">
                             <span class="text-secondary-400">報酬</span>
-                            <span class="font-bold text-primary-600">
-                                {{ number_format($job->reward_amount) }}円<span class="font-normal text-secondary-400">{{ $job->reward_unit === 'per_hour' ? '/時間' : '/回' }}</span>
+                            <span class="text-secondary-700 font-medium">
+                                ¥{{ number_format($job->reward_amount) }}<span class="text-secondary-400 font-normal">{{ $job->reward_unit === 'per_hour' ? '/時間' : '/回' }}</span>
                             </span>
                         </div>
                         @endif

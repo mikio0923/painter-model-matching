@@ -1,95 +1,81 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container mx-auto px-4 py-8 max-w-3xl">
-    <h1 class="text-2xl font-bold mb-6">お問い合わせ</h1>
+@section('title', 'お問い合わせ')
+@section('description', 'Palette へのお問い合わせはこちらから。サービスに関するご質問・ご要望をお寄せください。')
 
+@section('content')
+
+{{-- ページヘッダー --}}
+<div class="page-header">
+    <div class="page-header-inner">
+        <p class="page-header-subtitle">Contact</p>
+        <h1 class="page-header-title mt-2">お問い合わせ</h1>
+        <p class="text-secondary-500 text-sm mt-3">サービスに関するご質問・ご要望をお寄せください。</p>
+    </div>
+</div>
+
+<div class="page-narrow">
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div class="border-l-2 border-success-500 bg-canvas-50 px-4 py-3 mb-6 text-sm text-secondary-700">
+            <p class="text-[10px] uppercase tracking-[0.3em] text-success-700 mb-1">Sent</p>
             {{ session('success') }}
         </div>
     @endif
 
-    <form action="{{ route('contact.store') }}" method="POST" class="space-y-6">
+    <form action="{{ route('contact.store') }}" method="POST" class="border border-secondary-200 bg-canvas-50 p-5 sm:p-8 space-y-6">
         @csrf
 
-        {{-- 名前 --}}
         <div>
-            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
-                お名前 <span class="text-red-500">*</span>
+            <label for="name" class="form-label">
+                お名前 <span class="text-error-500">*</span>
             </label>
-            <input type="text" 
-                   id="name" 
-                   name="name" 
+            <input type="text" id="name" name="name" required
                    value="{{ old('name', Auth::check() ? Auth::user()->name : '') }}"
-                   required
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            @error('name')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+                   class="form-input">
+            @error('name')<p class="form-error">{{ $message }}</p>@enderror
         </div>
 
-        {{-- メールアドレス --}}
         <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-                メールアドレス <span class="text-red-500">*</span>
+            <label for="email" class="form-label">
+                メールアドレス <span class="text-error-500">*</span>
             </label>
-            <input type="email" 
-                   id="email" 
-                   name="email" 
+            <input type="email" id="email" name="email" required
                    value="{{ old('email', Auth::check() ? Auth::user()->email : '') }}"
-                   required
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            @error('email')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+                   class="form-input">
+            @error('email')<p class="form-error">{{ $message }}</p>@enderror
         </div>
 
-        {{-- 件名 --}}
         <div>
-            <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">
-                件名 <span class="text-red-500">*</span>
+            <label for="subject" class="form-label">
+                件名 <span class="text-error-500">*</span>
             </label>
-            <input type="text" 
-                   id="subject" 
-                   name="subject" 
+            <input type="text" id="subject" name="subject" required
                    value="{{ old('subject') }}"
-                   required
                    placeholder="例：アカウントについて"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            @error('subject')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+                   class="form-input">
+            @error('subject')<p class="form-error">{{ $message }}</p>@enderror
         </div>
 
-        {{-- メッセージ --}}
         <div>
-            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">
-                お問い合わせ内容 <span class="text-red-500">*</span>
+            <label for="message" class="form-label">
+                お問い合わせ内容 <span class="text-error-500">*</span>
             </label>
-            <textarea id="message" 
-                      name="message" 
-                      rows="8"
-                      required
+            <textarea id="message" name="message" rows="8" required
                       placeholder="お問い合わせ内容を入力してください"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('message') }}</textarea>
-            @error('message')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+                      class="form-textarea">{{ old('message') }}</textarea>
+            @error('message')<p class="form-error">{{ $message }}</p>@enderror
         </div>
 
-        {{-- 送信ボタン --}}
-        <div class="flex gap-4 pt-4">
-            <button type="submit" 
-                    class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                送信する
-            </button>
-            <a href="{{ route('home') }}" 
-               class="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                キャンセル
+        <div class="flex flex-col sm:flex-row gap-3 sm:justify-end pt-3 border-t border-secondary-200">
+            <a href="{{ route('home') }}"
+               class="order-2 sm:order-1 px-6 py-2.5 border border-secondary-400 text-secondary-700 text-xs uppercase tracking-[0.2em] hover:bg-secondary-100 transition-colors duration-200 text-center">
+                Cancel
             </a>
+            <button type="submit"
+                    class="order-1 sm:order-2 px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.25em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+                Send
+            </button>
         </div>
     </form>
 </div>
 @endsection
-

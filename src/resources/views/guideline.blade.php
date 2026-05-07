@@ -1,173 +1,168 @@
 @extends('layouts.app')
 
+@section('title', 'ご利用ガイドライン')
+@section('description', 'Palette のご利用にあたってのガイドライン。誠実な利用・条件遵守・安全な取引のために。')
+
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-    {{-- パンくず --}}
-    <nav class="text-sm text-gray-500 mb-4">
-        <a href="{{ url('/') }}" class="hover:text-gray-700">ホーム</a>
-        <span class="mx-1">/</span>
-        <span class="text-gray-800">GUIDE LINE</span>
-        <span class="mx-1">/</span>
-        <span class="text-gray-800">ご利用ガイドライン</span>
-    </nav>
 
-    <h1 class="text-3xl font-bold mb-6">ご利用ガイドライン</h1>
+{{-- ページヘッダー --}}
+<div class="page-header">
+    <div class="page-header-inner">
+        <div class="flex items-center gap-2 mb-3">
+            <a href="{{ url('/') }}" class="page-header-breadcrumb">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Home
+            </a>
+            <span class="page-header-breadcrumb-sep">/</span>
+            <span class="page-header-breadcrumb-current">ご利用ガイドライン</span>
+        </div>
+        <p class="page-header-subtitle">Guidelines</p>
+        <h1 class="page-header-title mt-2">ご利用ガイドライン</h1>
+        <p class="text-secondary-500 text-sm mt-3">{{ config('app.name', 'Palette') }} を安心してご利用いただくための共通ルールです。</p>
+    </div>
+</div>
 
-    <p class="text-gray-700 mb-10">
-        ModelTownをご利用いただく皆さまには、以下のガイドラインに従ってご利用いただきます。違反が確認された場合は、<a href="{{ route('contact.create') }}" class="text-blue-600 hover:underline">お問い合わせ</a>よりご連絡ください。
+<div class="page-narrow space-y-10">
+
+    <p class="text-sm text-secondary-700 leading-relaxed">
+        {{ config('app.name', 'Palette') }} をご利用いただく皆さまには、以下のガイドラインに従ってご利用いただきます。
+        違反が確認された場合は、<a href="{{ route('contact.create') }}" class="link-primary">お問い合わせ</a>よりご連絡ください。
     </p>
 
-    <div class="space-y-5">
-        @php
-            $items = [
-                [
-                    'title' => '誠実に利用する',
-                    'body' => true,
-                    'paragraphs' => [
-                        '相手を尊重し、何事も正直に、誠実な心で、ModelTownをご利用ください。',
-                        'ModelTownでは、皆さまに少しでも安心してサービスをご利用いただくため、本人確認サービスを提供しております。信頼の一つの指標になりますので、クライアント(依頼主)の方もモデルの方も、本人確認サービスを是非ご利用ください。',
-                    ],
+    @php
+        $appName = config('app.name', 'Palette');
+        $items = [
+            [
+                'title' => '誠実に利用する',
+                'paragraphs' => [
+                    "相手を尊重し、何事も正直に、誠実な心で {$appName} をご利用ください。",
+                    "{$appName} では、皆さまに少しでも安心してサービスをご利用いただくため、本人確認サービスを提供しております。信頼の指標になりますので、画家の方もモデルの方も、本人確認サービスをぜひご利用ください。",
                 ],
-                [
-                    'title' => '条件・約束を守る',
-                    'body' => true,
-                    'paragraphs' => [
-                        '仕事の内容や条件など、相手と事前に話し合って決めたこと（合意事項）を必ず守りましょう。',
-                        '※　撮影の内容、日時、場所、拘束時間、報酬、など',
-                    ],
+            ],
+            [
+                'title' => '条件・約束を守る',
+                'paragraphs' => [
+                    '仕事の内容や条件など、相手と事前に話し合って決めたこと（合意事項）を必ず守りましょう。',
+                    '※ 撮影の内容、日時、場所、拘束時間、報酬 など',
                 ],
-                [
-                    'title' => 'ドタキャンしない',
-                    'body' => true,
-                    'paragraphs' => [
-                        'いったん決定した仕事を、簡単にキャンセルしてはいけません。やむを得ずキャンセルする場合は、相手に連絡し、承諾を得てください。',
-                        '仕事のキャンセルによって、様々な損害が生じることがあります。キャンセルにかかる費用の清算(撮影場所のレンタル料金やカメラマンへの報酬、他のキャンセル費用、移動費用など)については、双方で折り合いをつけてください。',
-                    ],
+            ],
+            [
+                'title' => '直前のキャンセルを避ける',
+                'paragraphs' => [
+                    'いったん決定したお仕事を簡単にキャンセルしてはいけません。やむを得ずキャンセルする場合は、相手に連絡し、承諾を得てください。',
+                    'キャンセルにより様々な損害が生じる場合があります（撮影場所のレンタル料金・カメラマンへの報酬・移動費用など）。費用の清算については双方で折り合いをつけてください。',
                 ],
-                [
-                    'title' => 'ジョブは詳細まで記載する',
-                    'body' => true,
-                    'paragraphs' => [
-                        'クライアント(依頼主)は、ジョブの内容を丁寧に書きましょう。',
-                        'モデルが安心してエントリー(応募)できるように、下記の事項は必ず記載してください。',
-                    ],
-                    'bullets' => [
-                        '撮影内容',
-                        '募集対象(年齢層、性別など)',
-                        '撮影日時、場所',
-                        '報酬の金額、支払い方法',
-                        '撮影時間(開始～終了時間)',
-                        '撮影時の衣装、髪型やメイク',
-                        '撮影状況(スタッフの人数など)',
-                        '撮影環境(屋外、室内、スタジオなど)',
-                        '撮影データの用途',
-                        'その他、注意点など',
-                    ],
-                    'paragraphs_after' => [
-                        '以下のいずれかの条件と一致するジョブの掲載はお断りしており、また、モデルタウンにおいて同様の依頼をすることも禁止しています。',
-                        '・アダルト要素（フェチ系を含む）のあるもの',
-                        '・撮影時に危険が伴うと思われるもの',
-                        '・個人による、下着や水着のほか、過度な露出のある撮影',
-                        '・ホテルなど、第三者の目が届きにくい場所での撮影',
-                        '・その他、事務局が不適切と判断するもの',
-                    ],
+            ],
+            [
+                'title' => '依頼内容は丁寧に記載する',
+                'paragraphs' => [
+                    '画家は、依頼の内容を丁寧に書きましょう。モデルが安心してエントリーできるよう、以下の事項は必ず記載してください。',
                 ],
-                [
-                    'title' => 'エントリーに責任を持つ',
-                    'body' => true,
-                    'paragraphs' => [
-                        'モデルは、ジョブの内容をしっかりと確認してからエントリー(応募)しましょう。',
-                        'クライアント(依頼主)は、エントリーを受信後に厳正な審査を重ねてオファーしていますので、下記の事項を守ってエントリーしてください。',
-                    ],
-                    'bullets' => [
-                        'ジョブの内容をしっかり確認する',
-                        '記載されている日程や場所を確認する',
-                        '希望条件はエントリー時に伝える(可能な範囲で)',
-                        '応募後の数日はマイページを定期的にチェックする',
-                        'オファーが来たら必ず返信する',
-                    ],
-                    'paragraphs_after' => [
-                        '※ジョブの内容をよく確認せずにエントリーを繰り返す行為は、注意・警告(アカウント停止)の対象になります。',
-                    ],
+                'bullets' => [
+                    '撮影内容', '募集対象（年齢層・性別など）', '撮影日時・場所',
+                    '報酬の金額・支払い方法', '撮影時間（開始〜終了時間）',
+                    '撮影時の衣装・髪型やメイク', '撮影状況（スタッフの人数など）',
+                    '撮影環境（屋外・室内・スタジオなど）', '撮影データの用途',
+                    'その他、注意点など',
                 ],
-                [
-                    'title' => '事前に全部、伝える確認する',
-                    'body' => true,
-                    'paragraphs' => [
-                        '仕事に関する様々な事項において、認識の相違が生まれないよう、丁寧に正確にやりとりしましょう。',
-                        'クライアント(依頼主)もモデルも、分からないこと知りたいことがあれば、しっかりと確認しましょう。',
-                        'やりとりの中で、自分が理解したことを、自分の言葉でも復唱するようにすると、認識の相違は生まれにくくなります。',
-                        '特に、長期継続での依頼となる場合、クライアントが衣装を用意する場合、撮影に伴い身体的な接触がある場合など、必ずお互いの認識を共有してください。',
-                    ],
+                'paragraphs_after' => [
+                    '以下のいずれかに該当する依頼の掲載はお断りしており、同様の依頼を行うことも禁止しています。',
+                    '・アダルト要素（フェチ系を含む）のあるもの',
+                    '・撮影時に危険が伴うと思われるもの',
+                    '・個人による、下着や水着のほか過度な露出のある撮影',
+                    '・ホテルなど第三者の目が届きにくい場所での撮影',
+                    '・その他、運営が不適切と判断するもの',
                 ],
-                [
-                    'title' => '報酬は、直接支払う(直接受け取る)',
-                    'body' => true,
-                    'paragraphs' => [
-                        'ModelTown(当サイト)では、モデルに対する報酬の支払い手続きは、出来ません。',
-                        'クライアント(依頼主)とモデルの間で、報酬の金額や支払い方法などを決め、領収書が必要な場合にはモデルから受け取ってください。',
-                    ],
-                    'link' => ['領収書のテンプレート(PDF)', '#', 'こちらの %s を印刷し、活用いただくこともできます。'],
+            ],
+            [
+                'title' => 'エントリーに責任を持つ',
+                'paragraphs' => [
+                    'モデルは、依頼の内容をしっかりと確認してからエントリー（応募）しましょう。',
+                    '画家はエントリーを受信後に審査を重ねてオファーしていますので、以下の事項を守ってご応募ください。',
                 ],
-                [
-                    'title' => '必要に応じて契約書を交わす',
-                    'body' => true,
-                    'paragraphs' => [
-                        'モデルおよびクライアント(依頼主)は、必要に応じて契約書を交わしましょう。',
-                        'たとえば、肖像写真の使用期限や使用用途などを限定する、何らかの条件がある、制約が発生する場合などには、契約書を交わしたうえで取引してください。',
-                    ],
-                    'link' => ['契約書のテンプレート(PDF)', '#', 'こちらの %s を印刷し、ご活用いただくこともできます。'],
+                'bullets' => [
+                    '依頼の内容をしっかり確認する',
+                    '記載されている日程・場所を確認する',
+                    '希望条件はエントリー時に伝える（可能な範囲で）',
+                    '応募後の数日はマイページを定期的にチェックする',
+                    'オファーが来たら必ず返信する',
                 ],
-                [
-                    'title' => '当事者同士でやりとりする',
-                    'body' => true,
-                    'paragraphs' => [
-                        '原則として、代理で仕事を依頼したり、受け付けることを禁止しています。必ず、当事者同士でやりとりしてください。',
-                        '※20歳未満のモデルは、保護者によるやりとりが必要です。',
-                    ],
+                'paragraphs_after' => [
+                    '※ 依頼内容をよく確認せずにエントリーを繰り返す行為は、注意・警告（アカウント停止）の対象になります。',
                 ],
-            ];
-        @endphp
+            ],
+            [
+                'title' => '事前にすべて伝える・確認する',
+                'paragraphs' => [
+                    'お仕事に関するさまざまな事項において、認識の相違が生まれないよう、丁寧かつ正確にやりとりしましょう。',
+                    '画家もモデルも、分からないことや知りたいことがあればしっかり確認しましょう。',
+                    'やりとりの中で、理解したことを自分の言葉で復唱すると、認識の相違が生まれにくくなります。',
+                    '特に、長期の継続依頼・画家が衣装を用意する場合・撮影に伴う身体的な接触がある場合などは、必ずお互いの認識を共有してください。',
+                ],
+            ],
+            [
+                'title' => '報酬は、直接支払う・直接受け取る',
+                'paragraphs' => [
+                    "{$appName} では、モデルへの報酬の支払い手続きは行いません。",
+                    '画家とモデルの間で、報酬の金額・支払い方法などを決め、領収書が必要な場合にはモデルから受け取ってください。',
+                ],
+            ],
+            [
+                'title' => '必要に応じて契約書を交わす',
+                'paragraphs' => [
+                    'モデルおよび画家は、必要に応じて契約書を交わしましょう。',
+                    '肖像写真の使用期限・使用用途を限定する場合や、なんらかの条件・制約が発生する場合は、契約書を交わしたうえで取引してください。',
+                ],
+            ],
+            [
+                'title' => '当事者同士でやりとりする',
+                'paragraphs' => [
+                    '原則として、代理での依頼・受付は禁止しています。必ず当事者同士でやりとりしてください。',
+                    '※ 20歳未満のモデルは、保護者によるやりとりが必要です。',
+                ],
+            ],
+        ];
+    @endphp
 
+    <div class="space-y-6">
         @foreach($items as $index => $item)
-            <div class="border border-gray-200 rounded-lg bg-white px-5 py-4 sm:px-6 sm:py-4 shadow-sm">
-                <div class="flex gap-4">
-                    {{-- 番号円 --}}
-                    <div class="flex-shrink-0 w-12 h-12 rounded-full bg-black text-white flex items-center justify-center text-xl font-bold">
-                        {{ $index }}
+            <article class="border border-secondary-200 bg-canvas-50 px-5 sm:px-6 py-6">
+                <div class="flex gap-5">
+                    <div class="shrink-0">
+                        <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">No.</p>
+                        <p class="font-display text-2xl text-secondary-900">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</p>
                     </div>
-                    {{-- コンテンツ --}}
-                    <div class="flex-1 min-w-0">
-                        <h2 class="text-xl font-bold text-gray-900 mb-3">{{ $item['title'] }}</h2>
-                    <div class="text-gray-700 space-y-3 text-[15px] leading-relaxed">
-                        @foreach($item['paragraphs'] ?? [] as $p)
-                            <p>{{ $p }}</p>
-                        @endforeach
-                        @if(!empty($item['bullets']))
-                            <ul class="list-disc pl-6 space-y-1">
-                                @foreach($item['bullets'] as $b)
-                                    <li>{{ $b }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
-                        @if(!empty($item['paragraphs_after']))
-                            @foreach($item['paragraphs_after'] as $p)
+                    <div class="flex-1 min-w-0 pt-1">
+                        <h2 class="font-display text-lg sm:text-xl font-semibold text-secondary-900 mb-3">{{ $item['title'] }}</h2>
+                        <div class="text-secondary-700 text-sm leading-relaxed space-y-3">
+                            @foreach($item['paragraphs'] ?? [] as $p)
                                 <p>{{ $p }}</p>
                             @endforeach
-                        @endif
-                        @if(!empty($item['link']))
-                            @php
-                                $linkText = $item['link'][0];
-                                $linkUrl = $item['link'][1];
-                                $linkTemplate = $item['link'][2] ?? 'こちらの %s をご利用ください。';
-                            @endphp
-                            <p>{!! sprintf($linkTemplate, '<a href="' . e($linkUrl) . '" class="text-blue-600 hover:underline">' . e($linkText) . '</a>') !!}</p>
-                        @endif
+
+                            @if(!empty($item['bullets']))
+                                <ul class="list-disc pl-5 space-y-1 marker:text-secondary-400">
+                                    @foreach($item['bullets'] as $b)
+                                        <li>{{ $b }}</li>
+                                    @endforeach
+                                </ul>
+                            @endif
+
+                            @foreach($item['paragraphs_after'] ?? [] as $p)
+                                <p>{{ $p }}</p>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
-                </div>
-            </div>
+            </article>
         @endforeach
     </div>
+
+    <div class="border-t border-secondary-200 pt-8 text-center">
+        <p class="text-sm text-secondary-500 mb-4">違反が見受けられる場合は遠慮なくご連絡ください。</p>
+        <a href="{{ route('contact.create') }}" class="btn-museum-outline inline-flex">
+            お問い合わせ
+        </a>
+    </div>
+
 </div>
 @endsection

@@ -1,53 +1,58 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-    <h1 class="text-2xl font-bold mb-6">お知らせ一覧</h1>
+@section('title', 'お知らせ')
+@section('description', 'Palette からのお知らせ・プレスリリース一覧。')
 
+@section('content')
+
+{{-- ページヘッダー --}}
+<div class="page-header">
+    <div class="page-header-inner">
+        <p class="page-header-subtitle">Information</p>
+        <h1 class="page-header-title mt-2">お知らせ</h1>
+        <p class="text-secondary-500 text-sm mt-3">運営からのお知らせ・プレスリリースをお届けします。</p>
+    </div>
+</div>
+
+<div class="page-narrow">
     @if($informations->isEmpty())
-        <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-            <p class="text-gray-600">お知らせはありません</p>
+        <div class="border border-secondary-200 px-5 py-16 text-center">
+            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-400 mb-3">No Information</p>
+            <p class="text-secondary-500">現在お知らせはありません。</p>
         </div>
     @else
-        <div class="space-y-4">
+        <div class="border-t border-secondary-200">
             @foreach($informations as $info)
-                <div class="bg-white border rounded-lg p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="text-sm text-gray-500">
-                                    {{ $info->published_at->format('Y年m月d日') }}
-                                </span>
-                                @if($info->type === 'press_release')
-                                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                        プレスリリース
-                                    </span>
-                                @else
-                                    <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
-                                        お知らせ
-                                    </span>
-                                @endif
-                            </div>
-                            <h2 class="text-lg font-semibold mb-2">
-                                <a href="{{ route('information.show', $info) }}" class="text-blue-600 hover:text-blue-800">
-                                    {{ $info->title }}
-                                </a>
-                            </h2>
-                            @if($info->content)
-                                <p class="text-sm text-gray-600 line-clamp-2">
-                                    {{ strip_tags($info->content) }}
-                                </p>
-                            @endif
-                        </div>
+                <a href="{{ route('information.show', $info) }}"
+                   class="group flex items-start gap-5 sm:gap-8 py-6 px-1 border-b border-secondary-200 hover:bg-secondary-50 transition-colors duration-300">
+                    <div class="shrink-0 text-left">
+                        <p class="text-[10px] tracking-[0.2em] uppercase text-secondary-400">
+                            {{ $info->published_at->format('Y . n . j') }}
+                        </p>
+                        <p class="text-[10px] tracking-[0.25em] uppercase mt-1 {{ $info->type === 'press_release' ? 'text-secondary-900' : 'text-secondary-500' }}">
+                            {{ $info->type === 'press_release' ? 'Press' : 'Notice' }}
+                        </p>
                     </div>
-                </div>
+                    <div class="min-w-0 flex-1">
+                        <h2 class="font-display text-base sm:text-lg font-semibold text-secondary-900 mb-1 leading-snug">
+                            {{ $info->title }}
+                        </h2>
+                        @if($info->content)
+                            <p class="text-sm text-secondary-500 line-clamp-2 leading-relaxed">
+                                {{ strip_tags($info->content) }}
+                            </p>
+                        @endif
+                    </div>
+                    <svg class="w-4 h-4 text-secondary-300 group-hover:text-secondary-900 transition-colors duration-300 shrink-0 mt-1" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
             @endforeach
         </div>
 
-        <div class="mt-6">
+        <div class="mt-10">
             {{ $informations->links() }}
         </div>
     @endif
 </div>
 @endsection
-

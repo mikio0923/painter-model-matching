@@ -1,52 +1,90 @@
 @extends('layouts.app')
 
+@section('title', 'モデルになるガイド')
+@section('description', 'モデル登録から依頼受諾までの流れ、プロフィール作成のポイントをご紹介します。')
+
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-    <h1 class="text-3xl font-bold mb-6">モデルになるガイド</h1>
 
-    <div class="prose max-w-none">
-        <section class="mb-8">
-            <h2 class="text-2xl font-semibold mb-4">モデル登録の流れ</h2>
-            <ol class="list-decimal list-inside space-y-2">
-                <li>新規登録でモデルアカウントを作成</li>
-                <li>プロフィール情報を入力（表示名、年齢、性別、都道府県など）</li>
-                <li>プロフィール画像をアップロード</li>
-                <li>報酬目安を設定</li>
-                <li>プロフィールを公開</li>
-            </ol>
-        </section>
+{{-- ページヘッダー --}}
+<div class="page-header">
+    <div class="art-bg-stage">
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/pearl-earring.jpg') }}');"></div>
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/great-wave.jpg') }}');"></div>
+        <div class="art-bg-layer" style="background-image: url('{{ asset('images/art-bg/starry-night.jpg') }}');"></div>
+        <div class="art-bg-veil"></div>
+    </div>
+    <div class="page-header-inner">
+        <p class="page-header-subtitle">For Model</p>
+        <h1 class="page-header-title mt-2">モデルになるガイド</h1>
+        <p class="text-secondary-500 text-sm mt-3">登録からマッチング、依頼の受諾までの流れをご紹介します。</p>
+    </div>
+</div>
 
-        <section class="mb-8">
-            <h2 class="text-2xl font-semibold mb-4">プロフィール作成のポイント</h2>
-            <ul class="list-disc list-inside space-y-2">
-                <li>プロフィール画像は複数枚アップロード可能です</li>
-                <li>自己紹介や経験・実績を詳しく記載すると、依頼が来やすくなります</li>
-                <li>スタイルタグを適切に設定することで、検索されやすくなります</li>
-                <li>報酬目安を設定することで、適切な依頼が来やすくなります</li>
-            </ul>
-        </section>
+<div class="page-narrow space-y-12">
 
-        <section class="mb-8">
-            <h2 class="text-2xl font-semibold mb-4">依頼を受ける流れ</h2>
-            <ol class="list-decimal list-inside space-y-2">
-                <li>画家から依頼が来ます</li>
-                <li>依頼内容を確認し、応募します</li>
-                <li>画家が応募を承認すると、メッセージのやり取りが可能になります</li>
-                <li>詳細を確認し、依頼を完了します</li>
-                <li>完了後、お互いにレビューを投稿できます</li>
-            </ol>
-        </section>
+    @php
+        $sections = [
+            ['label' => 'Registration', 'title' => 'モデル登録の流れ', 'type' => 'ordered', 'items' => [
+                '新規登録でモデルアカウントを作成',
+                'プロフィール情報を入力（表示名、年齢、性別、都道府県など）',
+                'プロフィール画像をアップロード',
+                '報酬目安を設定',
+                'プロフィールを公開',
+            ]],
+            ['label' => 'Profile Tips', 'title' => 'プロフィール作成のポイント', 'type' => 'unordered', 'items' => [
+                'プロフィール画像は複数枚アップロード可能です',
+                '自己紹介・経歴を丁寧に書くと、依頼が来やすくなります',
+                'スタイルタグを設定すると、画家からの検索でヒットしやすくなります',
+                '報酬目安を設定することで、条件に合う依頼が届きやすくなります',
+            ]],
+            ['label' => 'Workflow', 'title' => '依頼を受ける流れ', 'type' => 'ordered', 'items' => [
+                '画家から依頼またはオファーが届きます',
+                '依頼内容を確認して応募します',
+                '画家が応募を承認すると、メッセージのやり取りが始まります',
+                '日程・場所・条件を詳細を確認し、撮影に臨みます',
+                '完了後、お互いにレビューを投稿できます',
+            ]],
+            ['label' => 'Notice', 'title' => '注意事項', 'type' => 'unordered', 'items' => [
+                'プロフィール情報は正確に入力してください',
+                '応募後は誠実に対応してください',
+                '報酬や条件は事前に必ず確認してください',
+                '安全のため、初回は公共の場所での撮影を推奨します',
+            ]],
+        ];
+    @endphp
 
-        <section class="mb-8">
-            <h2 class="text-2xl font-semibold mb-4">注意事項</h2>
-            <ul class="list-disc list-inside space-y-2">
-                <li>プロフィール情報は正確に入力してください</li>
-                <li>応募後は誠実に対応してください</li>
-                <li>報酬や条件は事前に確認してください</li>
-                <li>安全のため、初回は公共の場所での撮影を推奨します</li>
-            </ul>
+    @foreach($sections as $section)
+        <section>
+            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-2">{{ $section['label'] }}</p>
+            <h2 class="font-display text-2xl font-semibold text-secondary-900 mb-5">{{ $section['title'] }}</h2>
+
+            @if($section['type'] === 'ordered')
+                <ol class="border-t border-secondary-200">
+                    @foreach($section['items'] as $i => $item)
+                        <li class="flex items-baseline gap-4 py-4 border-b border-secondary-200">
+                            <span class="font-display text-secondary-400 text-sm shrink-0 w-8">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                            <span class="text-secondary-700 text-sm leading-relaxed">{{ $item }}</span>
+                        </li>
+                    @endforeach
+                </ol>
+            @else
+                <ul class="border-t border-secondary-200">
+                    @foreach($section['items'] as $item)
+                        <li class="flex items-baseline gap-4 py-4 border-b border-secondary-200">
+                            <span class="text-secondary-400 shrink-0">·</span>
+                            <span class="text-secondary-700 text-sm leading-relaxed">{{ $item }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
         </section>
+    @endforeach
+
+    <div class="border-t border-secondary-200 pt-10 text-center">
+        <p class="text-sm text-secondary-500 mb-5">準備ができたら、登録を始めましょう。</p>
+        <a href="{{ route('register', ['role' => 'model']) }}" class="btn-museum-dark inline-flex">
+            モデルとして登録
+        </a>
     </div>
 </div>
 @endsection
-

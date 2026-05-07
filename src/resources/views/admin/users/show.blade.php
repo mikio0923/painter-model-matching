@@ -1,120 +1,133 @@
 @extends('admin.layouts.app')
 
 @section('content')
-<div class="mb-8 flex items-center justify-between">
-    <h1 class="text-3xl font-bold text-secondary-900">ユーザー詳細</h1>
-    <a href="{{ route('admin.users.index') }}" class="btn-secondary">一覧に戻る</a>
+
+{{-- ヘッダー --}}
+<div class="border-b border-secondary-200 pb-5 mb-8 flex items-end justify-between gap-4 flex-wrap">
+    <div>
+        <div class="flex items-center gap-2 mb-2">
+            <a href="{{ route('admin.users.index') }}" class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 hover:text-secondary-900 transition-colors inline-flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Users
+            </a>
+            <span class="text-secondary-300">/</span>
+            <span class="text-[10px] tracking-[0.25em] uppercase text-secondary-700">Detail</span>
+        </div>
+        <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">User Detail</p>
+        <h1 class="font-display text-2xl font-semibold text-secondary-900">{{ $user->name }}</h1>
+    </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+@php
+    $roleInfo = match($user->role) {
+        'admin'   => ['label' => '管理者', 'class' => 'text-error-600'],
+        'painter' => ['label' => '画家',   'class' => 'text-secondary-900'],
+        default   => ['label' => 'モデル', 'class' => 'text-secondary-700'],
+    };
+@endphp
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
     {{-- 基本情報 --}}
-    <div class="card">
-        <div class="card-header">
-            <h2 class="text-lg font-semibold text-secondary-900">基本情報</h2>
+    <div class="border border-secondary-200 bg-canvas-50">
+        <div class="px-5 py-3 border-b border-secondary-200">
+            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Basic Info</p>
+            <h2 class="font-display text-base font-semibold text-secondary-900">基本情報</h2>
         </div>
-        <div class="card-body">
-            <dl class="space-y-4">
-                <div>
-                    <dt class="text-sm font-medium text-secondary-500">ID</dt>
-                    <dd class="mt-1 text-sm text-secondary-900">{{ $user->id }}</dd>
-                </div>
-                <div>
-                    <dt class="text-sm font-medium text-secondary-500">名前</dt>
-                    <dd class="mt-1 text-sm text-secondary-900">{{ $user->name }}</dd>
-                </div>
-                <div>
-                    <dt class="text-sm font-medium text-secondary-500">メールアドレス</dt>
-                    <dd class="mt-1 text-sm text-secondary-900">{{ $user->email }}</dd>
-                </div>
-                <div>
-                    <dt class="text-sm font-medium text-secondary-500">ロール</dt>
-                    <dd class="mt-1">
-                        <span class="badge badge-{{ $user->role === 'admin' ? 'error' : ($user->role === 'painter' ? 'primary' : 'accent') }}">
-                            {{ $user->role === 'admin' ? '管理者' : ($user->role === 'painter' ? '画家' : 'モデル') }}
-                        </span>
-                    </dd>
-                </div>
-                <div>
-                    <dt class="text-sm font-medium text-secondary-500">登録日</dt>
-                    <dd class="mt-1 text-sm text-secondary-900">{{ $user->created_at->format('Y年m月d日 H:i') }}</dd>
-                </div>
-            </dl>
-        </div>
+        <dl class="divide-y divide-secondary-200">
+            <div class="px-5 py-3 flex gap-4">
+                <dt class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 w-24 shrink-0 pt-0.5">ID</dt>
+                <dd class="text-sm text-secondary-900">{{ $user->id }}</dd>
+            </div>
+            <div class="px-5 py-3 flex gap-4">
+                <dt class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 w-24 shrink-0 pt-0.5">Name</dt>
+                <dd class="text-sm text-secondary-900">{{ $user->name }}</dd>
+            </div>
+            <div class="px-5 py-3 flex gap-4">
+                <dt class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 w-24 shrink-0 pt-0.5">Email</dt>
+                <dd class="text-sm text-secondary-900 break-all">{{ $user->email }}</dd>
+            </div>
+            <div class="px-5 py-3 flex gap-4">
+                <dt class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 w-24 shrink-0 pt-0.5">Role</dt>
+                <dd class="text-[10px] tracking-[0.25em] uppercase {{ $roleInfo['class'] }}">● {{ $roleInfo['label'] }}</dd>
+            </div>
+            <div class="px-5 py-3 flex gap-4">
+                <dt class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 w-24 shrink-0 pt-0.5">Created</dt>
+                <dd class="text-sm text-secondary-900">{{ $user->created_at->format('Y年n月j日 H:i') }}</dd>
+            </div>
+        </dl>
     </div>
 
     {{-- プロフィール情報 --}}
-    <div class="card">
-        <div class="card-header">
-            <h2 class="text-lg font-semibold text-secondary-900">プロフィール情報</h2>
+    <div class="border border-secondary-200 bg-canvas-50">
+        <div class="px-5 py-3 border-b border-secondary-200">
+            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Profile</p>
+            <h2 class="font-display text-base font-semibold text-secondary-900">プロフィール情報</h2>
         </div>
-        <div class="card-body">
-            @if($user->role === 'model' && $user->modelProfile)
-                <dl class="space-y-4">
-                    <div>
-                        <dt class="text-sm font-medium text-secondary-500">表示名</dt>
-                        <dd class="mt-1 text-sm text-secondary-900">{{ $user->modelProfile->display_name }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-sm font-medium text-secondary-500">都道府県</dt>
-                        <dd class="mt-1 text-sm text-secondary-900">{{ $user->modelProfile->prefecture ?? '未設定' }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-sm font-medium text-secondary-500">公開状態</dt>
-                        <dd class="mt-1">
-                            <span class="badge badge-{{ $user->modelProfile->is_public ? 'success' : 'secondary' }}">
-                                {{ $user->modelProfile->is_public ? '公開' : '非公開' }}
-                            </span>
-                        </dd>
-                    </div>
-                </dl>
-            @elseif($user->role === 'painter' && $user->painterProfile)
-                <dl class="space-y-4">
-                    <div>
-                        <dt class="text-sm font-medium text-secondary-500">表示名</dt>
-                        <dd class="mt-1 text-sm text-secondary-900">{{ $user->painterProfile->display_name }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-sm font-medium text-secondary-500">都道府県</dt>
-                        <dd class="mt-1 text-sm text-secondary-900">{{ $user->painterProfile->prefecture ?? '未設定' }}</dd>
-                    </div>
-                </dl>
-            @else
-                <p class="text-secondary-500 text-sm">プロフィール情報がありません</p>
-            @endif
-        </div>
+        @if($user->role === 'model' && $user->modelProfile)
+            <dl class="divide-y divide-secondary-200">
+                <div class="px-5 py-3 flex gap-4">
+                    <dt class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 w-24 shrink-0 pt-0.5">Display</dt>
+                    <dd class="text-sm text-secondary-900">{{ $user->modelProfile->display_name }}</dd>
+                </div>
+                <div class="px-5 py-3 flex gap-4">
+                    <dt class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 w-24 shrink-0 pt-0.5">Prefecture</dt>
+                    <dd class="text-sm text-secondary-900">{{ $user->modelProfile->prefecture ?? '未設定' }}</dd>
+                </div>
+                <div class="px-5 py-3 flex gap-4">
+                    <dt class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 w-24 shrink-0 pt-0.5">Visibility</dt>
+                    <dd class="text-[10px] tracking-[0.25em] uppercase {{ $user->modelProfile->is_public ? 'text-success-700' : 'text-secondary-500' }}">
+                        ● {{ $user->modelProfile->is_public ? '公開' : '非公開' }}
+                    </dd>
+                </div>
+            </dl>
+        @elseif($user->role === 'painter' && $user->painterProfile)
+            <dl class="divide-y divide-secondary-200">
+                <div class="px-5 py-3 flex gap-4">
+                    <dt class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 w-24 shrink-0 pt-0.5">Display</dt>
+                    <dd class="text-sm text-secondary-900">{{ $user->painterProfile->display_name }}</dd>
+                </div>
+                <div class="px-5 py-3 flex gap-4">
+                    <dt class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 w-24 shrink-0 pt-0.5">Prefecture</dt>
+                    <dd class="text-sm text-secondary-900">{{ $user->painterProfile->prefecture ?? '未設定' }}</dd>
+                </div>
+            </dl>
+        @else
+            <div class="px-5 py-12 text-center">
+                <p class="text-secondary-500 text-sm">プロフィール情報がありません。</p>
+            </div>
+        @endif
     </div>
 </div>
 
 {{-- アクティビティ --}}
-<div class="card mt-6">
-    <div class="card-header">
-        <h2 class="text-lg font-semibold text-secondary-900">アクティビティ</h2>
+<div class="border border-secondary-200 bg-canvas-50 mb-6">
+    <div class="px-5 py-3 border-b border-secondary-200">
+        <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Activity</p>
+        <h2 class="font-display text-base font-semibold text-secondary-900">アクティビティ</h2>
     </div>
-    <div class="card-body">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-                <dt class="text-sm font-medium text-secondary-500">投稿した依頼数</dt>
-                <dd class="mt-1 text-2xl font-bold text-secondary-900">{{ $user->jobs->count() }}</dd>
-            </div>
-            <div>
-                <dt class="text-sm font-medium text-secondary-500">応募数</dt>
-                <dd class="mt-1 text-2xl font-bold text-secondary-900">{{ $user->jobApplications->count() }}</dd>
-            </div>
+    <div class="px-5 py-5 grid grid-cols-2 gap-6">
+        <div>
+            <p class="text-[10px] tracking-[0.25em] uppercase text-secondary-500">Posted Jobs</p>
+            <p class="font-display text-2xl text-secondary-900 mt-1">{{ $user->jobs->count() }}</p>
+        </div>
+        <div>
+            <p class="text-[10px] tracking-[0.25em] uppercase text-secondary-500">Applications</p>
+            <p class="font-display text-2xl text-secondary-900 mt-1">{{ $user->jobApplications->count() }}</p>
         </div>
     </div>
 </div>
 
 @if($user->role !== 'admin')
-    <div class="mt-6">
-        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" 
+    <div class="flex justify-end">
+        <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
               onsubmit="return confirm('本当にこのユーザーを削除しますか？この操作は取り消せません。');">
             @csrf
             @method('DELETE')
-            <button type="submit" class="btn-secondary bg-error-600 hover:bg-error-700 text-white">
-                ユーザーを削除
+            <button type="submit"
+                    class="px-6 py-2.5 border border-error-500 text-error-600 text-xs uppercase tracking-[0.25em] hover:bg-error-50 transition-colors duration-200">
+                Delete User
             </button>
         </form>
     </div>
 @endif
 @endsection
-

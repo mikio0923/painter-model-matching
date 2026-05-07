@@ -1,317 +1,227 @@
 @extends('layouts.app')
 
+@section('title', '依頼を作成')
+
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-3xl">
-    <h1 class="text-2xl font-bold mb-6">依頼を作成</h1>
+
+{{-- ページヘッダー --}}
+<div class="page-header">
+    <div class="page-header-inner">
+        <div class="flex items-center gap-2 mb-3">
+            <a href="{{ route('painter.jobs.index') }}" class="page-header-breadcrumb">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                依頼一覧
+            </a>
+            <span class="page-header-breadcrumb-sep">/</span>
+            <span class="page-header-breadcrumb-current">作成</span>
+        </div>
+        <p class="page-header-subtitle">Create Job</p>
+        <h1 class="page-header-title mt-2">依頼を作成</h1>
+        <p class="text-secondary-500 text-sm mt-3">モデルに伝わるよう、内容を丁寧にご記入ください。</p>
+    </div>
+</div>
+
+<div class="page-narrow">
 
     @if($modelProfile)
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <p class="text-sm text-blue-800 font-semibold mb-2">依頼対象モデル</p>
-            <p class="text-blue-900">{{ $modelProfile->display_name }}</p>
+        <div class="border-l-2 border-secondary-400 bg-canvas-50 px-5 py-4 mb-6">
+            <p class="text-[10px] uppercase tracking-[0.3em] text-secondary-500 mb-1">Target Model</p>
+            <p class="text-secondary-900 font-medium">{{ $modelProfile->display_name }}</p>
         </div>
     @endif
 
-    <form action="{{ route('painter.jobs.store') }}" method="POST" class="space-y-6">
+    @php
+        $rowLabel = 'block text-[10px] tracking-[0.25em] uppercase text-secondary-500 mb-2';
+        $input    = 'w-full px-4 py-3 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900 transition-colors duration-200';
+    @endphp
+
+    <form action="{{ route('painter.jobs.store') }}" method="POST"
+          class="border border-secondary-200 bg-canvas-50 p-5 sm:p-8 space-y-6">
         @csrf
 
         @if($modelProfile)
             <input type="hidden" name="model_id" value="{{ $modelProfile->id }}">
         @endif
 
+        {{-- セクション: 案件概要 --}}
+        <div class="border-b border-secondary-200 pb-2">
+            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Section 01</p>
+            <h2 class="font-display text-base font-semibold text-secondary-900 mt-1">案件概要</h2>
+        </div>
+
         {{-- タイトル --}}
         <div>
-            <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
-                タイトル <span class="text-red-500">*</span>
-            </label>
-            <input type="text" 
-                   id="title" 
-                   name="title" 
-                   value="{{ old('title') }}"
-                   required
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            @error('title')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+            <label for="title" class="{{ $rowLabel }}">タイトル <span class="text-error-500">*</span></label>
+            <input type="text" id="title" name="title" value="{{ old('title') }}" required class="{{ $input }}">
+            @error('title')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
         {{-- 説明 --}}
         <div>
-            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-                説明 <span class="text-red-500">*</span>
-            </label>
-            <textarea id="description" 
-                      name="description" 
-                      rows="5"
-                      required
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('description') }}</textarea>
-            @error('description')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+            <label for="description" class="{{ $rowLabel }}">説明 <span class="text-error-500">*</span></label>
+            <textarea id="description" name="description" rows="6" required class="{{ $input }} resize-y leading-relaxed">{{ old('description') }}</textarea>
+            @error('description')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
         {{-- 用途 --}}
         <div>
-            <label for="usage_purpose" class="block text-sm font-medium text-gray-700 mb-1">
-                用途（任意）
-            </label>
-            <input type="text" 
-                   id="usage_purpose" 
-                   name="usage_purpose" 
-                   value="{{ old('usage_purpose') }}"
-                   placeholder="例：個展、練習、作品制作"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            @error('usage_purpose')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+            <label for="usage_purpose" class="{{ $rowLabel }}">用途</label>
+            <input type="text" id="usage_purpose" name="usage_purpose" value="{{ old('usage_purpose') }}"
+                   placeholder="例：個展、練習、作品制作" class="{{ $input }}">
+            @error('usage_purpose')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
         {{-- カテゴリ --}}
         <div>
-            <label for="category" class="block text-sm font-medium text-gray-700 mb-1">
-                カテゴリ（任意）
-            </label>
-            <input type="text"
-                   id="category"
-                   name="category"
-                   value="{{ old('category') }}"
-                   placeholder="例：広告用モデル募集"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            @error('category')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+            <label for="category" class="{{ $rowLabel }}">カテゴリ</label>
+            <input type="text" id="category" name="category" value="{{ old('category') }}"
+                   placeholder="例：広告用モデル募集" class="{{ $input }}">
+            @error('category')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
-        {{-- 報酬 --}}
-        <div class="grid grid-cols-2 gap-4">
+        {{-- セクション: 報酬・条件 --}}
+        <div class="border-b border-secondary-200 pb-2 pt-4">
+            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Section 02</p>
+            <h2 class="font-display text-base font-semibold text-secondary-900 mt-1">報酬・条件</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label for="reward_amount" class="block text-sm font-medium text-gray-700 mb-1">
-                    報酬額（任意）
-                </label>
-                <input type="number" 
-                       id="reward_amount" 
-                       name="reward_amount" 
-                       value="{{ old('reward_amount') }}"
-                       min="0"
-                       placeholder="例：5000"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                @error('reward_amount')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <label for="reward_amount" class="{{ $rowLabel }}">報酬額（円）</label>
+                <input type="number" id="reward_amount" name="reward_amount" value="{{ old('reward_amount') }}"
+                       min="0" placeholder="例：5000" class="{{ $input }}">
+                @error('reward_amount')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
             <div>
-                <label for="reward_unit" class="block text-sm font-medium text-gray-700 mb-1">
-                    単位（任意）
-                </label>
-                <select id="reward_unit" 
-                        name="reward_unit"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <label for="reward_unit" class="{{ $rowLabel }}">単位</label>
+                <select id="reward_unit" name="reward_unit" class="{{ $input }}">
                     <option value="per_session" {{ old('reward_unit', 'per_session') === 'per_session' ? 'selected' : '' }}>1回あたり</option>
                     <option value="per_hour" {{ old('reward_unit') === 'per_hour' ? 'selected' : '' }}>1時間あたり</option>
                 </select>
-                @error('reward_unit')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                @error('reward_unit')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
         </div>
 
-        {{-- その他条件 --}}
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label for="transportation_fee" class="block text-sm font-medium text-gray-700 mb-1">
-                    交通費の支給（任意）
-                </label>
-                <input type="text"
-                       id="transportation_fee"
-                       name="transportation_fee"
-                       value="{{ old('transportation_fee') }}"
-                       placeholder="例：なし / あり / 応相談"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                @error('transportation_fee')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <label for="transportation_fee" class="{{ $rowLabel }}">交通費の支給</label>
+                <input type="text" id="transportation_fee" name="transportation_fee" value="{{ old('transportation_fee') }}"
+                       placeholder="例：なし / あり / 応相談" class="{{ $input }}">
+                @error('transportation_fee')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
             <div>
-                <label for="costume_provided" class="block text-sm font-medium text-gray-700 mb-1">
-                    衣装の提供（任意）
-                </label>
-                <input type="text"
-                       id="costume_provided"
-                       name="costume_provided"
-                       value="{{ old('costume_provided') }}"
-                       placeholder="例：なし / あり / 応相談"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                @error('costume_provided')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <label for="costume_provided" class="{{ $rowLabel }}">衣装の提供</label>
+                <input type="text" id="costume_provided" name="costume_provided" value="{{ old('costume_provided') }}"
+                       placeholder="例：なし / あり / 応相談" class="{{ $input }}">
+                @error('costume_provided')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label for="target" class="block text-sm font-medium text-gray-700 mb-1">
-                    募集対象（任意）
-                </label>
-                <input type="text"
-                       id="target"
-                       name="target"
-                       value="{{ old('target') }}"
-                       placeholder="例：女性 / 男性 / 指定なし"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                @error('target')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <label for="target" class="{{ $rowLabel }}">募集対象</label>
+                <input type="text" id="target" name="target" value="{{ old('target') }}"
+                       placeholder="例：女性 / 男性 / 指定なし" class="{{ $input }}">
+                @error('target')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
             <div>
-                <label for="recruitment_number" class="block text-sm font-medium text-gray-700 mb-1">
-                    募集人数（任意）
-                </label>
-                <input type="number"
-                       id="recruitment_number"
-                       name="recruitment_number"
-                       value="{{ old('recruitment_number') }}"
-                       min="1"
-                       placeholder="例：1"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                @error('recruitment_number')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <label for="recruitment_number" class="{{ $rowLabel }}">募集人数</label>
+                <input type="number" id="recruitment_number" name="recruitment_number" value="{{ old('recruitment_number') }}"
+                       min="1" placeholder="例：1" class="{{ $input }}">
+                @error('recruitment_number')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
         </div>
 
-        {{-- 場所 --}}
+        {{-- セクション: 場所 --}}
+        <div class="border-b border-secondary-200 pb-2 pt-4">
+            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Section 03</p>
+            <h2 class="font-display text-base font-semibold text-secondary-900 mt-1">場所</h2>
+        </div>
+
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-                場所 <span class="text-red-500">*</span>
-            </label>
-            <div class="space-y-2">
-                <label class="flex items-center">
-                    <input type="radio" 
-                           name="location_type" 
-                           value="online" 
-                           {{ old('location_type', 'online') === 'online' ? 'checked' : '' }}
-                           required
-                           class="mr-2">
-                    <span>オンライン</span>
+            <p class="{{ $rowLabel }}">場所区分 <span class="text-error-500">*</span></p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <label class="cursor-pointer">
+                    <input type="radio" name="location_type" value="online"
+                           {{ old('location_type', 'online') === 'online' ? 'checked' : '' }} required class="peer sr-only">
+                    <span class="block text-center py-3 border border-secondary-300 text-sm text-secondary-700 peer-checked:border-secondary-900 peer-checked:bg-secondary-900 peer-checked:text-canvas-50 transition-colors duration-200">
+                        オンライン
+                        <span class="block text-[9px] tracking-[0.2em] uppercase text-secondary-500 peer-checked:text-secondary-300">Online</span>
+                    </span>
                 </label>
-                <label class="flex items-center">
-                    <input type="radio" 
-                           name="location_type" 
-                           value="offline" 
-                           {{ old('location_type') === 'offline' ? 'checked' : '' }}
-                           required
-                           class="mr-2">
-                    <span>オフライン</span>
+                <label class="cursor-pointer">
+                    <input type="radio" name="location_type" value="offline"
+                           {{ old('location_type') === 'offline' ? 'checked' : '' }} required class="peer sr-only">
+                    <span class="block text-center py-3 border border-secondary-300 text-sm text-secondary-700 peer-checked:border-secondary-900 peer-checked:bg-secondary-900 peer-checked:text-canvas-50 transition-colors duration-200">
+                        オフライン
+                        <span class="block text-[9px] tracking-[0.2em] uppercase text-secondary-500 peer-checked:text-secondary-300">Offline</span>
+                    </span>
                 </label>
             </div>
-            @error('location_type')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+            @error('location_type')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
-        {{-- 都道府県・市区町村（オフラインの場合） --}}
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label for="prefecture" class="block text-sm font-medium text-gray-700 mb-1">
-                    都道府県（任意）
-                </label>
-                <select id="prefecture" 
-                        name="prefecture"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <label for="prefecture" class="{{ $rowLabel }}">都道府県</label>
+                <select id="prefecture" name="prefecture" class="{{ $input }}">
                     <option value="">選択してください</option>
                     @foreach($prefectures as $pref)
                         <option value="{{ $pref }}" {{ old('prefecture') === $pref ? 'selected' : '' }}>{{ $pref }}</option>
                     @endforeach
                 </select>
-                @error('prefecture')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                @error('prefecture')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
             <div>
-                <label for="city" class="block text-sm font-medium text-gray-700 mb-1">
-                    市区町村（任意）
-                </label>
-                <input type="text" 
-                       id="city" 
-                       name="city" 
-                       value="{{ old('city') }}"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                @error('city')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <label for="city" class="{{ $rowLabel }}">市区町村</label>
+                <input type="text" id="city" name="city" value="{{ old('city') }}" class="{{ $input }}">
+                @error('city')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
         </div>
 
-        {{-- 住所・アクセス（オフラインの場合） --}}
         <div>
-            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">
-                住所（任意）
-            </label>
-            <input type="text"
-                   id="address"
-                   name="address"
-                   value="{{ old('address') }}"
-                   placeholder="例：新宿4-2-16 パシフィックマークス新宿サウスゲート7階"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            @error('address')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+            <label for="address" class="{{ $rowLabel }}">住所</label>
+            <input type="text" id="address" name="address" value="{{ old('address') }}"
+                   placeholder="例：新宿4-2-16 パシフィックマークス新宿サウスゲート7階" class="{{ $input }}">
+            @error('address')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
         <div>
-            <label for="access" class="block text-sm font-medium text-gray-700 mb-1">
-                アクセス・補足（任意）
-            </label>
-            <textarea id="access"
-                      name="access"
-                      rows="4"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('access') }}</textarea>
-            @error('access')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+            <label for="access" class="{{ $rowLabel }}">アクセス・補足</label>
+            <textarea id="access" name="access" rows="4" class="{{ $input }} resize-y leading-relaxed">{{ old('access') }}</textarea>
+            @error('access')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
-        {{-- 日程 --}}
-        <div>
-            <label for="scheduled_date" class="block text-sm font-medium text-gray-700 mb-1">
-                日程（任意）
-            </label>
-            <input type="date" 
-                   id="scheduled_date" 
-                   name="scheduled_date" 
-                   value="{{ old('scheduled_date') }}"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            @error('scheduled_date')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+        {{-- セクション: 日程 --}}
+        <div class="border-b border-secondary-200 pb-2 pt-4">
+            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Section 04</p>
+            <h2 class="font-display text-base font-semibold text-secondary-900 mt-1">日程</h2>
         </div>
 
-        {{-- 締切 --}}
-        <div>
-            <label for="apply_deadline" class="block text-sm font-medium text-gray-700 mb-1">
-                応募締切（任意）
-            </label>
-            <input type="date" 
-                   id="apply_deadline" 
-                   name="apply_deadline" 
-                   value="{{ old('apply_deadline') }}"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            @error('apply_deadline')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="scheduled_date" class="{{ $rowLabel }}">撮影日</label>
+                <input type="date" id="scheduled_date" name="scheduled_date" value="{{ old('scheduled_date') }}" class="{{ $input }}">
+                @error('scheduled_date')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
+            </div>
+            <div>
+                <label for="apply_deadline" class="{{ $rowLabel }}">応募締切</label>
+                <input type="date" id="apply_deadline" name="apply_deadline" value="{{ old('apply_deadline') }}" class="{{ $input }}">
+                @error('apply_deadline')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
+            </div>
         </div>
 
-        {{-- 送信ボタン --}}
-        <div class="flex gap-4 pt-4">
-            <button type="submit" 
-                    class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                依頼を作成
-            </button>
-            <a href="{{ route('painter.jobs.index') }}" 
-               class="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                キャンセル
+        {{-- 送信 --}}
+        <div class="flex flex-col sm:flex-row gap-3 sm:justify-end pt-4 border-t border-secondary-200">
+            <a href="{{ route('painter.jobs.index') }}"
+               class="order-2 sm:order-1 px-6 py-2.5 border border-secondary-400 text-secondary-700 text-xs uppercase tracking-[0.2em] hover:bg-secondary-100 transition-colors duration-200 text-center">
+                Cancel
             </a>
+            <button type="submit"
+                    class="order-1 sm:order-2 px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.25em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+                Create Job
+            </button>
         </div>
     </form>
 </div>
 @endsection
-

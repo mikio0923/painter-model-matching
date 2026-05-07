@@ -1,16 +1,22 @@
 <x-guest-layout>
-    <div class="container mx-auto px-4 py-8 max-w-2xl">
-        <h2 class="text-xl font-bold mb-6">
-            > 新規会員登録
-            @if(isset($role) && $role === 'model')
-                (モデルの方)
-            @elseif(isset($role) && $role === 'painter')
-                (クライアントの方)
-            @endif
-        </h2>
+    <div class="page-narrow py-12 sm:py-16">
+        <div class="mb-10 text-center">
+            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">
+                @if(isset($role) && $role === 'painter')
+                    For Painter
+                @else
+                    For Model
+                @endif
+            </p>
+            <h1 class="font-display text-2xl sm:text-3xl font-semibold text-secondary-900">新規会員登録</h1>
+            <p class="text-sm text-secondary-500 mt-3">
+                必要事項を入力して登録を完了してください。
+            </p>
+        </div>
 
         @if(session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <div class="border-l-2 border-error-500 bg-canvas-50 px-4 py-3 mb-6 text-sm text-secondary-700">
+                <p class="text-[10px] uppercase tracking-[0.3em] text-error-700 mb-1">Error</p>
                 {{ session('error') }}
             </div>
         @endif
@@ -355,13 +361,13 @@
                 </tr>
             </table>
 
-            <div class="flex items-center justify-end mt-6">
-                <a class="link-secondary text-sm" href="{{ route('login-register') }}">
-                    ログインはこちら
+            <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mt-8 pt-6 border-t border-secondary-200">
+                <a href="{{ route('login-register') }}" class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 hover:text-secondary-900 transition-colors text-center sm:text-left">
+                    ← Sign in
                 </a>
-
-                <button type="submit" class="ml-4 btn-primary">
-                    登録する
+                <button type="submit"
+                        class="px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.25em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+                    Sign up
                 </button>
             </div>
             </div>

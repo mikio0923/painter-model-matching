@@ -24,8 +24,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // 本番環境では HTTPS を強制（リバースプロキシ経由対応）
-        if ($this->app->environment('production')) {
+        // APP_URL が https:// で始まる場合のみ HTTPS を強制
+        // （SSL 設定前の HTTP 期間でも CSS/JS が壊れないように）
+        if (str_starts_with(config('app.url'), 'https://')) {
             URL::forceScheme('https');
         }
 

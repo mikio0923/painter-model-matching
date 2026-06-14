@@ -7,9 +7,30 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
+    /**
+     * 既存の外部キー制約があれば削除（冪等化のため）
+     */
+    private function dropForeignIfExists(string $table, string $constraintName): void
+    {
+        $exists = DB::selectOne(
+            "SELECT 1 FROM information_schema.table_constraints
+             WHERE constraint_schema = DATABASE()
+               AND table_name = ?
+               AND constraint_name = ?
+               AND constraint_type = 'FOREIGN KEY'",
+            [$table, $constraintName]
+        );
+
+        if ($exists) {
+            DB::statement("ALTER TABLE `{$table}` DROP FOREIGN KEY `{$constraintName}`");
+        }
+    }
+
     public function up(): void
     {
-        // ── messages: sender_id / receiver_id に FK が未設定 → nullable + FK(nullOnDelete) を追加 ──
+        // ── messages: sender_id / receiver_id を nullable + FK(nullOnDelete) に ──
+        $this->dropForeignIfExists('messages', 'messages_sender_id_foreign');
+        $this->dropForeignIfExists('messages', 'messages_receiver_id_foreign');
         Schema::table('messages', function (Blueprint $table) {
             $table->unsignedBigInteger('sender_id')->nullable()->change();
             $table->unsignedBigInteger('receiver_id')->nullable()->change();
@@ -20,10 +41,8 @@ return new class extends Migration
         });
 
         // ── reviews: cascadeOnDelete → nullOnDelete ──
-        Schema::table('reviews', function (Blueprint $table) {
-            $table->dropForeign(['reviewer_id']);
-            $table->dropForeign(['reviewed_user_id']);
-        });
+        $this->dropForeignIfExists('reviews', 'reviews_reviewer_id_foreign');
+        $this->dropForeignIfExists('reviews', 'reviews_reviewed_user_id_foreign');
         Schema::table('reviews', function (Blueprint $table) {
             $table->unsignedBigInteger('reviewer_id')->nullable()->change();
             $table->unsignedBigInteger('reviewed_user_id')->nullable()->change();
@@ -34,9 +53,7 @@ return new class extends Migration
         });
 
         // ── job_applications: model_id の cascadeOnDelete → nullOnDelete ──
-        Schema::table('job_applications', function (Blueprint $table) {
-            $table->dropForeign(['model_id']);
-        });
+        $this->dropForeignIfExists('job_applications', 'job_applications_model_id_foreign');
         Schema::table('job_applications', function (Blueprint $table) {
             $table->unsignedBigInteger('model_id')->nullable()->change();
         });
@@ -45,9 +62,7 @@ return new class extends Migration
         });
 
         // ── painter_jobs: cascadeOnDelete → nullOnDelete ──
-        Schema::table('painter_jobs', function (Blueprint $table) {
-            $table->dropForeign(['painter_id']);
-        });
+        $this->dropForeignIfExists('painter_jobs', 'painter_jobs_painter_id_foreign');
         Schema::table('painter_jobs', function (Blueprint $table) {
             $table->unsignedBigInteger('painter_id')->nullable()->change();
         });
@@ -59,20 +74,16 @@ return new class extends Migration
     public function down(): void
     {
         // ── messages ──
-        Schema::table('messages', function (Blueprint $table) {
-            $table->dropForeign(['sender_id']);
-            $table->dropForeign(['receiver_id']);
-        });
+        $this->dropForeignIfExists('messages', 'messages_sender_id_foreign');
+        $this->dropForeignIfExists('messages', 'messages_receiver_id_foreign');
         Schema::table('messages', function (Blueprint $table) {
             $table->unsignedBigInteger('sender_id')->nullable(false)->change();
             $table->unsignedBigInteger('receiver_id')->nullable(false)->change();
         });
 
         // ── reviews ──
-        Schema::table('reviews', function (Blueprint $table) {
-            $table->dropForeign(['reviewer_id']);
-            $table->dropForeign(['reviewed_user_id']);
-        });
+        $this->dropForeignIfExists('reviews', 'reviews_reviewer_id_foreign');
+        $this->dropForeignIfExists('reviews', 'reviews_reviewed_user_id_foreign');
         Schema::table('reviews', function (Blueprint $table) {
             $table->unsignedBigInteger('reviewer_id')->nullable(false)->change();
             $table->unsignedBigInteger('reviewed_user_id')->nullable(false)->change();
@@ -83,9 +94,7 @@ return new class extends Migration
         });
 
         // ── job_applications ──
-        Schema::table('job_applications', function (Blueprint $table) {
-            $table->dropForeign(['model_id']);
-        });
+        $this->dropForeignIfExists('job_applications', 'job_applications_model_id_foreign');
         Schema::table('job_applications', function (Blueprint $table) {
             $table->unsignedBigInteger('model_id')->nullable(false)->change();
         });
@@ -94,9 +103,7 @@ return new class extends Migration
         });
 
         // ── painter_jobs ──
-        Schema::table('painter_jobs', function (Blueprint $table) {
-            $table->dropForeign(['painter_id']);
-        });
+        $this->dropForeignIfExists('painter_jobs', 'painter_jobs_painter_id_foreign');
         Schema::table('painter_jobs', function (Blueprint $table) {
             $table->unsignedBigInteger('painter_id')->nullable(false)->change();
         });

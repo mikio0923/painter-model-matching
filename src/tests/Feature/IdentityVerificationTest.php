@@ -21,6 +21,10 @@ class IdentityVerificationTest extends TestCase
     {
         parent::setUp();
 
+        // 本人確認機能は一旦停止中（プライバシー方針変更のため）
+        // 機能を復活させる場合は routes/web.php のコメントアウトを外し、このskipも解除する
+        $this->markTestSkipped('本人確認機能は停止中（restored if re-enabled）');
+
         Storage::fake('local');
 
         $this->model = User::factory()->create(['role' => 'model']);

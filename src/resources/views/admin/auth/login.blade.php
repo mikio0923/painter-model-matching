@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="robots" content="noindex, nofollow">
-    <title>Admin Login — {{ config('app.name', 'Palette') }}</title>
+    <title>管理画面ログイン — {{ config('app.name', 'Palette') }}</title>
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,12 +19,12 @@
         <div class="w-full max-w-sm">
             {{-- ロゴ --}}
             <div class="text-center mb-12">
-                <p class="text-[10px] tracking-[0.4em] uppercase text-secondary-500 mb-2">Administration</p>
+                <p class="text-xs tracking-wide text-secondary-500 mb-2">管理画面</p>
                 <h1 class="font-display text-3xl font-semibold text-canvas-50 tracking-wide">
                     {{ config('app.name', 'Palette') }}
                 </h1>
-                <div class="mt-4 inline-block px-3 py-0.5 border border-secondary-600 text-secondary-400 text-[10px] uppercase tracking-[0.3em]">
-                    Restricted Area
+                <div class="mt-4 inline-block px-3 py-1 border border-secondary-600 text-secondary-400 text-xs">
+                    関係者以外立入禁止
                 </div>
             </div>
 
@@ -33,8 +33,8 @@
                 @csrf
 
                 <div>
-                    <label for="email" class="block text-[10px] uppercase tracking-[0.25em] text-secondary-400 mb-2">
-                        Email
+                    <label for="email" class="block text-sm font-medium text-secondary-400 mb-2">
+                        メールアドレス
                     </label>
                     <input id="email"
                            type="email"
@@ -50,8 +50,8 @@
                 </div>
 
                 <div>
-                    <label for="password" class="block text-[10px] uppercase tracking-[0.25em] text-secondary-400 mb-2">
-                        Password
+                    <label for="password" class="block text-sm font-medium text-secondary-400 mb-2">
+                        パスワード
                     </label>
                     <input id="password"
                            type="password"
@@ -72,33 +72,33 @@
                 @endif
 
                 <div class="flex items-center justify-between pt-2">
-                    <label class="flex items-center gap-2 text-xs text-secondary-400 select-none cursor-pointer">
+                    <label class="flex items-center gap-2 text-sm text-secondary-400 select-none cursor-pointer">
                         <input type="checkbox" name="remember" class="w-3.5 h-3.5 bg-secondary-800 border-secondary-600 rounded-none">
-                        Remember me
+                        ログイン状態を保持する
                     </label>
                 </div>
 
                 <button type="submit"
-                        class="w-full py-3 bg-canvas-50 text-secondary-900 text-xs font-medium uppercase tracking-[0.3em]
+                        class="w-full py-3 bg-canvas-50 text-secondary-900 text-sm font-medium
                                border border-canvas-50
                                hover:bg-transparent hover:text-canvas-50
                                transition-colors duration-300
                                focus:outline-none focus:ring-2 focus:ring-canvas-50 focus:ring-offset-2 focus:ring-offset-secondary-900">
-                    Sign in
+                    ログイン
                 </button>
             </form>
 
             <div class="mt-12 text-center">
-                <a href="{{ url('/') }}" class="text-[10px] text-secondary-500 hover:text-secondary-300 tracking-[0.3em] uppercase transition-colors">
-                    ← Back to site
+                <a href="{{ url('/') }}" class="text-xs text-secondary-500 hover:text-secondary-300 transition-colors">
+                    ← サイトに戻る
                 </a>
             </div>
         </div>
     </main>
 
     <footer class="px-4 py-6 text-center">
-        <p class="text-[10px] text-secondary-600 tracking-[0.2em] uppercase">
-            &copy; {{ date('Y') }} {{ config('app.name', 'Palette') }} · Admin
+        <p class="text-xs text-secondary-600">
+            &copy; {{ date('Y') }} {{ config('app.name', 'Palette') }} 管理画面
         </p>
     </footer>
 </body>

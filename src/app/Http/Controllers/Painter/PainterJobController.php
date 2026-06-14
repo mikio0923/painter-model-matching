@@ -19,16 +19,22 @@ class PainterJobController extends Controller
     /**
      * 依頼一覧を表示
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $jobs = Job::where('painter_id', Auth::id())
+        $query = Job::where('painter_id', Auth::id())
             ->with(['painter.painterProfile', 'applications.model.modelProfile'])
-            ->withCount('applications')
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->withCount('applications');
+
+        $status = $request->query('status');
+        if (in_array($status, ['open', 'closed', 'done'], true)) {
+            $query->where('status', $status);
+        }
+
+        $jobs = $query->orderBy('created_at', 'desc')->get();
 
         return view('painter.jobs.index', [
             'jobs' => $jobs,
+            'currentStatus' => $status,
         ]);
     }
 

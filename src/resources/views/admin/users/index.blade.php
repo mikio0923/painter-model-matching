@@ -4,8 +4,8 @@
 
 {{-- ヘッダー --}}
 <div class="border-b border-secondary-200 pb-5 mb-8">
-    <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Users</p>
     <h1 class="font-display text-2xl font-semibold text-secondary-900">ユーザー管理</h1>
+    <p class="text-sm text-secondary-500 mt-1">登録ユーザーの検索・確認・削除ができます。</p>
 </div>
 
 {{-- 検索フォーム --}}
@@ -13,13 +13,13 @@
       class="border border-secondary-200 bg-canvas-50 p-5 sm:p-6 mb-6">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-            <label for="keyword" class="block text-[10px] tracking-[0.25em] uppercase text-secondary-500 mb-2">Keyword</label>
+            <label for="keyword" class="block text-sm font-medium text-secondary-700 mb-1.5">キーワード</label>
             <input type="text" id="keyword" name="keyword" value="{{ request('keyword') }}"
                    placeholder="名前・メールアドレス"
                    class="w-full px-4 py-2.5 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900 transition-colors duration-200">
         </div>
         <div>
-            <label for="role" class="block text-[10px] tracking-[0.25em] uppercase text-secondary-500 mb-2">Role</label>
+            <label for="role" class="block text-sm font-medium text-secondary-700 mb-1.5">ロール</label>
             <select id="role" name="role"
                     class="w-full px-4 py-2.5 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm focus:outline-none focus:border-secondary-900">
                 <option value="">すべて</option>
@@ -30,8 +30,8 @@
         </div>
         <div class="flex items-end">
             <button type="submit"
-                    class="w-full px-6 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.25em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
-                Search
+                    class="w-full px-6 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-sm hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+                検索する
             </button>
         </div>
     </div>
@@ -44,21 +44,21 @@
             <table class="min-w-full">
                 <thead class="bg-secondary-50 border-b border-secondary-200">
                     <tr>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">ID</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">Name</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">Email</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">Role</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">Created</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">Action</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">ID</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">名前</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">メールアドレス</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">ロール</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">登録日</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">操作</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-secondary-200">
                     @foreach($users as $user)
                         @php
                             $roleInfo = match($user->role) {
-                                'admin'   => ['label' => '管理者', 'class' => 'text-error-600'],
-                                'painter' => ['label' => '画家',   'class' => 'text-secondary-900'],
-                                default   => ['label' => 'モデル', 'class' => 'text-secondary-700'],
+                                'admin'   => ['label' => '管理者', 'border' => 'border-error-500',     'bg' => 'bg-error-50',     'text' => 'text-error-700'],
+                                'painter' => ['label' => '画家',   'border' => 'border-primary-500',   'bg' => 'bg-primary-50',   'text' => 'text-primary-700'],
+                                default   => ['label' => 'モデル', 'border' => 'border-success-500',   'bg' => 'bg-success-50',   'text' => 'text-success-700'],
                             };
                         @endphp
                         <tr class="hover:bg-secondary-50 transition-colors">
@@ -70,21 +70,21 @@
                             </td>
                             <td class="px-5 py-4 whitespace-nowrap text-sm text-secondary-600">{{ $user->email }}</td>
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <span class="text-[10px] tracking-[0.25em] uppercase {{ $roleInfo['class'] }}">
-                                    ● {{ $roleInfo['label'] }}
+                                <span class="inline-flex items-center px-2.5 py-0.5 border {{ $roleInfo['border'] }} {{ $roleInfo['bg'] }} text-xs font-medium {{ $roleInfo['text'] }}">
+                                    {{ $roleInfo['label'] }}
                                 </span>
                             </td>
-                            <td class="px-5 py-4 whitespace-nowrap text-[10px] tracking-[0.2em] uppercase text-secondary-400">
-                                {{ $user->created_at->format('Y . n . j') }}
+                            <td class="px-5 py-4 whitespace-nowrap text-sm text-secondary-500">
+                                {{ $user->created_at->format('Y/n/j') }}
                             </td>
                             <td class="px-5 py-4 whitespace-nowrap text-sm">
-                                <a href="{{ route('admin.users.show', $user) }}" class="text-[10px] tracking-[0.25em] uppercase text-secondary-700 hover:text-secondary-900 mr-4">Detail</a>
+                                <a href="{{ route('admin.users.show', $user) }}" class="text-sm text-secondary-700 hover:text-secondary-900 mr-4">詳細</a>
                                 @if($user->role !== 'admin')
                                     <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline"
                                           onsubmit="return confirm('本当に削除しますか？');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-[10px] tracking-[0.25em] uppercase text-error-600 hover:text-error-700">Delete</button>
+                                        <button type="submit" class="text-sm text-error-600 hover:text-error-700">削除</button>
                                     </form>
                                 @endif
                             </td>
@@ -98,8 +98,7 @@
         </div>
     @else
         <div class="px-5 py-16 text-center">
-            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-400 mb-3">No Users</p>
-            <p class="text-secondary-500 text-sm">ユーザーが見つかりませんでした。</p>
+            <p class="text-secondary-500">ユーザーが見つかりませんでした。</p>
         </div>
     @endif
 </div>

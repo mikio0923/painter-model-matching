@@ -6,6 +6,7 @@
 
 {{-- ページヘッダー --}}
 <div class="page-header">
+    <x-art-bg-stage />
     <div class="page-header-inner">
         <p class="page-header-subtitle">Applications</p>
         <h1 class="page-header-title mt-2">エントリー履歴</h1>

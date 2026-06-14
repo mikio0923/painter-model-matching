@@ -10,15 +10,16 @@ class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_page_is_displayed(): void
+    public function test_profile_page_redirects_to_mypage(): void
     {
+        // アカウント設定はマイページに統合済み。/profile はマイページにリダイレクトする。
         $user = User::factory()->create();
 
         $response = $this
             ->actingAs($user)
             ->get('/profile');
 
-        $response->assertOk();
+        $response->assertRedirect(route('mypage') . '#account-settings');
     }
 
     public function test_profile_information_can_be_updated(): void
@@ -34,7 +35,7 @@ class ProfileTest extends TestCase
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect(route('mypage') . '#account-settings');
 
         $user->refresh();
 
@@ -56,7 +57,7 @@ class ProfileTest extends TestCase
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect(route('mypage') . '#account-settings');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
     }

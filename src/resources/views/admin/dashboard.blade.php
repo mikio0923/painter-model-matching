@@ -8,15 +8,16 @@
 {{-- 要対応アラート --}}
 @php
     $alerts = [];
-    if (($stats['pending_identity_verifications'] ?? 0) > 0) {
-        $alerts[] = [
-            'type' => 'identity',
-            'count' => $stats['pending_identity_verifications'],
-            'label' => '本人確認の審査待ち',
-            'route' => route('admin.identity-verifications.index'),
-            'color' => 'bg-warning-50 border-warning-200 text-warning-800',
-        ];
-    }
+    // 本人確認は一旦停止
+    // if (($stats['pending_identity_verifications'] ?? 0) > 0) {
+    //     $alerts[] = [
+    //         'type' => 'identity',
+    //         'count' => $stats['pending_identity_verifications'],
+    //         'label' => '本人確認の審査待ち',
+    //         'route' => route('admin.identity-verifications.index'),
+    //         'color' => 'bg-warning-50 border-warning-200 text-warning-800',
+    //     ];
+    // }
     if (($stats['unread_contacts'] ?? 0) > 0) {
         $alerts[] = [
             'type' => 'contact',
@@ -89,6 +90,7 @@
         </div>
     </div>
 
+    {{-- 本人確認カード（一旦停止）
     <div class="card">
         <div class="card-body">
             <h3 class="text-sm font-medium text-secondary-600 mb-2">本人確認</h3>
@@ -98,6 +100,7 @@
             </div>
         </div>
     </div>
+    --}}
 
     <div class="card">
         <div class="card-body">
@@ -120,7 +123,7 @@
     </div>
 </div>
 
-{{-- 本人確認 審査待ち --}}
+{{-- 本人確認 審査待ち（一旦停止）
 @if($recentVerifications->count() > 0)
 <div class="card mb-8">
     <div class="card-header flex items-center justify-between">
@@ -147,6 +150,7 @@
     </div>
 </div>
 @endif
+--}}
 
 {{-- 最近のアクティビティ --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

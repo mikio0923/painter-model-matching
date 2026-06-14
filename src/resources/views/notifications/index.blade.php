@@ -6,6 +6,7 @@
 
 {{-- ページヘッダー --}}
 <div class="page-header">
+    <x-art-bg-stage />
     <div class="page-header-inner">
         <p class="page-header-subtitle">Notifications</p>
         <h1 class="page-header-title mt-2">通知</h1>
@@ -17,7 +18,7 @@
 
     @if(session('success'))
         <div class="border-l-2 border-success-500 bg-canvas-50 px-4 py-3 mb-6 text-sm text-secondary-700">
-            <p class="text-[10px] uppercase tracking-[0.3em] text-success-700 mb-1">Updated</p>
+            <p class="text-xs text-success-700 mb-1 font-medium">更新しました</p>
             {{ session('success') }}
         </div>
     @endif
@@ -28,8 +29,8 @@
             <form action="{{ route('notifications.read-all') }}" method="POST">
                 @csrf
                 <button type="submit"
-                        class="px-5 py-2 border border-secondary-400 text-secondary-700 text-[10px] uppercase tracking-[0.25em] hover:bg-secondary-100 transition-colors duration-200">
-                    Mark All as Read
+                        class="px-5 py-2 border border-secondary-400 text-secondary-700 text-sm hover:bg-secondary-100 transition-colors duration-200">
+                    すべて既読にする
                 </button>
             </form>
         </div>
@@ -37,8 +38,7 @@
 
     @if($notifications->count() === 0)
         <div class="border border-secondary-200 px-5 py-16 text-center">
-            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-400 mb-3">No Notifications</p>
-            <p class="text-secondary-500 text-sm">現在、新しい通知はありません。</p>
+            <p class="text-sm text-secondary-500">現在、新しい通知はありません。</p>
         </div>
     @else
         <div class="border-t border-secondary-200">
@@ -46,9 +46,9 @@
                 @php $isUnread = $notification->isUnread(); @endphp
                 <div class="flex items-start gap-4 py-5 px-1 border-b border-secondary-200 {{ $isUnread ? 'bg-canvas-100' : '' }}">
 
-                    {{-- マーカー（未読は黒丸、既読は薄い丸） --}}
+                    {{-- マーカー（未読は赤丸、既読は薄い丸） --}}
                     <div class="shrink-0 mt-2">
-                        <span class="block w-2 h-2 rounded-full {{ $isUnread ? 'bg-secondary-900' : 'bg-secondary-200' }}"></span>
+                        <span class="block w-2 h-2 rounded-full {{ $isUnread ? 'bg-error-500' : 'bg-secondary-200' }}"></span>
                     </div>
 
                     <div class="min-w-0 flex-1">
@@ -57,16 +57,16 @@
                                 {{ $notification->title }}
                             </h3>
                             @if($isUnread)
-                                <span class="text-[9px] tracking-[0.25em] uppercase border border-secondary-900 text-secondary-900 px-1.5 py-0.5 shrink-0">New</span>
+                                <span class="text-xs border border-error-500 bg-error-50 text-error-700 px-2 py-0.5 shrink-0 font-medium">未読</span>
                             @endif
                         </div>
                         @if($notification->body)
                             <p class="text-sm text-secondary-600 leading-relaxed mb-2">{{ $notification->body }}</p>
                         @endif
-                        <p class="text-[10px] tracking-[0.2em] uppercase text-secondary-400">
-                            {{ $notification->created_at->format('Y . n . j  H:i') }}
+                        <p class="text-xs text-secondary-400">
+                            {{ $notification->created_at->format('Y年n月j日 H:i') }}
                             @if($notification->read_at)
-                                · Read {{ $notification->read_at->format('n.j  H:i') }}
+                                ・既読 {{ $notification->read_at->format('n月j日 H:i') }}
                             @endif
                         </p>
                     </div>
@@ -77,14 +77,14 @@
                             <form action="{{ route('notifications.read', $notification) }}" method="POST">
                                 @csrf
                                 <button type="submit"
-                                        class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 hover:text-secondary-900 transition-colors">
-                                    Mark Read
+                                        class="text-sm text-secondary-500 hover:text-secondary-900 transition-colors">
+                                    既読にする
                                 </button>
                             </form>
                         @else
                             <a href="{{ route('notifications.read', $notification) }}"
-                               class="text-[10px] tracking-[0.25em] uppercase text-secondary-400 hover:text-secondary-900 transition-colors">
-                                Detail →
+                               class="text-sm text-secondary-400 hover:text-secondary-900 transition-colors">
+                                詳細 →
                             </a>
                         @endif
                     </div>

@@ -14,111 +14,119 @@
         </div>
     </div>
 
-    <div class="page-narrow space-y-16">
+    <div class="page-narrow space-y-12">
 
-        {{-- ========== ログインフォーム ========== --}}
-        <section>
-            <div class="mb-8">
+        {{-- ========== ログインフォーム（コンパクト） ========== --}}
+        <section class="max-w-md mx-auto w-full">
+            <div class="mb-5 text-center">
                 <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Sign in</p>
-                <h2 class="font-display text-2xl font-semibold text-secondary-900">ログイン</h2>
+                <h2 class="font-display text-xl font-semibold text-secondary-900">ログイン</h2>
             </div>
 
-            <form method="POST" action="{{ route('login') }}" class="border border-secondary-200 bg-canvas-50 p-6 sm:p-8 space-y-6">
+            <form method="POST" action="{{ route('login') }}" class="border border-secondary-200 bg-canvas-50 p-5 sm:p-6 space-y-4">
                 @csrf
 
                 <div>
-                    <label for="email" class="block text-[10px] uppercase tracking-[0.25em] text-secondary-500 mb-2">Email</label>
+                    <label for="email" class="block text-[10px] uppercase tracking-[0.25em] text-secondary-500 mb-1.5">Email</label>
                     <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus autocomplete="username"
-                           class="w-full px-4 py-3 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm
+                           class="w-full px-3 py-2 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm
                                   focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900
                                   transition-colors duration-200">
-                    @error('email')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
+                    @error('email')<p class="text-xs text-error-600 mt-1.5">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
-                    <label for="password" class="block text-[10px] uppercase tracking-[0.25em] text-secondary-500 mb-2">Password</label>
-                    <input type="password" name="password" id="password" required autocomplete="current-password"
-                           class="w-full px-4 py-3 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm
-                                  focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900
-                                  transition-colors duration-200">
-                    @error('password')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
-                    <div class="mt-2">
-                        <a href="{{ route('password.request') }}" class="text-xs text-secondary-500 hover:text-secondary-900 underline underline-offset-2 transition-colors">
-                            パスワードをお忘れですか?
+                    <div class="flex items-end justify-between mb-1.5">
+                        <label for="password" class="block text-[10px] uppercase tracking-[0.25em] text-secondary-500">Password</label>
+                        <a href="{{ route('password.request') }}" class="text-[11px] text-secondary-500 hover:text-secondary-900 underline underline-offset-2 transition-colors">
+                            お忘れですか?
                         </a>
                     </div>
+                    <input type="password" name="password" id="password" required autocomplete="current-password"
+                           class="w-full px-3 py-2 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm
+                                  focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900
+                                  transition-colors duration-200">
+                    @error('password')<p class="text-xs text-error-600 mt-1.5">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
-                    <p class="text-[10px] uppercase tracking-[0.25em] text-secondary-500 mb-3">Account Type</p>
-                    <div class="grid grid-cols-2 gap-3">
+                    <p class="text-[10px] uppercase tracking-[0.25em] text-secondary-500 mb-2">Account Type</p>
+                    <div class="grid grid-cols-2 gap-2">
                         <label class="cursor-pointer">
                             <input type="radio" name="role" value="model" {{ old('role', 'model') === 'model' ? 'checked' : '' }} class="peer sr-only">
-                            <span class="block text-center py-3 border border-secondary-300 text-sm text-secondary-700 peer-checked:border-secondary-900 peer-checked:bg-secondary-900 peer-checked:text-canvas-50 transition-colors duration-200">
-                                Model<span class="block text-[9px] tracking-[0.2em] uppercase text-secondary-500 peer-checked:text-secondary-300">モデル</span>
+                            <span class="block text-center py-2 border border-secondary-300 text-sm text-secondary-700 peer-checked:border-secondary-900 peer-checked:bg-secondary-900 peer-checked:text-canvas-50 transition-colors duration-200">
+                                モデル
                             </span>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="role" value="painter" {{ old('role') === 'painter' ? 'checked' : '' }} class="peer sr-only">
-                            <span class="block text-center py-3 border border-secondary-300 text-sm text-secondary-700 peer-checked:border-secondary-900 peer-checked:bg-secondary-900 peer-checked:text-canvas-50 transition-colors duration-200">
-                                Painter<span class="block text-[9px] tracking-[0.2em] uppercase text-secondary-500 peer-checked:text-secondary-300">画家</span>
+                            <span class="block text-center py-2 border border-secondary-300 text-sm text-secondary-700 peer-checked:border-secondary-900 peer-checked:bg-secondary-900 peer-checked:text-canvas-50 transition-colors duration-200">
+                                画家
                             </span>
                         </label>
                     </div>
-                    @error('role')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
-                    <p class="text-xs text-secondary-500 mt-3 leading-relaxed">
-                        同じメールアドレスでモデル・画家の両方をお持ちの場合は、どちらでログインするかをお選びください。
-                    </p>
+                    @error('role')<p class="text-xs text-error-600 mt-1.5">{{ $message }}</p>@enderror
                 </div>
 
-                <div class="flex items-center justify-between pt-4 border-t border-secondary-200">
-                    <label class="flex items-center gap-2 text-xs text-secondary-600 cursor-pointer">
+                <div class="flex items-center justify-between pt-3 border-t border-secondary-200">
+                    <label class="flex items-center gap-1.5 text-[11px] text-secondary-600 cursor-pointer">
                         <input type="checkbox" name="remember" id="remember_me" class="w-3.5 h-3.5 border-secondary-400">
-                        次回から自動的にログイン
+                        自動ログイン
                     </label>
-                    <button type="submit" class="px-8 py-3 bg-secondary-900 text-canvas-50 text-xs uppercase tracking-[0.25em] border border-secondary-900 hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
-                        Sign in
+                    <button type="submit" class="px-6 py-2 bg-secondary-900 text-canvas-50 text-sm border border-secondary-900 hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+                        ログイン
                     </button>
                 </div>
             </form>
         </section>
 
-        {{-- ========== 新規会員登録 ========== --}}
+        {{-- ========== 新規会員登録（カラーカード） ========== --}}
         <section>
-            <div class="mb-8">
+            <div class="mb-6 text-center">
                 <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">New Account</p>
                 <h2 class="font-display text-2xl font-semibold text-secondary-900">新規登録</h2>
-                <p class="text-sm text-secondary-500 mt-3">
-                    {{ config('app.name', 'Palette') }} のご利用には会員登録（無料）が必要です。お役割をお選びください。
+                <p class="text-sm text-secondary-500 mt-2">
+                    お役割をお選びください。
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 border-t border-l border-secondary-200">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {{-- モデル登録 --}}
                 <a href="{{ route('register', ['role' => 'model']) }}"
-                   class="group block px-6 py-10 border-r border-b border-secondary-200 hover:bg-secondary-50 transition-colors duration-300 relative">
-                    <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-2">For Model</p>
-                    <h3 class="font-display text-2xl font-semibold text-secondary-900 mb-3">モデルとして登録</h3>
-                    <p class="text-xs text-secondary-500 leading-relaxed">
+                   class="group relative block overflow-hidden border-2 border-success-500 bg-success-50 p-6 sm:p-8 hover:bg-success-500 hover:text-canvas-50 transition-all duration-300">
+                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-success-500 group-hover:bg-canvas-50 flex items-center justify-center transition-colors duration-300">
+                        <svg class="w-6 h-6 text-canvas-50 group-hover:text-success-600 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <p class="text-[10px] tracking-[0.3em] uppercase text-success-700 group-hover:text-canvas-50 mb-2 transition-colors duration-300">For Model</p>
+                    <h3 class="font-display text-2xl font-semibold text-secondary-900 group-hover:text-canvas-50 mb-3 transition-colors duration-300">モデルとして登録</h3>
+                    <p class="text-xs text-secondary-600 group-hover:text-canvas-50/90 leading-relaxed mb-5 transition-colors duration-300">
                         画家からの依頼を受け、ポートレートのモデルとして活動するためのアカウントです。
                     </p>
-                    <div class="mt-6 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-secondary-700 group-hover:text-secondary-900 transition-colors">
-                        Sign up
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                    </div>
+                    <span class="inline-flex items-center gap-2 px-4 py-2 bg-success-600 text-canvas-50 group-hover:bg-canvas-50 group-hover:text-success-700 text-xs font-medium transition-colors duration-300">
+                        登録を始める
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </span>
                 </a>
+
                 {{-- 画家登録 --}}
                 <a href="{{ route('register', ['role' => 'painter']) }}"
-                   class="group block px-6 py-10 border-r border-b border-secondary-200 hover:bg-secondary-50 transition-colors duration-300 relative">
-                    <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-2">For Painter</p>
-                    <h3 class="font-display text-2xl font-semibold text-secondary-900 mb-3">画家として登録</h3>
-                    <p class="text-xs text-secondary-500 leading-relaxed">
+                   class="group relative block overflow-hidden border-2 border-primary-500 bg-primary-50 p-6 sm:p-8 hover:bg-primary-500 hover:text-canvas-50 transition-all duration-300">
+                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-primary-500 group-hover:bg-canvas-50 flex items-center justify-center transition-colors duration-300">
+                        <svg class="w-6 h-6 text-canvas-50 group-hover:text-primary-600 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
+                    </div>
+                    <p class="text-[10px] tracking-[0.3em] uppercase text-primary-700 group-hover:text-canvas-50 mb-2 transition-colors duration-300">For Painter</p>
+                    <h3 class="font-display text-2xl font-semibold text-secondary-900 group-hover:text-canvas-50 mb-3 transition-colors duration-300">画家として登録</h3>
+                    <p class="text-xs text-secondary-600 group-hover:text-canvas-50/90 leading-relaxed mb-5 transition-colors duration-300">
                         モデルへ依頼を出し、人物画・ポートレート制作を行うためのアカウントです。
                     </p>
-                    <div class="mt-6 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-secondary-700 group-hover:text-secondary-900 transition-colors">
-                        Sign up
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                    </div>
+                    <span class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-canvas-50 group-hover:bg-canvas-50 group-hover:text-primary-700 text-xs font-medium transition-colors duration-300">
+                        登録を始める
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </span>
                 </a>
             </div>
         </section>

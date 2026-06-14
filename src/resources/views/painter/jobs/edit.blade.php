@@ -6,6 +6,7 @@
 
 {{-- ページヘッダー --}}
 <div class="page-header">
+    <x-art-bg-stage />
     <div class="page-header-inner">
         <div class="flex items-center gap-2 mb-3">
             <a href="{{ route('painter.jobs.index') }}" class="page-header-breadcrumb">

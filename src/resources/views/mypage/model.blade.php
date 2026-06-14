@@ -48,18 +48,31 @@
                             @if($modelProfile->prefecture){{ $modelProfile->prefecture }}@endif
                             @if($modelProfile->age) ・ {{ $modelProfile->age }}歳@endif
                         </p>
-                        <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] mb-4 pt-4 border-t border-secondary-200">
-                            <span class="text-secondary-500">Status</span>
-                            <span class="{{ $modelProfile->is_public ? 'text-success-700' : 'text-secondary-600' }}">
-                                {{ $modelProfile->is_public ? '● 公開中' : '○ 非公開' }}
-                            </span>
+                        <div class="flex items-center justify-between mb-3 pt-4 border-t border-secondary-200">
+                            <span class="text-[10px] uppercase tracking-[0.2em] text-secondary-500">Status</span>
+                            @if($modelProfile->is_public)
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 border-2 border-success-500 bg-success-50 text-success-700 text-xs font-medium">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-success-500"></span>
+                                    公開中
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 border-2 border-secondary-300 bg-secondary-50 text-secondary-600 text-xs font-medium">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-secondary-400"></span>
+                                    非公開
+                                </span>
+                            @endif
                         </div>
+                        {{-- 本人確認バッジ（一旦停止）
                         @if($modelProfile->identity_verified)
-                            <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] mb-4">
-                                <span class="text-secondary-500">Identity</span>
-                                <span class="text-success-700">✓ 確認済み</span>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-[10px] uppercase tracking-[0.2em] text-secondary-500">Identity</span>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 border-2 border-success-500 bg-success-50 text-success-700 text-xs font-medium">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                    確認済み
+                                </span>
                             </div>
                         @endif
+                        --}}
                         <a href="{{ route('model.profile.edit') }}" class="block w-full text-center py-2.5 border border-secondary-900 text-secondary-900 text-xs uppercase tracking-[0.2em] hover:bg-secondary-900 hover:text-canvas-50 transition-colors duration-300">
                             Edit Profile
                         </a>
@@ -78,28 +91,35 @@
                 </div>
             @endif
 
-            {{-- 活動統計 --}}
+            {{-- 活動統計（クリックで詳細へ） --}}
             <div class="border border-secondary-200">
                 <div class="px-5 py-3 border-b border-secondary-200">
                     <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Activity</p>
                 </div>
                 <div class="grid grid-cols-2 divide-x divide-y divide-secondary-200">
-                    <div class="p-5 text-center">
-                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $totalApplications }}</div>
+                    <a href="{{ route('model.applications.index') }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $totalApplications }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">総応募</div>
-                    </div>
-                    <div class="p-5 text-center">
-                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $acceptedApplications }}</div>
+                    </a>
+                    <a href="{{ route('model.applications.index') }}?status=accepted" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $acceptedApplications }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">承認</div>
-                    </div>
-                    <div class="p-5 text-center">
-                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $completedJobs }}</div>
+                    </a>
+                    <a href="{{ route('model.applications.index') }}?status=completed" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $completedJobs }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">完了</div>
-                    </div>
-                    <div class="p-5 text-center">
-                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $totalFavorites }}</div>
-                        <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">お気に入り</div>
-                    </div>
+                    </a>
+                    @if($modelProfile)
+                        <a href="{{ route('models.show', $modelProfile) }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                            <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $totalFavorites }}</div>
+                            <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">お気に入り</div>
+                        </a>
+                    @else
+                        <div class="p-5 text-center">
+                            <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $totalFavorites }}</div>
+                            <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">お気に入り</div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </aside>
@@ -107,19 +127,13 @@
         {{-- ========== 中央 & 右カラム: メニュー + お知らせ ========== --}}
         <div class="lg:col-span-2 space-y-12">
 
-            {{-- 警告（プロフィール未作成 or 本人確認未完了） --}}
-            @if(!$modelProfile || !$modelProfile->identity_verified)
+            {{-- 警告（プロフィール未作成） --}}
+            @if(!$modelProfile)
                 <div class="bg-canvas-50 border-l-2 border-warning-500 px-5 py-4">
                     <p class="text-[10px] uppercase tracking-[0.3em] text-warning-700 mb-2">Notice</p>
-                    @if(!$modelProfile)
-                        <p class="text-sm text-secondary-700">
-                            <a href="{{ route('model.profile.edit') }}" class="link-primary">モデルプロフィールの登録</a>がまだ完了していません。依頼への応募にはプロフィール登録が必要です。
-                        </p>
-                    @elseif(!$modelProfile->identity_verified)
-                        <p class="text-sm text-secondary-700">
-                            <a href="{{ route('model.identity-verification') }}" class="link-primary">本人確認</a>を完了すると、画家からのオファー率が高まります。
-                        </p>
-                    @endif
+                    <p class="text-sm text-secondary-700">
+                        <a href="{{ route('model.profile.edit') }}" class="link-primary">モデルプロフィールの登録</a>がまだ完了していません。依頼への応募にはプロフィール登録が必要です。
+                    </p>
                 </div>
             @endif
 
@@ -171,14 +185,15 @@
                             'sub' => 'Q&A',
                             'desc' => '画家からの質問に回答する',
                         ],
+                        // 本人確認は一旦停止
+                        // [
+                        //     'href' => route('model.identity-verification'),
+                        //     'label' => '本人確認',
+                        //     'sub' => 'Identity',
+                        //     'desc' => '書類提出・確認状況の管理',
+                        // ],
                         [
-                            'href' => route('model.identity-verification'),
-                            'label' => '本人確認',
-                            'sub' => 'Identity',
-                            'desc' => '書類提出・確認状況の管理',
-                        ],
-                        [
-                            'href' => route('profile.edit'),
+                            'href' => route('mypage') . '#account-settings',
                             'label' => 'アカウント設定',
                             'sub' => 'Account',
                             'desc' => 'メール・パスワード・退会',
@@ -304,6 +319,11 @@
             @endif
 
         </div>
+    </div>
+
+    {{-- ========== アカウント設定（基本情報・パスワード・退会） ========== --}}
+    <div class="pt-4">
+        @include('mypage.partials.account-settings')
     </div>
 </div>
 @endsection

@@ -13,7 +13,6 @@ use App\Http\Controllers\Model\ModelProfileEditController;
 use App\Http\Controllers\Model\ModelApplicationController;
 use App\Http\Controllers\Model\ModelProfileController;
 use App\Http\Controllers\Model\ModelQuestionController;
-use App\Http\Controllers\Model\ModelAccountController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
@@ -137,16 +136,11 @@ Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->grou
     Route::post('/questions/{modelProfileQuestion}/answer', [ModelQuestionController::class, 'answer'])->name('questions.answer');
     Route::get('/questions/{modelProfileQuestion}/edit', [ModelQuestionController::class, 'edit'])->name('questions.edit');
 
-    // 本人確認
-    Route::get('/identity-verification', [\App\Http\Controllers\Model\IdentityVerificationController::class, 'show'])->name('identity-verification');
-    Route::post('/identity-verification', [\App\Http\Controllers\Model\IdentityVerificationController::class, 'store'])
-        ->middleware('throttle:5,10')
-        ->name('identity-verification.store');
-
-    // 決済関連（実装待ち）
-    Route::get('/paid-options', [ModelAccountController::class, 'paidOptions'])->name('paid-options');
-    Route::get('/billing-history', [ModelAccountController::class, 'billingHistory'])->name('billing-history');
-    Route::get('/payment-method', [ModelAccountController::class, 'paymentMethod'])->name('payment-method');
+    // 本人確認（一旦停止 — マイページ掲載写真を実在証明として運用）
+    // Route::get('/identity-verification', [\App\Http\Controllers\Model\IdentityVerificationController::class, 'show'])->name('identity-verification');
+    // Route::post('/identity-verification', [\App\Http\Controllers\Model\IdentityVerificationController::class, 'store'])
+    //     ->middleware('throttle:5,10')
+    //     ->name('identity-verification.store');
 });
 
 /*
@@ -217,12 +211,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/contacts/{contact}/read', [\App\Http\Controllers\Admin\AdminContactController::class, 'markAsRead'])->name('contacts.read');
     Route::delete('/contacts/{contact}', [\App\Http\Controllers\Admin\AdminContactController::class, 'destroy'])->name('contacts.destroy');
 
-    // 本人確認管理
-    Route::get('/identity-verifications', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'index'])->name('identity-verifications.index');
-    Route::get('/identity-verifications/{verification}', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'show'])->name('identity-verifications.show');
-    Route::get('/identity-verifications/{verification}/image/{field}', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'image'])->name('identity-verifications.image');
-    Route::post('/identity-verifications/{verification}/approve', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'approve'])->name('identity-verifications.approve');
-    Route::post('/identity-verifications/{verification}/reject', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'reject'])->name('identity-verifications.reject');
+    // 本人確認管理（一旦停止）
+    // Route::get('/identity-verifications', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'index'])->name('identity-verifications.index');
+    // Route::get('/identity-verifications/{verification}', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'show'])->name('identity-verifications.show');
+    // Route::get('/identity-verifications/{verification}/image/{field}', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'image'])->name('identity-verifications.image');
+    // Route::post('/identity-verifications/{verification}/approve', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'approve'])->name('identity-verifications.approve');
+    // Route::post('/identity-verifications/{verification}/reject', [\App\Http\Controllers\Admin\AdminIdentityVerificationController::class, 'reject'])->name('identity-verifications.reject');
 
     // お知らせ管理
     Route::get('/information', [\App\Http\Controllers\Admin\AdminInformationController::class, 'index'])->name('information.index');

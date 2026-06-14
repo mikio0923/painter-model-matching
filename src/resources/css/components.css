@@ -433,13 +433,13 @@
 
     .art-bg-veil {
         @apply absolute inset-0;
-        background-color: rgb(253 250 246 / 0.55);
+        background-color: rgb(253 250 246 / 0.42);
     }
 
     .art-bg-layer {
         @apply absolute inset-0 bg-no-repeat bg-cover bg-center;
         opacity: 0;
-        filter: grayscale(0.4) sepia(0.15);
+        filter: grayscale(0.25) sepia(0.1);
         animation: artFade 60s ease-in-out infinite;
         will-change: transform, opacity;
     }
@@ -457,8 +457,8 @@
 
     @keyframes artFade {
         0%, 33.33%, 100% { opacity: 0; transform: scale(1.0) translate(0, 0); }
-        5%               { opacity: 0.10; }
-        15%              { opacity: 0.10; }
+        5%               { opacity: 0.22; }
+        15%              { opacity: 0.22; }
         28%              { opacity: 0; transform: scale(1.06) translate(-1.5%, -1%); }
     }
 
@@ -472,13 +472,13 @@
     .page-header .art-bg-layer:nth-child(3) { animation-delay: 30s; }
 
     .page-header .art-bg-veil {
-        background-color: rgb(253 250 246 / 0.45);
+        background-color: rgb(253 250 246 / 0.32);
     }
 
     @keyframes artFadeHeader {
         0%, 33.33%, 100% { opacity: 0; transform: scale(1.0) translate(0, 0); }
-        5%               { opacity: 0.14; }
-        20%              { opacity: 0.14; }
+        5%               { opacity: 0.32; }
+        20%              { opacity: 0.32; }
         28%              { opacity: 0; transform: scale(1.05) translate(-1%, -0.5%); }
     }
 

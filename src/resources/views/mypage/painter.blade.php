@@ -77,36 +77,36 @@
                 </div>
             @endif
 
-            {{-- 制作統計 --}}
+            {{-- 制作統計（クリックで詳細へ） --}}
             <div class="border border-secondary-200">
                 <div class="px-5 py-3 border-b border-secondary-200">
                     <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Activity</p>
                 </div>
                 <div class="grid grid-cols-2 divide-x divide-y divide-secondary-200">
-                    <div class="p-5 text-center">
-                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $totalJobs }}</div>
+                    <a href="{{ route('painter.jobs.index') }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $totalJobs }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">総依頼</div>
-                    </div>
-                    <div class="p-5 text-center">
-                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $openJobs }}</div>
+                    </a>
+                    <a href="{{ route('painter.jobs.index', ['status' => 'open']) }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $openJobs }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">公開中</div>
-                    </div>
-                    <div class="p-5 text-center">
-                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $completedJobs }}</div>
+                    </a>
+                    <a href="{{ route('painter.jobs.index', ['status' => 'done']) }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $completedJobs }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">完了</div>
-                    </div>
-                    <div class="p-5 text-center">
-                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $totalApplications }}</div>
+                    </a>
+                    <a href="{{ route('painter.jobs.index') }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $totalApplications }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">総応募</div>
-                    </div>
-                    <div class="p-5 text-center">
-                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $acceptedApplications }}</div>
+                    </a>
+                    <a href="{{ route('painter.jobs.index') }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $acceptedApplications }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">承認</div>
-                    </div>
-                    <div class="p-5 text-center">
-                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums">{{ $totalFavorites }}</div>
+                    </a>
+                    <a href="{{ route('favorites.index') }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                        <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $totalFavorites }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">お気に入り</div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </aside>
@@ -176,7 +176,7 @@
                             'desc' => 'ブックマークしたモデル・依頼',
                         ],
                         [
-                            'href' => route('profile.edit'),
+                            'href' => route('mypage') . '#account-settings',
                             'label' => 'アカウント設定',
                             'sub' => 'Account',
                             'desc' => 'メール・パスワード・退会',
@@ -285,6 +285,11 @@
             </section>
 
         </div>
+    </div>
+
+    {{-- ========== アカウント設定（基本情報・パスワード・退会） ========== --}}
+    <div class="pt-4">
+        @include('mypage.partials.account-settings')
     </div>
 </div>
 @endsection

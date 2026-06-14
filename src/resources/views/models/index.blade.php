@@ -20,153 +20,130 @@
 <div class="page">
   <script>
     function resetSearchForm() {
-      // キーワード
-      document.getElementById('keyword').value = '';
-      // 性別（ラジオボタン）
-      const genderRadios = document.querySelectorAll('input[name="gender"]');
-      genderRadios.forEach(radio => {
-        radio.checked = false;
+      ['keyword','gender','age_min','age_max','height_min','height_max','weight_min','weight_max','reward_min'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
       });
-      // 年齢
-      document.getElementById('age_min').value = '';
-      document.getElementById('age_max').value = '';
-      // 身長
-      document.getElementById('height_min').value = '';
-      document.getElementById('height_max').value = '';
-      // 体重
-      document.getElementById('weight_min').value = '';
-      document.getElementById('weight_max').value = '';
-      // 参考価格
-      document.getElementById('reward_min').value = '';
-      // 体型（チェックボックス）
-      const bodyTypeCheckboxes = document.querySelectorAll('input[name="body_type[]"]');
-      bodyTypeCheckboxes.forEach(checkbox => {
-        checkbox.checked = false;
-      });
-      // タグ（チェックボックス）
-      const tagCheckboxes = document.querySelectorAll('input[name="tag[]"]');
-      tagCheckboxes.forEach(checkbox => {
-        checkbox.checked = false;
-      });
+      document.querySelectorAll('input[name="body_type[]"], input[name="tag[]"]').forEach(cb => cb.checked = false);
     }
   </script>
 
   {{-- 検索フォーム --}}
-  <div class="border border-secondary-200 bg-canvas-50 mb-8 p-4 sm:p-6">
-    <form method="GET" action="{{ route('models.index') }}" class="space-y-5">
+  <div class="bg-canvas-50 rounded-xl border border-secondary-200 p-6 mb-8">
+    <form method="GET" action="{{ route('models.index') }}" id="model-search-form">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-      {{-- キーワード --}}
-      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
-        <label for="keyword" class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">キーワード</label>
-        <input type="text" id="keyword" name="keyword" value="{{ request('keyword') }}"
-               placeholder="表示名で検索"
-               class="form-input">
-      </div>
-
-      {{-- 性別 --}}
-      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
-        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">性別</label>
-        <div class="flex flex-wrap gap-x-5 gap-y-2">
-          @foreach([['male','男性'], ['female','女性'], ['other','その他']] as $g)
-            <label class="flex items-center cursor-pointer">
-              <input type="radio" name="gender" value="{{ $g[0] }}"
-                     {{ request('gender') === $g[0] ? 'checked' : '' }}
-                     class="border-secondary-400 text-secondary-900 focus:ring-secondary-700">
-              <span class="ml-2 text-sm text-secondary-700">{{ $g[1] }}</span>
-            </label>
-          @endforeach
+        {{-- キーワード --}}
+        <div class="lg:col-span-2">
+          <label for="keyword" class="form-label">キーワード</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-4 h-4 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+            <input type="text" id="keyword" name="keyword" value="{{ request('keyword') }}"
+                   placeholder="表示名で検索" class="form-input pl-10">
+          </div>
         </div>
-      </div>
 
-      {{-- 年齢 --}}
-      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
-        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">年齢</label>
-        <div class="flex items-center gap-2">
-          <input type="number" id="age_min" name="age_min" value="{{ request('age_min') }}"
-                 placeholder="最小" min="1" max="150" class="form-input min-w-0 flex-1">
-          <span class="text-secondary-500 shrink-0">〜</span>
-          <input type="number" id="age_max" name="age_max" value="{{ request('age_max') }}"
-                 placeholder="最大" min="1" max="150" class="form-input min-w-0 flex-1">
-          <span class="text-sm text-secondary-500 shrink-0">歳</span>
+        {{-- 性別 --}}
+        <div>
+          <label for="gender" class="form-label">性別</label>
+          <select id="gender" name="gender" class="form-input">
+            <option value="">すべて</option>
+            @foreach([['male','男性'], ['female','女性'], ['other','その他']] as $g)
+              <option value="{{ $g[0] }}" {{ request('gender') === $g[0] ? 'selected' : '' }}>{{ $g[1] }}</option>
+            @endforeach
+          </select>
         </div>
-      </div>
 
-      {{-- 身長 --}}
-      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
-        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">身長</label>
-        <div class="flex items-center gap-2">
-          <input type="number" id="height_min" name="height_min" value="{{ request('height_min') }}"
-                 placeholder="最小" min="1" max="300" class="form-input min-w-0 flex-1">
-          <span class="text-secondary-500 shrink-0">〜</span>
-          <input type="number" id="height_max" name="height_max" value="{{ request('height_max') }}"
-                 placeholder="最大" min="1" max="300" class="form-input min-w-0 flex-1">
-          <span class="text-sm text-secondary-500 shrink-0">cm</span>
-        </div>
-      </div>
-
-      {{-- 体重 --}}
-      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
-        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">体重</label>
-        <div class="flex items-center gap-2">
-          <input type="number" id="weight_min" name="weight_min" value="{{ request('weight_min') }}"
-                 placeholder="最小" min="1" max="300" class="form-input min-w-0 flex-1">
-          <span class="text-secondary-500 shrink-0">〜</span>
-          <input type="number" id="weight_max" name="weight_max" value="{{ request('weight_max') }}"
-                 placeholder="最大" min="1" max="300" class="form-input min-w-0 flex-1">
-          <span class="text-sm text-secondary-500 shrink-0">kg</span>
-        </div>
-      </div>
-
-      {{-- 参考価格 --}}
-      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] sm:items-center gap-2 sm:gap-4">
-        <label for="reward_min" class="text-[10px] uppercase tracking-[0.25em] text-secondary-500">参考価格</label>
-        <div class="flex items-center gap-2">
+        {{-- 参考価格 --}}
+        <div>
+          <label for="reward_min" class="form-label">参考価格（円〜）</label>
           <input type="number" id="reward_min" name="reward_min" value="{{ request('reward_min') }}"
-                 placeholder="例：5000" min="0" class="form-input min-w-0 flex-1">
-          <span class="text-sm text-secondary-500 shrink-0">円</span>
+                 placeholder="例：5000" min="0" class="form-input">
         </div>
-      </div>
 
-      {{-- 体型 --}}
-      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-2 sm:gap-4 sm:items-start">
-        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500 sm:pt-2">体型</label>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-3 gap-y-2">
-          @foreach($bodyTypes as $bodyType)
-            <label class="flex items-center cursor-pointer min-w-0">
-              <input type="checkbox" name="body_type[]" value="{{ $bodyType }}"
-                     {{ in_array($bodyType, (array)request('body_type', [])) ? 'checked' : '' }}
-                     class="border-secondary-400 text-secondary-900 focus:ring-secondary-700 shrink-0">
-              <span class="ml-2 text-sm text-secondary-700 truncate">{{ $bodyType }}</span>
-            </label>
-          @endforeach
+        {{-- 年齢 --}}
+        <div class="sm:col-span-2">
+          <label class="form-label">年齢</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="age_min" name="age_min" value="{{ request('age_min') }}"
+                   placeholder="最小" min="1" max="150" class="form-input min-w-0 flex-1">
+            <span class="text-secondary-400 text-sm shrink-0">〜</span>
+            <input type="number" id="age_max" name="age_max" value="{{ request('age_max') }}"
+                   placeholder="最大" min="1" max="150" class="form-input min-w-0 flex-1">
+            <span class="text-sm text-secondary-500 shrink-0">歳</span>
+          </div>
         </div>
-      </div>
 
-      {{-- タグ --}}
-      <div class="grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-2 sm:gap-4 sm:items-start">
-        <label class="text-[10px] uppercase tracking-[0.25em] text-secondary-500 sm:pt-2">タグ</label>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-3 gap-y-2">
-          @foreach($allTags as $tag)
-            <label class="flex items-center cursor-pointer min-w-0">
-              <input type="checkbox" name="tag[]" value="{{ $tag }}"
-                     {{ in_array($tag, (array)request('tag', [])) ? 'checked' : '' }}
-                     class="border-secondary-400 text-secondary-900 focus:ring-secondary-700 shrink-0">
-              <span class="ml-2 text-sm text-secondary-700 truncate">{{ $tag }}</span>
-            </label>
-          @endforeach
+        {{-- 身長 --}}
+        <div class="sm:col-span-2">
+          <label class="form-label">身長</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="height_min" name="height_min" value="{{ request('height_min') }}"
+                   placeholder="最小" min="1" max="300" class="form-input min-w-0 flex-1">
+            <span class="text-secondary-400 text-sm shrink-0">〜</span>
+            <input type="number" id="height_max" name="height_max" value="{{ request('height_max') }}"
+                   placeholder="最大" min="1" max="300" class="form-input min-w-0 flex-1">
+            <span class="text-sm text-secondary-500 shrink-0">cm</span>
+          </div>
         </div>
-      </div>
 
-      {{-- ボタン --}}
-      <div class="flex flex-col sm:flex-row gap-3 sm:justify-end pt-5 border-t border-secondary-200">
-        <button type="button" onclick="resetSearchForm();"
-                class="order-2 sm:order-1 px-6 py-2.5 border border-secondary-400 text-secondary-700 text-xs uppercase tracking-[0.2em] hover:bg-secondary-100 transition-colors duration-200">
-          Reset
-        </button>
-        <button type="submit"
-                class="order-1 sm:order-2 px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.2em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
-          Search
-        </button>
+        {{-- 体重 --}}
+        <div class="sm:col-span-2">
+          <label class="form-label">体重</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="weight_min" name="weight_min" value="{{ request('weight_min') }}"
+                   placeholder="最小" min="1" max="300" class="form-input min-w-0 flex-1">
+            <span class="text-secondary-400 text-sm shrink-0">〜</span>
+            <input type="number" id="weight_max" name="weight_max" value="{{ request('weight_max') }}"
+                   placeholder="最大" min="1" max="300" class="form-input min-w-0 flex-1">
+            <span class="text-sm text-secondary-500 shrink-0">kg</span>
+          </div>
+        </div>
+
+        {{-- 体型 --}}
+        <div class="sm:col-span-2 lg:col-span-4">
+          <label class="form-label">体型</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-3 gap-y-2">
+            @foreach($bodyTypes as $bodyType)
+              <label class="flex items-center cursor-pointer min-w-0">
+                <input type="checkbox" name="body_type[]" value="{{ $bodyType }}"
+                       {{ in_array($bodyType, (array)request('body_type', [])) ? 'checked' : '' }}
+                       class="border-secondary-400 text-secondary-900 focus:ring-secondary-700 shrink-0">
+                <span class="ml-2 text-sm text-secondary-700 truncate">{{ $bodyType }}</span>
+              </label>
+            @endforeach
+          </div>
+        </div>
+
+        {{-- タグ --}}
+        <div class="sm:col-span-2 lg:col-span-4">
+          <label class="form-label">タグ</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-3 gap-y-2">
+            @foreach($allTags as $tag)
+              <label class="flex items-center cursor-pointer min-w-0">
+                <input type="checkbox" name="tag[]" value="{{ $tag }}"
+                       {{ in_array($tag, (array)request('tag', [])) ? 'checked' : '' }}
+                       class="border-secondary-400 text-secondary-900 focus:ring-secondary-700 shrink-0">
+                <span class="ml-2 text-sm text-secondary-700 truncate">{{ $tag }}</span>
+              </label>
+            @endforeach
+          </div>
+        </div>
+
+        {{-- ボタン --}}
+        <div class="sm:col-span-2 lg:col-span-4 flex items-end gap-3 sm:justify-end">
+          <button type="submit" class="btn-primary flex-1 sm:flex-none">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            検索
+          </button>
+          <button type="button" onclick="resetSearchForm()" class="btn-secondary flex-1 sm:flex-none">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            リセット
+          </button>
+        </div>
+
       </div>
     </form>
   </div>
@@ -215,9 +192,11 @@
               <div class="p-2">
                 <div class="card-title mb-0.5 text-sm flex items-center gap-1">
                   <span class="truncate">{{ $model->display_name }}</span>
+                  {{-- 本人確認済みアイコン（一旦停止）
                   @if($model->identity_verified)
                     <svg class="w-3.5 h-3.5 text-success-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" title="本人確認済み"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                   @endif
+                  --}}
                 </div>
 
                 <div class="card-meta mb-1 text-xs">
@@ -271,8 +250,8 @@
       </div>
     </div>
 
-    <div class="mt-6">
-      {{ $models->links() }}
+    <div class="mt-8">
+      {{ $models->links('vendor.pagination.block-ten') }}
     </div>
   @endif
 </div>

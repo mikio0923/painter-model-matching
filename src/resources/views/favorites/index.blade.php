@@ -6,6 +6,7 @@
 
 {{-- ページヘッダー --}}
 <div class="page-header">
+    <x-art-bg-stage />
     <div class="page-header-inner">
         <p class="page-header-subtitle">Favorites</p>
         <h1 class="page-header-title mt-2">お気に入り</h1>
@@ -67,29 +68,50 @@
                     </div>
 
                 @elseif($item instanceof \App\Models\Job)
-                    {{-- 依頼 --}}
-                    <div class="relative border border-secondary-200 bg-canvas-50 hover:border-secondary-400 transition-colors duration-300 flex flex-col">
+                    {{-- 依頼（モデルカードと同サイズ） --}}
+                    <div class="relative border border-secondary-200 bg-canvas-50 overflow-hidden hover:border-secondary-400 transition-colors duration-300">
                         <div class="absolute top-2 right-2 z-20">
                             <x-favorite-button type="job" :id="$item->id" :favorited="true" />
                         </div>
-                        <a href="{{ route('jobs.show', $item) }}" class="block p-5 flex flex-col flex-1">
-                            <p class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 mb-2">Job</p>
-                            <h3 class="font-display text-base font-semibold text-secondary-900 mb-2 line-clamp-2 leading-snug">{{ $item->title }}</h3>
-                            <p class="text-xs text-secondary-500 line-clamp-2 mb-4 leading-relaxed">
-                                {{ mb_strlen($item->description) > 80 ? mb_substr($item->description, 0, 80) . '…' : $item->description }}
-                            </p>
-                            <div class="mt-auto pt-3 border-t border-secondary-200 flex items-center justify-between text-xs">
-                                <span class="text-secondary-500">
-                                    {{ $item->location_type === 'online' ? 'Online' : 'Offline' }}
-                                    @if($item->prefecture)
-                                        · {{ $item->prefecture }}
-                                    @endif
-                                </span>
+                        <a href="{{ route('jobs.show', $item) }}" class="block">
+                            {{-- 報酬を大きく表示する装飾エリア（モデルの画像 aspect-[3/4] と同サイズ） --}}
+                            <div class="aspect-[3/4] bg-gradient-to-br from-secondary-900 via-secondary-800 to-secondary-700 text-canvas-50 p-5 flex flex-col">
+                                <p class="text-[10px] tracking-[0.3em] uppercase text-canvas-50/60 mb-2">Job</p>
+                                <h3 class="font-display text-base font-semibold leading-snug line-clamp-3 mb-3">{{ $item->title }}</h3>
+                                <p class="text-[11px] text-canvas-50/70 line-clamp-4 leading-relaxed mb-auto">
+                                    {{ mb_strlen($item->description) > 120 ? mb_substr($item->description, 0, 120) . '…' : $item->description }}
+                                </p>
                                 @if($item->reward_amount)
-                                    <span class="font-semibold text-secondary-900">
-                                        ¥{{ number_format($item->reward_amount) }}
-                                    </span>
+                                    <div class="pt-3 mt-3 border-t border-canvas-50/15">
+                                        <p class="text-[9px] tracking-[0.3em] uppercase text-canvas-50/50">Reward</p>
+                                        <p class="font-display text-2xl font-medium mt-0.5">
+                                            ¥{{ number_format($item->reward_amount) }}<span class="text-xs text-canvas-50/60 font-normal ml-1">{{ $item->reward_unit === 'per_hour' ? '/時間' : '/回' }}</span>
+                                        </p>
+                                    </div>
                                 @endif
+                            </div>
+                            {{-- メタ情報（モデルカードの p-4 と同じ） --}}
+                            <div class="p-4">
+                                <div class="space-y-1.5 text-xs">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-secondary-400">場所</span>
+                                        <span class="text-secondary-700 font-medium">
+                                            {{ $item->location_type === 'online' ? 'オンライン' : 'オフライン' }}@if($item->prefecture)（{{ $item->prefecture }}）@endif
+                                        </span>
+                                    </div>
+                                    @if($item->scheduled_date)
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-secondary-400">日程</span>
+                                            <span class="text-secondary-700">{{ $item->scheduled_date->format('Y/n/j') }}</span>
+                                        </div>
+                                    @endif
+                                    @if($item->apply_deadline)
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-secondary-400">締切</span>
+                                            <span class="text-secondary-700">{{ $item->apply_deadline->format('Y/n/j') }}</span>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </a>
                     </div>

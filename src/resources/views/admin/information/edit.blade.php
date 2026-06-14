@@ -4,19 +4,19 @@
 
 <div class="border-b border-secondary-200 pb-5 mb-8">
     <div class="flex items-center gap-2 mb-2">
-        <a href="{{ route('admin.information.index') }}" class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 hover:text-secondary-900 transition-colors inline-flex items-center gap-1">
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Information
+        <a href="{{ route('admin.information.index') }}" class="text-sm text-secondary-500 hover:text-secondary-900 transition-colors inline-flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            お知らせ一覧
         </a>
         <span class="text-secondary-300">/</span>
-        <span class="text-[10px] tracking-[0.25em] uppercase text-secondary-700">Edit</span>
+        <span class="text-sm text-secondary-700">編集</span>
     </div>
-    <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Edit Information</p>
-    <h1 class="font-display text-2xl font-semibold text-secondary-900">お知らせ編集</h1>
+    <h1 class="font-display text-2xl font-semibold text-secondary-900">お知らせを編集</h1>
+    <p class="text-sm text-secondary-500 mt-1">既存のお知らせを編集します。</p>
 </div>
 
 @php
-    $rowLabel = 'block text-[10px] tracking-[0.25em] uppercase text-secondary-500 mb-2';
+    $rowLabel = 'block text-sm font-medium text-secondary-700 mb-1.5';
     $input    = 'w-full px-4 py-3 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900 transition-colors duration-200';
 @endphp
 
@@ -32,7 +32,7 @@
     </div>
 
     <div>
-        <label for="type" class="{{ $rowLabel }}">タイプ <span class="text-error-500">*</span></label>
+        <label for="type" class="{{ $rowLabel }}">種別 <span class="text-error-500">*</span></label>
         <select id="type" name="type" required class="{{ $input }} max-w-md">
             <option value="">選択してください</option>
             <option value="information"   {{ old('type', $information->type) === 'information'   ? 'selected' : '' }}>お知らせ</option>
@@ -42,7 +42,7 @@
     </div>
 
     <div>
-        <label for="content" class="{{ $rowLabel }}">内容 <span class="text-error-500">*</span></label>
+        <label for="content" class="{{ $rowLabel }}">本文 <span class="text-error-500">*</span></label>
         <textarea id="content" name="content" rows="10" required class="{{ $input }} resize-y leading-relaxed">{{ old('content', $information->content) }}</textarea>
         @error('content')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
     </div>
@@ -66,12 +66,12 @@
 
     <div class="flex flex-col sm:flex-row gap-3 sm:justify-end pt-4 border-t border-secondary-200">
         <a href="{{ route('admin.information.index') }}"
-           class="order-2 sm:order-1 px-6 py-2.5 border border-secondary-400 text-secondary-700 text-xs uppercase tracking-[0.2em] hover:bg-secondary-100 transition-colors duration-200 text-center">
-            Cancel
+           class="order-2 sm:order-1 px-6 py-2.5 border border-secondary-400 text-secondary-700 text-sm hover:bg-secondary-100 transition-colors duration-200 text-center">
+            キャンセル
         </a>
         <button type="submit"
-                class="order-1 sm:order-2 px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.25em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
-            Update
+                class="order-1 sm:order-2 px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-sm hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+            更新する
         </button>
     </div>
 </form>

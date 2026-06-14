@@ -7,6 +7,7 @@
 
 {{-- ページヘッダー --}}
 <div class="page-header">
+    <x-art-bg-stage />
     <div class="page-header-inner">
         <div class="flex items-center gap-2 mb-3">
             <a href="{{ url('/') }}" class="page-header-breadcrumb">
@@ -36,7 +37,7 @@
                 'title' => '誠実に利用する',
                 'paragraphs' => [
                     "相手を尊重し、何事も正直に、誠実な心で {$appName} をご利用ください。",
-                    "{$appName} では、皆さまに少しでも安心してサービスをご利用いただくため、本人確認サービスを提供しております。信頼の指標になりますので、画家の方もモデルの方も、本人確認サービスをぜひご利用ください。",
+                    "{$appName} はマッチングの場を提供するサービスです。{$appName} 上での身分確認・実在確認は行っておりません。プロフィール画像やポートフォリオなどを参考に、利用者ご自身の判断と責任でやりとりを進めてください。",
                 ],
             ],
             [

@@ -4,12 +4,13 @@
 
 <div class="border-b border-secondary-200 pb-5 mb-8 flex items-end justify-between gap-4 flex-wrap">
     <div>
-        <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Information</p>
         <h1 class="font-display text-2xl font-semibold text-secondary-900">お知らせ管理</h1>
+        <p class="text-sm text-secondary-500 mt-1">サイト掲載のお知らせ・プレスリリースを管理します。</p>
     </div>
     <a href="{{ route('admin.information.create') }}"
-       class="px-6 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.25em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
-        New
+       class="inline-flex items-center gap-2 px-6 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-sm hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        新規作成
     </a>
 </div>
 
@@ -17,7 +18,7 @@
       class="border border-secondary-200 bg-canvas-50 p-5 sm:p-6 mb-6">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-            <label for="type" class="block text-[10px] tracking-[0.25em] uppercase text-secondary-500 mb-2">Type</label>
+            <label for="type" class="block text-sm font-medium text-secondary-700 mb-1.5">種別</label>
             <select id="type" name="type"
                     class="w-full px-4 py-2.5 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm focus:outline-none focus:border-secondary-900">
                 <option value="">すべて</option>
@@ -26,7 +27,7 @@
             </select>
         </div>
         <div>
-            <label for="is_published" class="block text-[10px] tracking-[0.25em] uppercase text-secondary-500 mb-2">Published</label>
+            <label for="is_published" class="block text-sm font-medium text-secondary-700 mb-1.5">公開状態</label>
             <select id="is_published" name="is_published"
                     class="w-full px-4 py-2.5 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm focus:outline-none focus:border-secondary-900">
                 <option value="">すべて</option>
@@ -36,8 +37,8 @@
         </div>
         <div class="flex items-end">
             <button type="submit"
-                    class="w-full px-6 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.25em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
-                Filter
+                    class="w-full px-6 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-sm hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+                絞り込む
             </button>
         </div>
     </div>
@@ -49,12 +50,12 @@
             <table class="min-w-full">
                 <thead class="bg-secondary-50 border-b border-secondary-200">
                     <tr>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">ID</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">Title</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">Type</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">Published</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">Date</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-medium text-secondary-500 uppercase tracking-[0.2em]">Action</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">ID</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">タイトル</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">種別</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">公開状態</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">公開日</th>
+                        <th class="px-5 py-3 text-left text-xs font-medium text-secondary-600">操作</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-secondary-200">
@@ -70,20 +71,22 @@
                                 {{ $information->type === 'information' ? 'お知らせ' : 'プレスリリース' }}
                             </td>
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <span class="text-[10px] tracking-[0.25em] uppercase {{ $information->is_published ? 'text-success-700' : 'text-secondary-500' }}">
-                                    ● {{ $information->is_published ? '公開' : '非公開' }}
-                                </span>
+                                @if($information->is_published)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 border border-success-500 bg-success-50 text-xs font-medium text-success-700">公開中</span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 border border-secondary-300 bg-secondary-50 text-xs font-medium text-secondary-600">非公開</span>
+                                @endif
                             </td>
-                            <td class="px-5 py-4 whitespace-nowrap text-[10px] tracking-[0.2em] uppercase text-secondary-400">
-                                {{ $information->published_at ? $information->published_at->format('Y . n . j') : '—' }}
+                            <td class="px-5 py-4 whitespace-nowrap text-sm text-secondary-500">
+                                {{ $information->published_at ? $information->published_at->format('Y/n/j') : '—' }}
                             </td>
                             <td class="px-5 py-4 whitespace-nowrap text-sm">
-                                <a href="{{ route('admin.information.edit', $information) }}" class="text-[10px] tracking-[0.25em] uppercase text-secondary-700 hover:text-secondary-900 mr-4">Edit</a>
+                                <a href="{{ route('admin.information.edit', $information) }}" class="text-sm text-secondary-700 hover:text-secondary-900 mr-4">編集</a>
                                 <form action="{{ route('admin.information.destroy', $information) }}" method="POST" class="inline"
                                       onsubmit="return confirm('本当に削除しますか？');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-[10px] tracking-[0.25em] uppercase text-error-600 hover:text-error-700">Delete</button>
+                                    <button type="submit" class="text-sm text-error-600 hover:text-error-700">削除</button>
                                 </form>
                             </td>
                         </tr>
@@ -96,8 +99,7 @@
         </div>
     @else
         <div class="px-5 py-16 text-center">
-            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-400 mb-3">No Information</p>
-            <p class="text-secondary-500 text-sm">お知らせが見つかりませんでした。</p>
+            <p class="text-secondary-500">お知らせが見つかりませんでした。</p>
         </div>
     @endif
 </div>

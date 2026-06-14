@@ -253,8 +253,8 @@
                 <div class="p-5 space-y-3">
                     @if($rewardLabel)
                     <div class="text-center py-4 border-b border-secondary-100">
-                        <p class="text-xs text-secondary-400 uppercase tracking-wider mb-1">報酬</p>
-                        <p class="font-display text-3xl font-bold text-primary-600">{{ $rewardLabel }}</p>
+                        <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Reward</p>
+                        <p class="text-xl font-medium text-secondary-900">{{ $rewardLabel }}</p>
                     </div>
                     @endif
                     <dl class="space-y-2.5 text-sm">

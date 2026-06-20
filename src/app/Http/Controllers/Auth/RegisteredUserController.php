@@ -114,10 +114,10 @@ class RegisteredUserController extends Controller
                 ->with('error', '認証リンクが無効または期限切れです。再度メールアドレスを入力し、届いたメールのリンクは1回だけクリックしてください。');
         }
 
-        // トークンを削除
-        $registrationToken->delete();
-
-        // セッションに保存
+        // ⚠️ 旧実装ではここでトークンを削除していたが、
+        // メーラーのリンクプリフェッチ・ウイルススキャン・コピペ前のテストアクセス等で
+        // 本人ブラウザより先に踏まれてトークンが消費される事故があったため、
+        // 削除は最終的な store() のユーザー作成成功時まで遅延する。
         session([
             'verified_email' => $email,
             'verified_role' => $registrationToken->role,
@@ -285,6 +285,9 @@ class RegisteredUserController extends Controller
                 'is_public' => false,
             ]);
         }
+
+        // 登録完了したのでメール認証トークンを削除（verify では削除しない方針）
+        RegistrationToken::where('email', $verifiedEmail)->delete();
 
         // セッションをクリア
         session()->forget(['verified_email', 'verified_role', 'verification_token']);

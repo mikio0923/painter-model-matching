@@ -1,5 +1,6 @@
-<nav class="bg-canvas-50/90 backdrop-blur-md border-b border-secondary-200 sticky top-0 z-50"
-     x-data="{ mobileOpen: false }">
+<nav class="bg-canvas-50 border-b border-secondary-200 sticky top-0 z-50"
+     x-data="{ mobileOpen: false }"
+     style="transform: translateZ(0);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
 
@@ -16,7 +17,7 @@
             </a>
 
             {{-- デスクトップナビ（中央） --}}
-            <div class="hidden md:flex items-stretch gap-0.5 h-full">
+            <div class="hidden md:flex items-center gap-0.5">
                 @php
                     $navLinks = [
                         ['href' => route('home'),          'label' => 'ホーム',       'active' => request()->routeIs('home')],
@@ -28,13 +29,13 @@
                 @endphp
                 @foreach($navLinks as $link)
                     <a href="{{ $link['href'] }}"
-                       class="relative inline-flex items-center px-4 h-full text-sm font-medium cursor-pointer transition-colors duration-200
+                       class="relative inline-flex items-center px-4 h-16 text-sm font-medium cursor-pointer transition-colors duration-200
                               {{ $link['active']
                                   ? 'text-secondary-900'
                                   : 'text-secondary-600 hover:text-secondary-900' }}">
                         {{ $link['label'] }}
                         @if($link['active'])
-                            <span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-6 h-px bg-secondary-900 pointer-events-none"></span>
+                            <span class="absolute bottom-3 left-1/2 -translate-x-1/2 w-6 h-px bg-secondary-900 pointer-events-none"></span>
                         @endif
                     </a>
                 @endforeach

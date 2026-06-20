@@ -371,7 +371,7 @@ class ModelProfileEditController extends Controller
             }
         }
 
-        return redirect()->route('model.profile.edit')
+        return redirect()->route('mypage')
             ->with('success', 'プロフィールを更新しました');
     }
 }

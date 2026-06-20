@@ -73,9 +73,6 @@
                             </div>
                         @endif
                         --}}
-                        <a href="{{ route('model.profile.edit') }}" class="block w-full text-center py-2.5 border border-secondary-900 text-secondary-900 text-xs uppercase tracking-[0.2em] hover:bg-secondary-900 hover:text-canvas-50 transition-colors duration-300">
-                            Edit Profile
-                        </a>
                     </div>
                 </div>
             @else
@@ -174,10 +171,10 @@
                             'desc' => '表示名・身体情報・経歴を編集',
                         ],
                         [
-                            'href' => route('model.profile.edit') . '#photos',
+                            'href' => route('model.portfolio.edit'),
                             'label' => 'ポートフォリオ',
                             'sub' => 'Portfolio',
-                            'desc' => '掲載写真の追加・並び替え',
+                            'desc' => '掲載写真の追加・編集・削除',
                         ],
                         [
                             'href' => route('model.questions.index'),
@@ -193,7 +190,7 @@
                         //     'desc' => '書類提出・確認状況の管理',
                         // ],
                         [
-                            'href' => route('mypage') . '#account-settings',
+                            'href' => route('model.account-settings'),
                             'label' => 'アカウント設定',
                             'sub' => 'Account',
                             'desc' => 'メール・パスワード・退会',
@@ -321,9 +318,6 @@
         </div>
     </div>
 
-    {{-- ========== アカウント設定（基本情報・パスワード・退会） ========== --}}
-    <div class="pt-4">
-        @include('mypage.partials.account-settings')
-    </div>
+    {{-- アカウント設定は別画面 (model.account-settings) に分離済み --}}
 </div>
 @endsection

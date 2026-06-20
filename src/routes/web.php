@@ -124,6 +124,20 @@ Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->grou
         ->middleware('throttle:5,1')
         ->name('profile.update');
 
+    // ポートフォリオ管理（プロフィール編集から分離）
+    Route::get('/portfolio', [\App\Http\Controllers\Model\PortfolioController::class, 'edit'])->name('portfolio.edit');
+    Route::post('/portfolio', [\App\Http\Controllers\Model\PortfolioController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('portfolio.store');
+    Route::put('/portfolio/{image}/caption', [\App\Http\Controllers\Model\PortfolioController::class, 'updateCaption'])->name('portfolio.caption');
+    Route::post('/portfolio/{image}/main', [\App\Http\Controllers\Model\PortfolioController::class, 'setMain'])->name('portfolio.set-main');
+    Route::delete('/portfolio/{image}', [\App\Http\Controllers\Model\PortfolioController::class, 'destroy'])->name('portfolio.destroy');
+
+    // アカウント設定（マイページから分離した別画面）
+    Route::get('/account-settings', function() {
+        return view('account.settings');
+    })->name('account-settings');
+
     Route::get('/applications', [ModelApplicationController::class, 'index'])->name('applications.index');
 
     // 応募は「依頼詳細からPOST」想定（画面は jobs.show 側でOK）

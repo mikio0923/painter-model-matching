@@ -80,11 +80,6 @@
         </section>
     @endforeach
 
-    <div class="border-t border-secondary-200 pt-10 text-center">
-        <p class="text-sm text-secondary-500 mb-5">準備ができたら、登録を始めましょう。</p>
-        <a href="{{ route('register', ['role' => 'model']) }}" class="btn-museum-dark inline-flex">
-            モデルとして登録
-        </a>
-    </div>
+    {{-- 「準備ができたら、登録を始めましょう / モデルとして登録」セクションは削除済み --}}
 </div>
 @endsection

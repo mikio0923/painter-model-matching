@@ -9,9 +9,16 @@ return new class extends Migration
 {
     /**
      * 既存の外部キー制約があれば削除（冪等化のため）
+     *
+     * SQLite では information_schema が存在せず、ALTER TABLE で FK を個別 drop できない。
+     * テスト環境は毎回 migrate:fresh で空の状態から開始するため、SQLite では何もしない。
      */
     private function dropForeignIfExists(string $table, string $constraintName): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         $exists = DB::selectOne(
             "SELECT 1 FROM information_schema.table_constraints
              WHERE constraint_schema = DATABASE()

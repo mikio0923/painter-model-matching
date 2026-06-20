@@ -60,65 +60,11 @@
             <p class="text-xs text-secondary-500 mt-2">JPEG / PNG / GIF、最大 5MB</p>
         </div>
 
-        {{-- ポートフォリオ・日記 --}}
-        <div>
-            <p class="{{ $rowLabel }}">ポートフォリオ・日記（最大 10 枚）</p>
-            <p class="text-xs text-secondary-500 mb-3">写真とキャプションで日記のように投稿できます。</p>
-
-            @if($modelProfile->images->count() > 0)
-                <div class="space-y-4 mb-4" id="existingImages">
-                    @foreach($modelProfile->images as $image)
-                        <div class="border border-secondary-200 bg-canvas-50 p-4 flex flex-col sm:flex-row gap-4" data-image-id="{{ $image->id }}">
-                            <div class="relative flex-shrink-0 w-full sm:w-40">
-                                <img src="{{ Storage::url($image->image_path) }}"
-                                     alt="ギャラリー画像"
-                                     class="w-full aspect-square object-cover border border-secondary-200">
-                                <div class="absolute top-2 right-2 flex gap-1 flex-col sm:flex-row">
-                                    @if($image->is_main)
-                                        <span class="bg-secondary-900 text-canvas-50 text-[9px] uppercase tracking-[0.2em] px-2 py-1">Main</span>
-                                    @else
-                                        <button type="button"
-                                                onclick="setMainImage({{ $image->id }})"
-                                                class="bg-canvas-50 border border-secondary-400 text-secondary-700 text-[9px] uppercase tracking-[0.2em] px-2 py-1 hover:bg-secondary-100">
-                                            Set Main
-                                        </button>
-                                    @endif
-                                    <button type="button"
-                                            onclick="deleteImage({{ $image->id }})"
-                                            class="bg-canvas-50 border border-error-500 text-error-600 text-[9px] uppercase tracking-[0.2em] px-2 py-1 hover:bg-error-50">
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <label for="caption_{{ $image->id }}" class="block text-[10px] uppercase tracking-[0.2em] text-secondary-500 mb-1">Caption</label>
-                                <textarea id="caption_{{ $image->id }}"
-                                          name="captions[{{ $image->id }}]"
-                                          rows="3"
-                                          placeholder="写真へのコメントや日記を書けます"
-                                          class="{{ $input }} text-sm leading-relaxed">{{ old("captions.{$image->id}", $image->caption) }}</textarea>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-
-            <div id="imagePreview" class="grid grid-cols-3 md:grid-cols-5 gap-3 mb-4 hidden"></div>
-
-            <div class="flex gap-3 items-center flex-wrap">
-                <input type="file" id="images" name="images[]"
-                       accept="image/jpeg,image/png,image/jpg,image/gif" multiple class="hidden"
-                       onchange="handleImageSelection(event)">
-                <button type="button"
-                        onclick="document.getElementById('images').click()"
-                        class="px-5 py-2.5 border border-secondary-400 text-secondary-700 text-xs uppercase tracking-[0.2em] hover:bg-secondary-100 transition-colors duration-200">
-                    Choose Images
-                </button>
-                <span id="selectedCount" class="text-xs text-secondary-500"></span>
-            </div>
-            @error('images')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
-            @error('images.*')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
-            <p class="text-xs text-secondary-500 mt-2">複数選択可。JPEG / PNG / GIF、各最大 5MB。新しい画像を追加するとポートフォリオに投稿されます。</p>
+        {{-- ポートフォリオは別画面で管理 --}}
+        <div class="border-l-2 border-secondary-400 bg-canvas-50 px-4 py-3 text-sm text-secondary-700 leading-relaxed">
+            ポートフォリオ画像の追加・編集・削除は
+            <a href="{{ route('model.portfolio.edit') }}" class="link-primary font-medium">ポートフォリオ管理画面</a>
+            から行えます。
         </div>
 
         {{-- セクション: 基本情報 --}}
@@ -458,14 +404,14 @@
             <label class="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" name="online_available" value="1"
                        {{ old('online_available', $modelProfile->online_available) ? 'checked' : '' }}
-                       class="border-secondary-300 text-secondary-900 focus:ring-secondary-900">
+                       class="border-error-400 text-error-600 focus:ring-error-500 accent-error-600">
                 <span class="text-sm text-secondary-700">オンライン対応可能</span>
             </label>
 
             <label class="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" name="is_public" value="1"
                        {{ old('is_public', $modelProfile->is_public) ? 'checked' : '' }}
-                       class="border-secondary-300 text-secondary-900 focus:ring-secondary-900">
+                       class="border-error-400 text-error-600 focus:ring-error-500 accent-error-600">
                 <span class="text-sm text-secondary-700">プロフィールを公開する</span>
             </label>
         </div>
@@ -485,78 +431,6 @@
 </div>
 
 <script>
-let selectedFiles = [];
-
-function handleImageSelection(event) {
-    const files = Array.from(event.target.files);
-    const maxFiles = 10;
-    const existingCount = {{ $modelProfile->images->count() }};
-
-    if (selectedFiles.length + files.length + existingCount > maxFiles) {
-        alert(`画像は最大${maxFiles}枚までアップロードできます。既存の画像を含めて${maxFiles}枚を超えています。`);
-        return;
-    }
-
-    selectedFiles = [...selectedFiles, ...files];
-
-    const dataTransfer = new DataTransfer();
-    selectedFiles.forEach(file => dataTransfer.items.add(file));
-    event.target.files = dataTransfer.files;
-
-    updateImagePreview();
-    updateSelectedCount();
-}
-
-function updateImagePreview() {
-    const previewContainer = document.getElementById('imagePreview');
-    previewContainer.innerHTML = '';
-
-    if (selectedFiles.length === 0) {
-        previewContainer.classList.add('hidden');
-        return;
-    }
-    previewContainer.classList.remove('hidden');
-
-    selectedFiles.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const div = document.createElement('div');
-            div.className = 'relative';
-            div.innerHTML = `
-                <img src="${e.target.result}"
-                     alt="プレビュー ${index + 1}"
-                     class="w-full aspect-square object-cover border border-secondary-200">
-                <button type="button"
-                        onclick="removeImage(${index})"
-                        class="absolute top-2 right-2 bg-canvas-50 border border-error-500 text-error-600 text-[9px] uppercase tracking-[0.2em] px-2 py-1 hover:bg-error-50">
-                    Remove
-                </button>
-            `;
-            previewContainer.appendChild(div);
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-function removeImage(index) {
-    selectedFiles.splice(index, 1);
-    const fileInput = document.getElementById('images');
-    const dataTransfer = new DataTransfer();
-    selectedFiles.forEach(file => dataTransfer.items.add(file));
-    fileInput.files = dataTransfer.files;
-    updateImagePreview();
-    updateSelectedCount();
-}
-
-function updateSelectedCount() {
-    const countElement = document.getElementById('selectedCount');
-    const existingCount = {{ $modelProfile->images->count() }};
-    const totalCount = selectedFiles.length + existingCount;
-    countElement.textContent = selectedFiles.length > 0
-        ? `選択中: ${selectedFiles.length} 枚（合計: ${totalCount} 枚）`
-        : '';
-}
-
 function updateDays() {
     const year = document.getElementById('birth_year').value;
     const month = document.getElementById('birth_month').value;
@@ -650,23 +524,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
     }
 });
 
-function setMainImage(imageId) {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'main_image_id';
-    input.value = imageId;
-    document.querySelector('form').appendChild(input);
-    document.querySelector('form').submit();
-}
-
-function deleteImage(imageId) {
-    if (!confirm('この画像を削除しますか？')) return;
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'delete_images[]';
-    input.value = imageId;
-    document.querySelector('form').appendChild(input);
-    document.querySelector('form').submit();
-}
+// ポートフォリオ画像の操作は別画面（model.portfolio.edit）に分離済み
 </script>
 @endsection

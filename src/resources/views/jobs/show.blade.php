@@ -281,8 +281,9 @@
                     </dl>
                 </div>
 
-                {{-- お気に入りボタン --}}
+                {{-- お気に入りボタン（自分の依頼には表示しない） --}}
                 @auth
+                @if(auth()->id() !== $job->painter_id)
                 <div class="px-5 pb-5">
                     <x-favorite-button
                         type="job"
@@ -292,6 +293,7 @@
                         :label-on="'お気に入り解除 (' . $goodCount . ')'"
                         :label-off="'お気に入りに追加 (' . $goodCount . ')'" />
                 </div>
+                @endif
                 @endauth
             </div>
 
@@ -299,16 +301,34 @@
             <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                 <div class="p-5">
                     <p class="text-xs font-semibold text-secondary-400 uppercase tracking-wider mb-4">投稿者</p>
+                    @php
+                        $painterProfileLink = $painterProfile ? route('painters.show', $painterProfile) : null;
+                    @endphp
                     <div class="flex items-center gap-3">
-                        <div class="avatar avatar-lg border-2 border-primary-100 shrink-0">
-                            @if($painterProfile?->profile_image_path)
-                                <img src="{{ Storage::url($painterProfile->profile_image_path) }}" alt="{{ $painterName }}" class="w-full h-full object-cover">
-                            @else
+                        @if($painterProfileLink)
+                            <a href="{{ $painterProfileLink }}"
+                               class="avatar avatar-lg border-2 border-primary-100 shrink-0 hover:border-primary-300 transition-colors"
+                               title="{{ $painterName }} のプロフィールを見る">
+                                @if($painterProfile?->profile_image_path)
+                                    <img src="{{ Storage::url($painterProfile->profile_image_path) }}" alt="{{ $painterName }}" class="w-full h-full object-cover">
+                                @else
+                                    <svg class="w-7 h-7 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                @endif
+                            </a>
+                        @else
+                            <div class="avatar avatar-lg border-2 border-primary-100 shrink-0">
                                 <svg class="w-7 h-7 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                            @endif
-                        </div>
+                            </div>
+                        @endif
                         <div class="min-w-0">
-                            <p class="font-bold text-secondary-900 truncate">{{ $painterName }}</p>
+                            @if($painterProfileLink)
+                                <a href="{{ $painterProfileLink }}"
+                                   class="font-bold text-secondary-900 truncate hover:text-primary-600 transition-colors">
+                                    {{ $painterName }}
+                                </a>
+                            @else
+                                <p class="font-bold text-secondary-900 truncate">{{ $painterName }}</p>
+                            @endif
                             <p class="text-xs text-secondary-400 mt-0.5">画家</p>
                         </div>
                     </div>

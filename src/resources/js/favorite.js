@@ -54,9 +54,14 @@
             button.classList.toggle('fav-btn', !favorited);
             button.classList.toggle('fav-btn-active', favorited);
         } else {
-            // large variant のクラス切り替え（黒/白の反転）
-            const onClasses = ['bg-secondary-900', 'text-canvas-50', 'border-secondary-900', 'hover:bg-canvas-50', 'hover:text-secondary-900'];
-            const offClasses = ['bg-canvas-50', 'text-secondary-900', 'border-secondary-900', 'hover:bg-secondary-900', 'hover:text-canvas-50'];
+            // large variant のクラス切り替え
+            const colorOn = button.dataset.colorOn || 'dark';
+            const onClasses = colorOn === 'red'
+                ? ['bg-error-500', 'text-canvas-50', 'border-error-500', 'hover:bg-error-600', 'hover:border-error-600']
+                : ['bg-secondary-900', 'text-canvas-50', 'border-secondary-900', 'hover:bg-canvas-50', 'hover:text-secondary-900'];
+            const offClasses = colorOn === 'red'
+                ? ['bg-canvas-50', 'text-error-600', 'border-error-500', 'hover:bg-error-50']
+                : ['bg-canvas-50', 'text-secondary-900', 'border-secondary-900', 'hover:bg-secondary-900', 'hover:text-canvas-50'];
             const apply = favorited ? onClasses : offClasses;
             const remove = favorited ? offClasses : onClasses;
             apply.forEach(c => button.classList.add(c));

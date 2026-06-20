@@ -37,7 +37,7 @@ class StoreJobRequest extends FormRequest
             'city' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string', 'max:255'],
             'access' => ['nullable', 'string', 'max:5000'],
-            'scheduled_date' => ['nullable', 'date', 'after_or_equal:today'],
+            'scheduled_date' => ['nullable', 'date', 'after_or_equal:today', 'after_or_equal:apply_deadline'],
             'apply_deadline' => ['nullable', 'date', 'after_or_equal:today'],
             'model_id' => ['nullable', 'integer', 'exists:model_profiles,id'],
         ];
@@ -63,7 +63,7 @@ class StoreJobRequest extends FormRequest
             'recruitment_number.max' => '募集人数は9,999以下の値を入力してください。',
             'location_type.required' => '場所タイプを選択してください。',
             'location_type.in' => '場所タイプは「オンライン」または「オフライン」を選択してください。',
-            'scheduled_date.after_or_equal' => '予定日は今日以降の日付を入力してください。',
+            'scheduled_date.after_or_equal' => '撮影日は応募締切以降かつ今日以降の日付を入力してください。',
             'apply_deadline.after_or_equal' => '応募締切は今日以降の日付を入力してください。',
         ];
     }

@@ -171,9 +171,11 @@
                     </div>
                 </a>
 
-                <div class="absolute top-3 right-3 z-10">
-                    <x-favorite-button type="job" :id="$job->id" :favorited="$isFavJob" />
-                </div>
+                @if(auth()->id() !== $job->painter_id)
+                    <div class="absolute top-3 right-3 z-10">
+                        <x-favorite-button type="job" :id="$job->id" :favorited="$isFavJob" />
+                    </div>
+                @endif
             </div>
             @endforeach
         </div>

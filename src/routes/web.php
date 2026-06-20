@@ -29,6 +29,9 @@ Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'ind
 
 Route::get('/models', [ModelProfileController::class, 'index'])->name('models.index');
 Route::get('/models/{modelProfile}', [ModelProfileController::class, 'show'])->name('models.show');
+
+// 画家プロフィール公開ページ
+Route::get('/painters/{painterProfile}', [\App\Http\Controllers\PainterProfileController::class, 'show'])->name('painters.show');
 Route::post('/models/{modelProfile}/questions', [\App\Http\Controllers\ModelProfileQuestionController::class, 'store'])
     ->middleware(['auth', 'throttle:10,1'])
     ->name('model-profile.questions.store');

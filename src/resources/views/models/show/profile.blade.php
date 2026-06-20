@@ -215,8 +215,9 @@
                             :id="$modelProfile->id"
                             :favorited="$isFavorite"
                             variant="large"
-                            :label-on="'お気に入り解除 (' . $favoritesCount . ')'"
-                            :label-off="'お気に入りに追加 (' . $favoritesCount . ')'" />
+                            color-on="red"
+                            :label-on="'お気に入り (' . $favoritesCount . ')'"
+                            :label-off="'お気に入り (' . $favoritesCount . ')'" />
                     @else
                         <div class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 border border-secondary-300 text-sm text-secondary-500">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

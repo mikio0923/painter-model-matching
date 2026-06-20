@@ -28,6 +28,7 @@
     'labelOn' => 'お気に入り解除',
     'labelOff' => 'お気に入りに追加',
     'size' => 'md',
+    'colorOn' => 'dark', // 'dark' | 'red'
 ])
 
 @php
@@ -37,6 +38,16 @@
         default => 'p-1.5 [&_svg]:w-4 [&_svg]:h-4',
     };
     $isLarge = $variant === 'large';
+
+    // large variant の登録済 / 未登録時の class セット
+    // colorOn='red' を指定すると登録済時に赤背景固定（モデル詳細用）
+    if ($colorOn === 'red') {
+        $favoritedClasses = 'bg-error-500 text-canvas-50 border-error-500 hover:bg-error-600 hover:border-error-600';
+        $unfavoritedClasses = 'bg-canvas-50 text-error-600 border-error-500 hover:bg-error-50';
+    } else {
+        $favoritedClasses = 'bg-secondary-900 text-canvas-50 border-secondary-900 hover:bg-canvas-50 hover:text-secondary-900';
+        $unfavoritedClasses = 'bg-canvas-50 text-secondary-900 border-secondary-900 hover:bg-secondary-900 hover:text-canvas-50';
+    }
 @endphp
 
 @auth
@@ -46,10 +57,11 @@
         data-target-id="{{ $id }}"
         data-label-on="{{ $labelOn }}"
         data-label-off="{{ $labelOff }}"
+        data-color-on="{{ $colorOn }}"
         aria-pressed="{{ $favorited ? 'true' : 'false' }}"
         title="{{ $favorited ? $labelOn : $labelOff }}"
         @if($isLarge)
-            class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 border text-sm font-medium transition-colors duration-300 {{ $favorited ? 'bg-secondary-900 text-canvas-50 border-secondary-900 hover:bg-canvas-50 hover:text-secondary-900' : 'bg-canvas-50 text-secondary-900 border-secondary-900 hover:bg-secondary-900 hover:text-canvas-50' }}"
+            class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 border text-sm font-medium transition-colors duration-300 {{ $favorited ? $favoritedClasses : $unfavoritedClasses }}"
         @else
             class="{{ $favorited ? 'fav-btn-active' : 'fav-btn' }} {{ $sizeClasses }} transition-colors duration-200"
         @endif

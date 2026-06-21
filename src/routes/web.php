@@ -88,6 +88,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/messages/job/{job}', [MessageController::class, 'store'])
         ->middleware('throttle:20,1')
         ->name('messages.store');
+    // 非同期ポーリング用（短期間に高頻度叩かれる想定なので throttle は緩め）
+    Route::get('/messages/job/{job}/poll', [MessageController::class, 'poll'])
+        ->middleware('throttle:240,1')
+        ->name('messages.poll');
 
     Route::get('/jobs/{job}/reviews/create', [ReviewController::class, 'create'])->name('reviews.create');
     Route::post('/jobs/{job}/reviews', [ReviewController::class, 'store'])

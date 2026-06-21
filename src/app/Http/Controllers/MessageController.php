@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 
 class MessageController extends Controller
 {
@@ -122,7 +123,7 @@ class MessageController extends Controller
     /**
      * メッセージを送信
      */
-    public function store(Request $request, Job $job): RedirectResponse
+    public function store(Request $request, Job $job): RedirectResponse|JsonResponse
     {
         $request->validate([
             'body' => ['required', 'string', 'max:5000'],
@@ -141,9 +142,77 @@ class MessageController extends Controller
         // 通知を作成（受信者に通知）
         NotificationService::notifyMessageReceived($message);
 
+        // 非同期 (LINE 風) では JSON で返却し、ページ遷移せず DOM に挿入する
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $this->serializeMessage($message->fresh(['sender']), $user->id),
+            ]);
+        }
+
         return redirect()->route('messages.show', [
             'job' => $job,
             'with' => $request->receiver_id,
         ])->with('success', 'メッセージを送信しました');
+    }
+
+    /**
+     * 新着メッセージのポーリング用 API（JSON）
+     * GET /messages/job/{job}/poll?with={otherUserId}&since={lastMessageId}
+     */
+    public function poll(Request $request, Job $job): JsonResponse
+    {
+        $request->validate([
+            'with'  => ['required', 'integer', 'exists:users,id'],
+            'since' => ['nullable', 'integer', 'min:0'],
+        ]);
+
+        $user        = Auth::user();
+        $otherUserId = (int) $request->get('with');
+        $since       = (int) $request->get('since', 0);
+
+        $query = Message::where('job_id', $job->id)
+            ->where(function ($q) use ($user, $otherUserId) {
+                $q->where(function ($qq) use ($user, $otherUserId) {
+                    $qq->where('sender_id', $user->id)
+                       ->where('receiver_id', $otherUserId);
+                })->orWhere(function ($qq) use ($user, $otherUserId) {
+                    $qq->where('sender_id', $otherUserId)
+                       ->where('receiver_id', $user->id);
+                });
+            })
+            ->where('id', '>', $since)
+            ->orderBy('id', 'asc')
+            ->with(['sender'])
+            ->limit(200)
+            ->get();
+
+        // 自分宛の未読を既読化（ポーリングのたびに反映）
+        Message::where('job_id', $job->id)
+            ->where('receiver_id', $user->id)
+            ->where('sender_id', $otherUserId)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        $payload = $query->map(fn($m) => $this->serializeMessage($m, $user->id))->all();
+
+        return response()->json([
+            'messages' => $payload,
+            'last_id'  => $query->last()?->id ?? $since,
+        ]);
+    }
+
+    /**
+     * Message を非同期用の最小データに整形（HTML エスケープは JS 側で textContent 経由）
+     */
+    private function serializeMessage(Message $message, int $viewerId): array
+    {
+        return [
+            'id'         => $message->id,
+            'body'       => $message->body,
+            'is_me'      => $message->sender_id === $viewerId,
+            'sender_name'=> $message->sender->name ?? '退会済みユーザー',
+            'created_at' => $message->created_at->format('m/d H:i'),
+        ];
     }
 }

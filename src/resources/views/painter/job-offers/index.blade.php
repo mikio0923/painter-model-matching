@@ -35,24 +35,29 @@
                     $model = $offer->model;
                     $modelName = $model->modelProfile?->display_name ?? $model->name;
                 @endphp
-                <li class="bg-canvas-50 border border-secondary-200 rounded-lg p-4 flex items-start justify-between gap-4">
-                    <div class="min-w-0">
-                        <p class="font-semibold text-secondary-900 truncate">{{ $offer->job->title }}</p>
-                        <p class="text-xs text-secondary-500 mt-1">{{ $modelName }} さん宛・{{ $offer->created_at->format('Y/m/d') }}</p>
-                        @if($offer->isAccepted() || $offer->isDeclined())
-                            <p class="text-xs text-secondary-400 mt-1">返答: {{ $offer->responded_at?->format('Y/m/d') }}</p>
-                        @endif
-                    </div>
-                    @if($offer->isAccepted())
-                        <a href="{{ route('jobs.show', $offer->job) }}"
-                           class="text-xs px-3 py-1.5 shrink-0 bg-success-50 text-success-700 border border-success-200 rounded-full hover:bg-success-100 transition-colors">
-                            受諾 →
-                        </a>
-                    @elseif($offer->isDeclined())
-                        <span class="text-xs px-2 py-1 rounded-full shrink-0 bg-secondary-100 text-secondary-600 border border-secondary-200">辞退</span>
-                    @else
-                        <span class="text-xs px-2 py-1 rounded-full shrink-0 bg-warning-50 text-warning-700 border border-warning-200">返答待ち</span>
-                    @endif
+                <li>
+                    <a href="{{ route('jobs.show', $offer->job) }}"
+                       class="block bg-canvas-50 border border-secondary-200 rounded-lg p-4 hover:border-secondary-900 hover:bg-canvas-100 transition-colors">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="font-semibold text-secondary-900 truncate">{{ $offer->job->title }}</p>
+                                <p class="text-xs text-secondary-500 mt-1">{{ $modelName }} さん宛・{{ $offer->created_at->format('Y/m/d') }}</p>
+                                @if($offer->isAccepted() || $offer->isDeclined())
+                                    <p class="text-xs text-secondary-400 mt-1">返答: {{ $offer->responded_at?->format('Y/m/d') }}</p>
+                                @endif
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded-full shrink-0
+                                         @if($offer->isAccepted()) bg-success-50 text-success-700 border border-success-200
+                                         @elseif($offer->isDeclined()) bg-secondary-100 text-secondary-600 border border-secondary-200
+                                         @else bg-warning-50 text-warning-700 border border-warning-200
+                                         @endif">
+                                @if($offer->isAccepted()) 受諾
+                                @elseif($offer->isDeclined()) 辞退
+                                @else 返答待ち
+                                @endif
+                            </span>
+                        </div>
+                    </a>
                 </li>
             @endforeach
         </ul>

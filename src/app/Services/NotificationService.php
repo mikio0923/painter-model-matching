@@ -177,6 +177,40 @@ class NotificationService
     }
 
     /**
+     * モデルプロフィールが画家からお気に入りされた（モデル宛）
+     */
+    public static function notifyModelFavorited(\App\Models\ModelProfile $modelProfile, User $favoriter): void
+    {
+        $favoriterName = $favoriter->painterProfile?->display_name ?? $favoriter->name;
+
+        Notification::create([
+            'user_id'      => $modelProfile->user_id,
+            'type'         => 'favorite_received_model',
+            'title'        => 'お気に入りに追加されました',
+            'body'         => "{$favoriterName}さんがあなたのプロフィールをお気に入りに追加しました。",
+            'related_id'   => $modelProfile->id,
+            'related_type' => \App\Models\ModelProfile::class,
+        ]);
+    }
+
+    /**
+     * 依頼がモデルからお気に入りされた（画家宛）
+     */
+    public static function notifyJobFavorited(Job $job, User $favoriter): void
+    {
+        $favoriterName = $favoriter->modelProfile?->display_name ?? $favoriter->name;
+
+        Notification::create([
+            'user_id'      => $job->painter_id,
+            'type'         => 'favorite_received_job',
+            'title'        => 'あなたの依頼がお気に入りに追加されました',
+            'body'         => "{$favoriterName}さんが「{$job->title}」をお気に入りに追加しました。",
+            'related_id'   => $job->id,
+            'related_type' => Job::class,
+        ]);
+    }
+
+    /**
      * 個別依頼が辞退された（画家宛）
      * 本文は丁寧な定型文。モデルからの補足コメントがある場合のみ末尾に添える。
      */

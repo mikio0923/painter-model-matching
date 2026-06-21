@@ -51,6 +51,13 @@
 @endphp
 
 @auth
+@php
+    // モデルのお気に入りは画家のみ、依頼のお気に入りはモデルのみ
+    $userRole = auth()->user()->role;
+    $allowedForRole = ($type === 'model' && $userRole === 'painter')
+                  || ($type === 'job' && $userRole === 'model');
+@endphp
+@if($allowedForRole)
 <button type="button"
         data-favorite-toggle
         data-target-type="{{ $type }}"
@@ -78,4 +85,5 @@
         <span data-favorite-label>{{ $favorited ? $labelOn : $labelOff }}</span>
     @endif
 </button>
+@endif
 @endauth

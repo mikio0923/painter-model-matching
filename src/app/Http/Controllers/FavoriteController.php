@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Favorite;
 use App\Models\ModelProfile;
 use App\Models\Job;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,6 +38,13 @@ class FavoriteController extends Controller
     {
         $user = Auth::user();
 
+        if ($user->role !== 'painter') {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'モデルのお気に入りは画家のみ可能です'], 403);
+            }
+            return back()->with('error', 'モデルのお気に入りは画家のみ可能です');
+        }
+
         // 既にお気に入りに登録されているかチェック
         $existingFavorite = Favorite::where('user_id', $user->id)
             ->where('favoritable_type', ModelProfile::class)
@@ -56,6 +64,8 @@ class FavoriteController extends Controller
             'favoritable_id' => $modelProfile->id,
         ]);
 
+        NotificationService::notifyModelFavorited($modelProfile, $user);
+
         if ($request->wantsJson()) {
             return response()->json(['success' => true]);
         }
@@ -68,6 +78,13 @@ class FavoriteController extends Controller
     public function storeJob(Request $request, Job $job): RedirectResponse|JsonResponse
     {
         $user = Auth::user();
+
+        if ($user->role !== 'model') {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => '依頼のお気に入りはモデルのみ可能です'], 403);
+            }
+            return back()->with('error', '依頼のお気に入りはモデルのみ可能です');
+        }
 
         // 既にお気に入りに登録されているかチェック
         $existingFavorite = Favorite::where('user_id', $user->id)
@@ -87,6 +104,8 @@ class FavoriteController extends Controller
             'favoritable_type' => Job::class,
             'favoritable_id' => $job->id,
         ]);
+
+        NotificationService::notifyJobFavorited($job, $user);
 
         if ($request->wantsJson()) {
             return response()->json(['success' => true]);
@@ -126,6 +145,14 @@ class FavoriteController extends Controller
 
         $user = Auth::user();
 
+        // 同ロール間の Fav は禁止: モデルのお気に入りは画家のみ / 依頼のお気に入りはモデルのみ
+        if ($validated['target_type'] === 'model' && $user->role !== 'painter') {
+            return response()->json(['success' => false, 'message' => 'モデルのお気に入りは画家のみ可能です'], 403);
+        }
+        if ($validated['target_type'] === 'job' && $user->role !== 'model') {
+            return response()->json(['success' => false, 'message' => '依頼のお気に入りはモデルのみ可能です'], 403);
+        }
+
         $modelClass = $validated['target_type'] === 'model'
             ? ModelProfile::class
             : Job::class;
@@ -151,6 +178,13 @@ class FavoriteController extends Controller
                 'favoritable_id' => $target->id,
             ]);
             $favorited = true;
+
+            // 追加された時のみ通知（解除時は通知しない）
+            if ($validated['target_type'] === 'model') {
+                NotificationService::notifyModelFavorited($target, $user);
+            } else {
+                NotificationService::notifyJobFavorited($target, $user);
+            }
         }
 
         $count = Favorite::where('favoritable_type', $modelClass)

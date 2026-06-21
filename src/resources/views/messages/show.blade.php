@@ -85,9 +85,9 @@
 (function(){
     const POLL_INTERVAL_MS = 4000;
     const csrfToken   = document.querySelector('meta[name="csrf-token"]')?.content || '';
-    const storeUrl    = @json(route('messages.store', $job));
-    const pollUrl     = @json(route('messages.poll', $job));
-    const otherUserId = @json($otherUser->id ?? null);
+    const storeUrl    = {!! json_encode(route('messages.store', $job)) !!};
+    const pollUrl     = {!! json_encode(route('messages.poll', $job)) !!};
+    const otherUserId = {!! json_encode($otherUser->id ?? null) !!};
 
     const scrollEl    = document.getElementById('messages-scroll');
     const listEl      = document.getElementById('messages-list');

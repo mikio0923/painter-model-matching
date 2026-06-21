@@ -43,16 +43,16 @@
                             <p class="text-xs text-secondary-400 mt-1">返答: {{ $offer->responded_at?->format('Y/m/d') }}</p>
                         @endif
                     </div>
-                    <span class="text-xs px-2 py-1 rounded-full shrink-0
-                                 @if($offer->isAccepted()) bg-success-50 text-success-700 border border-success-200
-                                 @elseif($offer->isDeclined()) bg-secondary-100 text-secondary-600 border border-secondary-200
-                                 @else bg-warning-50 text-warning-700 border border-warning-200
-                                 @endif">
-                        @if($offer->isAccepted()) 受諾
-                        @elseif($offer->isDeclined()) 辞退
-                        @else 返答待ち
-                        @endif
-                    </span>
+                    @if($offer->isAccepted())
+                        <a href="{{ route('jobs.show', $offer->job) }}"
+                           class="text-xs px-3 py-1.5 shrink-0 bg-success-50 text-success-700 border border-success-200 rounded-full hover:bg-success-100 transition-colors">
+                            受諾 →
+                        </a>
+                    @elseif($offer->isDeclined())
+                        <span class="text-xs px-2 py-1 rounded-full shrink-0 bg-secondary-100 text-secondary-600 border border-secondary-200">辞退</span>
+                    @else
+                        <span class="text-xs px-2 py-1 rounded-full shrink-0 bg-warning-50 text-warning-700 border border-warning-200">返答待ち</span>
+                    @endif
                 </li>
             @endforeach
         </ul>

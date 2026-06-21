@@ -95,17 +95,20 @@ class JobController extends Controller
      */
     public function show(Job $job): View
     {
-        // 非公開の依頼は404
-        if ($job->status !== 'open') {
+        $isOwner = Auth::check() && Auth::id() === $job->painter_id;
+        $hasRelatedOffer = Auth::check()
+            && $job->offers()->where('model_id', Auth::id())->exists();
+
+        // closed/done の依頼は、所有画家本人 と 個別依頼の対象モデルのみ閲覧可
+        if ($job->status !== 'open' && !$isOwner && !$hasRelatedOffer) {
             abort(404);
         }
 
-        // pending な個別依頼がある場合は、画家本人と指名されたモデルのみ閲覧可
-        if ($job->pendingOffers()->exists()) {
-            $allowed = Auth::check() && (
-                Auth::id() === $job->painter_id
-                || $job->pendingOffers()->where('model_id', Auth::id())->exists()
-            );
+        // open でも pending な個別依頼がある場合は、画家本人と指名されたモデルのみ閲覧可
+        if ($job->status === 'open' && $job->pendingOffers()->exists()) {
+            $allowed = $isOwner
+                || ($hasRelatedOffer
+                    && $job->pendingOffers()->where('model_id', Auth::id())->exists());
             if (!$allowed) {
                 abort(404);
             }

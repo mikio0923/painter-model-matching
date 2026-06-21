@@ -42,10 +42,10 @@
     // large variant の登録済 / 未登録時の class セット
     // colorOn='red' を指定すると登録済時に赤背景固定（モデル詳細用）
     if ($colorOn === 'red') {
-        $favoritedClasses = 'bg-error-500 text-canvas-50 border-error-500 hover:bg-error-600 hover:border-error-600';
-        $unfavoritedClasses = 'bg-canvas-50 text-error-600 border-error-500 hover:bg-error-50';
+        $favoritedClasses   = 'bg-error-500 text-white border-error-500 hover:bg-error-600 hover:border-error-600';
+        $unfavoritedClasses = 'bg-white text-error-500 border-error-500 hover:bg-error-50';
     } else {
-        $favoritedClasses = 'bg-secondary-900 text-canvas-50 border-secondary-900 hover:bg-canvas-50 hover:text-secondary-900';
+        $favoritedClasses   = 'bg-secondary-900 text-canvas-50 border-secondary-900 hover:bg-canvas-50 hover:text-secondary-900';
         $unfavoritedClasses = 'bg-canvas-50 text-secondary-900 border-secondary-900 hover:bg-secondary-900 hover:text-canvas-50';
     }
 @endphp

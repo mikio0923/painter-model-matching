@@ -57,10 +57,10 @@
             // large variant のクラス切り替え
             const colorOn = button.dataset.colorOn || 'dark';
             const onClasses = colorOn === 'red'
-                ? ['bg-error-500', 'text-canvas-50', 'border-error-500', 'hover:bg-error-600', 'hover:border-error-600']
+                ? ['bg-error-500', 'text-white', 'border-error-500', 'hover:bg-error-600', 'hover:border-error-600']
                 : ['bg-secondary-900', 'text-canvas-50', 'border-secondary-900', 'hover:bg-canvas-50', 'hover:text-secondary-900'];
             const offClasses = colorOn === 'red'
-                ? ['bg-canvas-50', 'text-error-600', 'border-error-500', 'hover:bg-error-50']
+                ? ['bg-white', 'text-error-500', 'border-error-500', 'hover:bg-error-50']
                 : ['bg-canvas-50', 'text-secondary-900', 'border-secondary-900', 'hover:bg-secondary-900', 'hover:text-canvas-50'];
             const apply = favorited ? onClasses : offClasses;
             const remove = favorited ? offClasses : onClasses;

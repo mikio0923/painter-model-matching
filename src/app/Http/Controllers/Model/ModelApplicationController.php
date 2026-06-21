@@ -59,4 +59,39 @@ class ModelApplicationController extends Controller
         return redirect()->route('model.applications.index')
             ->with('success', '応募が完了しました');
     }
+
+    /**
+     * モデルが「報酬を受け取った」と宣言して取引を完了する。
+     * 撮影日 (scheduled_date) 当日以降のみ実行可能。
+     * 取引完了後に双方がレビューを投稿できるようになる。
+     */
+    public function markPaymentReceived(Request $request, JobApplication $application): RedirectResponse
+    {
+        // 自分の応募かチェック
+        abort_unless($application->model_id === Auth::id(), 403);
+
+        // 既に完了済みなら何もしない
+        if ($application->isCompleted()) {
+            return redirect()->route('jobs.show', $application->job)
+                ->with('error', 'すでに取引完了済みです。');
+        }
+
+        // 承認されているか
+        if ($application->status !== 'accepted') {
+            return redirect()->route('jobs.show', $application->job)
+                ->with('error', '承認された応募のみ取引完了にできます。');
+        }
+
+        // 撮影日当日以降のみ
+        $scheduled = $application->job->scheduled_date;
+        if ($scheduled && $scheduled->isFuture() && !$scheduled->isToday()) {
+            return redirect()->route('jobs.show', $application->job)
+                ->with('error', '撮影日当日以降に取引完了の操作ができます。');
+        }
+
+        $application->update(['payment_received_at' => now()]);
+
+        return redirect()->route('jobs.show', $application->job)
+            ->with('success', '取引完了を確定しました。レビューを投稿できます。');
+    }
 }

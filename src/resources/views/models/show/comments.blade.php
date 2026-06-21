@@ -8,14 +8,6 @@
     @if($reviews->count() > 0)
         <div class="space-y-4">
             @foreach($reviews as $review)
-                @php
-                    $ratingClass = match($review->rating) {
-                        'very_good' => 'text-success-700',
-                        'good'      => 'text-success-700',
-                        'bad'       => 'text-error-600',
-                        default     => 'text-secondary-500',
-                    };
-                @endphp
                 <article class="border border-secondary-200 bg-canvas-50 px-5 py-4 hover:border-secondary-400 transition-colors duration-300">
                     <div class="flex items-start justify-between gap-4 mb-3">
                         <div class="min-w-0 flex-1">
@@ -32,9 +24,7 @@
                             </p>
                         </div>
                         <div class="text-right shrink-0">
-                            <p class="text-[10px] tracking-[0.25em] uppercase {{ $ratingClass }}">
-                                ● {{ $review->rating_label }}
-                            </p>
+                            <x-star-rating :rating="(int) $review->rating" size="sm" />
                         </div>
                     </div>
                     @if($review->comment)

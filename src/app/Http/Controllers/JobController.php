@@ -131,26 +131,38 @@ class JobController extends Controller
                 ->exists();
         }
 
-        // レビューを書けるかチェック（承認された応募がある場合）
-        $canReview = false;
-        $reviewTarget = null;
+        // レビュー / 取引完了の状態を判定
+        // - acceptedApplication: 承認された応募
+        // - canMarkComplete: モデル側で「報酬を受け取りました」を押せる状態
+        // - canReview: 取引完了済みでレビュー未投稿なら true
+        $canReview         = false;
+        $reviewTarget      = null;
+        $acceptedApplication = null;
+        $canMarkComplete   = false;
         if (Auth::check()) {
             if (Auth::user()->role === 'model') {
-                $application = JobApplication::where('job_id', $job->id)
+                $acceptedApplication = JobApplication::where('job_id', $job->id)
                     ->where('model_id', Auth::id())
                     ->where('status', 'accepted')
                     ->first();
-                if ($application) {
-                    $canReview = true;
+                if ($acceptedApplication) {
                     $reviewTarget = $job->painter;
+                    $canReview    = $acceptedApplication->isCompleted();
+                    // 取引完了の宣言は撮影日当日以降のみ可
+                    if (!$acceptedApplication->isCompleted()) {
+                        $scheduled = $job->scheduled_date;
+                        $canMarkComplete = !$scheduled
+                            || $scheduled->isPast()
+                            || $scheduled->isToday();
+                    }
                 }
             } else {
-                $application = JobApplication::where('job_id', $job->id)
+                $acceptedApplication = JobApplication::where('job_id', $job->id)
                     ->where('status', 'accepted')
                     ->first();
-                if ($application && $job->painter_id === Auth::id()) {
-                    $canReview = true;
-                    $reviewTarget = $application->model;
+                if ($acceptedApplication && $job->painter_id === Auth::id()) {
+                    $reviewTarget = $acceptedApplication->model;
+                    $canReview    = $acceptedApplication->isCompleted();
                 }
             }
         }
@@ -164,6 +176,6 @@ class JobController extends Controller
                 ->exists();
         }
 
-        return view('jobs.show', compact('job', 'hasApplied', 'canReview', 'reviewTarget', 'isFavorite'));
+        return view('jobs.show', compact('job', 'hasApplied', 'canReview', 'reviewTarget', 'isFavorite', 'acceptedApplication', 'canMarkComplete'));
     }
 }

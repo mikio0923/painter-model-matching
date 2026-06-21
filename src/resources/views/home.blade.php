@@ -195,7 +195,7 @@
                 $revieweeRole = $reviewee->role === 'model' ? 'モデル' : '画家';
                 $revieweeUrl  = $reviewee->role === 'model' && $reviewee->modelProfile
                     ? route('models.show', $reviewee->modelProfile) : null;
-                $starCount    = match($review->rating) { 'very_good' => 5, 'good' => 3, 'bad' => 1, default => 0 };
+                $starCount    = (int) $review->rating;
                 $reviewerName = $review->reviewer->modelProfile?->display_name ?? $review->reviewer->painterProfile?->display_name ?? $review->reviewer->name;
             @endphp
             <div class="bg-canvas-50 rounded-xl border border-secondary-200 p-5 flex flex-col gap-3">
@@ -214,11 +214,7 @@
                     </div>
                 </div>
                 {{-- 星 --}}
-                <div class="flex gap-0.5">
-                    @for($i = 1; $i <= 5; $i++)
-                        <svg class="w-4 h-4 {{ $i <= $starCount ? 'text-gold-500' : 'text-secondary-200' }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    @endfor
-                </div>
+                <x-star-rating :rating="$starCount" />
                 {{-- コメント --}}
                 <p class="text-sm text-secondary-600 leading-relaxed line-clamp-4 flex-1">
                     {{ $review->comment ?: 'コメントなし' }}
@@ -322,7 +318,7 @@
                 <div class="min-w-0">
                     <div class="flex items-center gap-2 mb-1">
                         <p class="text-sm font-semibold text-secondary-900 truncate">{{ $reviewerName }}</p>
-                        <span class="badge badge-success shrink-0">{{ $review->rating_label }}</span>
+                        <x-star-rating :rating="(int) $review->rating" size="sm" />
                     </div>
                     @if($review->comment)
                         <p class="text-sm text-secondary-600 leading-relaxed line-clamp-3">{{ $review->comment }}</p>

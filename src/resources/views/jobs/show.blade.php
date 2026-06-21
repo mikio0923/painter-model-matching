@@ -214,7 +214,7 @@
                                     <span class="text-secondary-400 font-normal">→</span>
                                     {{ $review->reviewedUser->painterProfile?->display_name ?? $review->reviewedUser->modelProfile?->display_name ?? $review->reviewedUser->name }}
                                 </span>
-                                <span class="badge badge-success">{{ $review->rating_label }}</span>
+                                <x-star-rating :rating="(int) $review->rating" size="sm" />
                                 <span class="text-xs text-secondary-400 ml-auto">{{ $review->created_at->format('Y年n月j日') }}</span>
                             </div>
                             @if($review->comment)
@@ -228,18 +228,70 @@
             @endif
 
             @auth
-                @if($canReview && $reviewTarget)
+                {{-- ───────── 取引完了 & レビュー ───────── --}}
+                @if($acceptedApplication)
                     @php
-                        $existingReview = $job->reviews()->where('reviewer_id', Auth::id())->where('reviewed_user_id', $reviewTarget->id)->first();
+                        $existingReview = $reviewTarget
+                            ? $job->reviews()->where('reviewer_id', Auth::id())->where('reviewed_user_id', $reviewTarget->id)->first()
+                            : null;
+                        $isModel = auth()->user()->role === 'model';
                     @endphp
-                    @if(!$existingReview)
-                        <div>
-                            <a href="{{ route('reviews.create', $job) }}" class="btn-accent">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-                                レビューを投稿する
-                            </a>
-                        </div>
-                    @endif
+
+                    <div class="bg-canvas-50 border border-secondary-200 rounded-xl p-5 space-y-4">
+                        <p class="text-xs font-semibold text-secondary-400 uppercase tracking-wider">取引ステータス</p>
+
+                        @if($acceptedApplication->isCompleted())
+                            <p class="text-sm text-success-700">
+                                ✓ 取引完了済み（{{ $acceptedApplication->payment_received_at->format('Y/m/d') }}）
+                            </p>
+                        @elseif($isModel)
+                            {{-- モデル: 取引完了の宣言フォーム --}}
+                            <p class="text-sm text-secondary-700 leading-relaxed">
+                                撮影が完了し、報酬を受け取り次第、下のボタンで取引完了を確定してください。完了するとレビューが投稿できます。
+                            </p>
+                            <form action="{{ route('model.applications.complete', $acceptedApplication) }}" method="POST"
+                                  onsubmit="return confirm('報酬を受け取ったとして取引を完了します。よろしいですか？');">
+                                @csrf
+                                <button type="submit"
+                                        @disabled(!$canMarkComplete)
+                                        class="px-6 py-2.5 bg-success-600 text-white text-sm font-medium border border-success-600 hover:bg-success-700 transition-colors {{ $canMarkComplete ? '' : 'opacity-50 cursor-not-allowed' }}">
+                                    報酬を受け取りました（取引完了）
+                                </button>
+                            </form>
+                            @if(!$canMarkComplete && $job->scheduled_date)
+                                <p class="text-xs text-secondary-500">
+                                    取引完了は撮影日（{{ $job->scheduled_date->format('Y/m/d') }}）当日以降に行えます。
+                                </p>
+                            @endif
+                        @else
+                            {{-- 画家: モデルの取引完了承認待ち --}}
+                            <p class="text-sm text-secondary-700 leading-relaxed">
+                                モデルが報酬を受領し、取引完了を確定するとレビューを投稿できるようになります。
+                            </p>
+                        @endif
+
+                        {{-- レビューボタン: 取引完了済かつ未投稿のときのみ活性 --}}
+                        @if($reviewTarget)
+                            <div class="pt-3 border-t border-secondary-100">
+                                @if($existingReview)
+                                    <div class="flex items-center gap-2 text-sm text-secondary-500">
+                                        <span>レビュー投稿済み</span>
+                                        <x-star-rating :rating="(int) $existingReview->rating" size="sm" />
+                                    </div>
+                                @elseif($canReview)
+                                    <a href="{{ route('reviews.create', $job) }}" class="btn-accent">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.16c.969 0 1.371 1.24.588 1.81l-3.366 2.446a1 1 0 00-.364 1.118l1.286 3.957c.299.921-.755 1.688-1.538 1.118l-3.366-2.446a1 1 0 00-1.176 0L5.745 17.02c-.783.57-1.837-.197-1.538-1.118l1.286-3.957a1 1 0 00-.364-1.118L1.763 9.384c-.783-.57-.38-1.81.588-1.81h4.16a1 1 0 00.95-.69l1.286-3.957z"/></svg>
+                                        レビューを投稿する
+                                    </a>
+                                @else
+                                    <span class="inline-flex items-center gap-2 px-5 py-2.5 border border-secondary-300 text-secondary-400 text-sm cursor-not-allowed">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.16c.969 0 1.371 1.24.588 1.81l-3.366 2.446a1 1 0 00-.364 1.118l1.286 3.957c.299.921-.755 1.688-1.538 1.118l-3.366-2.446a1 1 0 00-1.176 0L5.745 17.02c-.783.57-1.837-.197-1.538-1.118l1.286-3.957a1 1 0 00-.364-1.118L1.763 9.384c-.783-.57-.38-1.81.588-1.81h4.16a1 1 0 00.95-.69l1.286-3.957z"/></svg>
+                                        レビューを投稿する（取引完了後に活性化）
+                                    </span>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
                 @endif
             @endauth
 

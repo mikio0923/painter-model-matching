@@ -148,6 +148,11 @@ Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->grou
         ->middleware('throttle:10,1')
         ->name('jobs.apply');
 
+    // 取引完了の宣言（モデル＝買い手が報酬受領を確定）
+    Route::post('/applications/{application}/complete', [ModelApplicationController::class, 'markPaymentReceived'])
+        ->middleware('throttle:10,1')
+        ->name('applications.complete');
+
     // あなたへの質問
     Route::get('/questions', [ModelQuestionController::class, 'index'])->name('questions.index');
     Route::post('/questions/{modelProfileQuestion}/answer', [ModelQuestionController::class, 'answer'])->name('questions.answer');

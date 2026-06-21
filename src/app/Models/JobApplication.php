@@ -12,11 +12,24 @@ class JobApplication extends Model
         'model_id',
         'message',
         'status',
+        'payment_received_at',
+    ];
+
+    protected $casts = [
+        'payment_received_at' => 'datetime',
     ];
 
     public function job(): BelongsTo
     {
         return $this->belongsTo(Job::class);
+    }
+
+    /**
+     * 取引完了済（モデルが報酬受領を確認済）かどうか
+     */
+    public function isCompleted(): bool
+    {
+        return $this->payment_received_at !== null;
     }
 
     public function model(): BelongsTo

@@ -80,7 +80,7 @@ class HomeController extends Controller
                 'reviewedUser.modelProfile',
                 'job.painter.painterProfile'
             ])
-            ->whereIn('rating', ['very_good', 'good'])
+            ->where('rating', '>=', 4)
             ->latest()
             ->take(10)
             ->get();

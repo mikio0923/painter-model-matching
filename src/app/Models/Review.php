@@ -18,6 +18,10 @@ class Review extends Model
         'comment',
     ];
 
+    protected $casts = [
+        'rating' => 'integer',
+    ];
+
     public function job(): BelongsTo
     {
         return $this->belongsTo(Job::class);
@@ -33,14 +37,12 @@ class Review extends Model
         return $this->belongsTo(User::class, 'reviewed_user_id');
     }
 
-    // 評価の表示用
+    /**
+     * 1〜5 の整数評価。レガシー互換のため getRatingLabelAttribute も残す。
+     */
     public function getRatingLabelAttribute(): string
     {
-        return match($this->rating) {
-            'very_good' => '非常に良い・良い',
-            'good' => '良い',
-            'bad' => '悪い',
-            default => '不明',
-        };
+        $r = (int) $this->rating;
+        return $r >= 1 && $r <= 5 ? "★ {$r} / 5" : '未評価';
     }
 }

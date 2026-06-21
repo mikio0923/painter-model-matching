@@ -39,10 +39,12 @@ class ReviewTest extends TestCase
             'status' => 'done',
         ]);
 
+        // 取引完了済 (モデルが報酬受領を確定) の状態でテストを行う
         JobApplication::create([
             'job_id' => $this->job->id,
             'model_id' => $this->model->id,
             'status' => 'accepted',
+            'payment_received_at' => now(),
         ]);
     }
 
@@ -50,7 +52,7 @@ class ReviewTest extends TestCase
     {
         $response = $this->actingAs($this->painter)->post(route('reviews.store', $this->job), [
             'reviewed_user_id' => $this->model->id,
-            'rating' => 'very_good',
+            'rating' => 5,
             'comment' => '素晴らしいモデルでした。',
         ]);
 
@@ -59,7 +61,7 @@ class ReviewTest extends TestCase
             'job_id' => $this->job->id,
             'reviewer_id' => $this->painter->id,
             'reviewed_user_id' => $this->model->id,
-            'rating' => 'very_good',
+            'rating' => 5,
         ]);
     }
 
@@ -67,7 +69,7 @@ class ReviewTest extends TestCase
     {
         $response = $this->actingAs($this->model)->post(route('reviews.store', $this->job), [
             'reviewed_user_id' => $this->painter->id,
-            'rating' => 'good',
+            'rating' => 4,
             'comment' => '丁寧な進行でした。',
         ]);
 
@@ -75,7 +77,7 @@ class ReviewTest extends TestCase
         $this->assertDatabaseHas('reviews', [
             'reviewer_id' => $this->model->id,
             'reviewed_user_id' => $this->painter->id,
-            'rating' => 'good',
+            'rating' => 4,
         ]);
     }
 
@@ -85,12 +87,12 @@ class ReviewTest extends TestCase
             'job_id' => $this->job->id,
             'reviewer_id' => $this->painter->id,
             'reviewed_user_id' => $this->model->id,
-            'rating' => 'very_good',
+            'rating' => 5,
         ]);
 
         $response = $this->actingAs($this->painter)->post(route('reviews.store', $this->job), [
             'reviewed_user_id' => $this->model->id,
-            'rating' => 'good',
+            'rating' => 4,
         ]);
 
         $response->assertSessionHas('error');
@@ -106,11 +108,22 @@ class ReviewTest extends TestCase
         $response->assertSessionHasErrors('rating');
     }
 
+    public function test_review_rating_must_be_in_range(): void
+    {
+        foreach ([0, 6, -1] as $bad) {
+            $response = $this->actingAs($this->painter)->post(route('reviews.store', $this->job), [
+                'reviewed_user_id' => $this->model->id,
+                'rating' => $bad,
+            ]);
+            $response->assertSessionHasErrors('rating');
+        }
+    }
+
     public function test_review_comment_has_max_length(): void
     {
         $response = $this->actingAs($this->painter)->post(route('reviews.store', $this->job), [
             'reviewed_user_id' => $this->model->id,
-            'rating' => 'good',
+            'rating' => 4,
             'comment' => str_repeat('あ', 2001),
         ]);
         $response->assertSessionHasErrors('comment');
@@ -120,8 +133,28 @@ class ReviewTest extends TestCase
     {
         $response = $this->post(route('reviews.store', $this->job), [
             'reviewed_user_id' => $this->model->id,
-            'rating' => 'very_good',
+            'rating' => 5,
         ]);
         $response->assertRedirect(route('login'));
+    }
+
+    public function test_cannot_review_before_payment_received(): void
+    {
+        // payment_received_at を未設定に戻す
+        JobApplication::where('job_id', $this->job->id)
+            ->where('model_id', $this->model->id)
+            ->update(['payment_received_at' => null]);
+
+        $response = $this->actingAs($this->painter)->post(route('reviews.store', $this->job), [
+            'reviewed_user_id' => $this->model->id,
+            'rating' => 5,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+        $this->assertDatabaseMissing('reviews', [
+            'job_id' => $this->job->id,
+            'reviewer_id' => $this->painter->id,
+        ]);
     }
 }

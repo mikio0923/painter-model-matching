@@ -39,9 +39,9 @@
             <p class="text-sm text-secondary-700 mb-4">既にレビューを投稿済みです。一度の取引につき1回のみ投稿可能です。</p>
 
             <dl class="space-y-2 text-sm border-t border-secondary-200 pt-4">
-                <div class="flex gap-4">
-                    <dt class="text-[10px] uppercase tracking-[0.25em] text-secondary-500 w-20 shrink-0 pt-0.5">Rating</dt>
-                    <dd class="text-secondary-900 font-medium">{{ $existingReview->rating_label }}</dd>
+                <div class="flex gap-4 items-center">
+                    <dt class="text-[10px] uppercase tracking-[0.25em] text-secondary-500 w-20 shrink-0">Rating</dt>
+                    <dd><x-star-rating :rating="$existingReview->rating" :show-number="true" /></dd>
                 </div>
                 @if($existingReview->comment)
                     <div class="flex gap-4">
@@ -57,35 +57,33 @@
             @csrf
             <input type="hidden" name="reviewed_user_id" value="{{ $otherUser->id }}">
 
-            {{-- 評価 --}}
+            {{-- 評価（星 5 つ） --}}
             <div>
                 <p class="text-[10px] tracking-[0.25em] uppercase text-secondary-500 mb-3">Rating <span class="text-error-500">*</span></p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    @php
-                        $ratings = [
-                            ['value' => 'very_good', 'label' => '非常に良い', 'sub' => 'Very Good',
-                                'checked' => 'peer-checked:border-success-500 peer-checked:bg-success-500 peer-checked:text-canvas-50',
-                                'subChecked' => 'peer-checked:text-canvas-50/80'],
-                            ['value' => 'good',      'label' => '良い',       'sub' => 'Good',
-                                'checked' => 'peer-checked:border-warning-500 peer-checked:bg-warning-500 peer-checked:text-canvas-50',
-                                'subChecked' => 'peer-checked:text-canvas-50/80'],
-                            ['value' => 'bad',       'label' => '悪い',       'sub' => 'Bad',
-                                'checked' => 'peer-checked:border-error-500 peer-checked:bg-error-500 peer-checked:text-canvas-50',
-                                'subChecked' => 'peer-checked:text-canvas-50/80'],
-                        ];
-                    @endphp
-                    @foreach($ratings as $r)
-                        <label class="cursor-pointer">
-                            <input type="radio" name="rating" value="{{ $r['value'] }}"
-                                   {{ old('rating') === $r['value'] ? 'checked' : '' }}
-                                   required class="peer sr-only">
-                            <span class="block text-center py-3 border border-secondary-300 text-sm text-secondary-700 {{ $r['checked'] }} transition-colors duration-200">
-                                {{ $r['label'] }}
-                                <span class="block text-[9px] tracking-[0.2em] uppercase text-secondary-500 {{ $r['subChecked'] }}">{{ $r['sub'] }}</span>
-                            </span>
-                        </label>
-                    @endforeach
+                <div x-data="{ rating: {{ (int) old('rating', 0) }}, hover: 0 }"
+                     class="flex items-center gap-2"
+                     role="radiogroup" aria-label="評価">
+                    <template x-for="i in 5" :key="i">
+                        <button type="button"
+                                role="radio"
+                                :aria-checked="rating === i"
+                                @click="rating = i"
+                                @mouseenter="hover = i"
+                                @mouseleave="hover = 0"
+                                class="p-1 focus:outline-none focus:ring-2 focus:ring-warning-500 rounded">
+                            <svg class="w-8 h-8 transition-colors"
+                                 :class="(hover ? i <= hover : i <= rating) ? 'text-warning-500' : 'text-secondary-300'"
+                                 fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.16c.969 0 1.371 1.24.588 1.81l-3.366 2.446a1 1 0 00-.364 1.118l1.286 3.957c.299.921-.755 1.688-1.538 1.118l-3.366-2.446a1 1 0 00-1.176 0L5.745 17.02c-.783.57-1.837-.197-1.538-1.118l1.286-3.957a1 1 0 00-.364-1.118L1.763 9.384c-.783-.57-.38-1.81.588-1.81h4.16a1 1 0 00.95-.69l1.286-3.957z"/>
+                            </svg>
+                        </button>
+                    </template>
+                    <span class="ml-2 text-sm text-secondary-600">
+                        <span x-text="(hover || rating) ? (hover || rating) + ' / 5' : '未選択'"></span>
+                    </span>
+                    <input type="hidden" name="rating" :value="rating" required>
                 </div>
+                <p class="text-xs text-secondary-500 mt-2">星をクリックして 1〜5 を選んでください。</p>
                 @error('rating')<p class="form-error">{{ $message }}</p>@enderror
             </div>
 

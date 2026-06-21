@@ -41,10 +41,10 @@
             <p class="text-sm text-secondary-500">現在、新しい通知はありません。</p>
         </div>
     @else
-        <div class="border-t border-secondary-200">
+        <div class="space-y-3">
             @foreach($notifications as $notification)
                 @php $isUnread = $notification->isUnread(); @endphp
-                <div class="flex items-start gap-4 py-5 px-1 border-b border-secondary-200 {{ $isUnread ? 'bg-canvas-100' : '' }}">
+                <div class="flex items-start gap-4 p-5 border-2 border-secondary-900 rounded-md {{ $isUnread ? 'bg-canvas-100' : 'bg-canvas-50' }}">
 
                     {{-- マーカー（未読は赤丸、既読は薄い丸） --}}
                     <div class="shrink-0 mt-2">

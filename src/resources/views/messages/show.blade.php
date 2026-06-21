@@ -45,12 +45,7 @@
                                     {{ $message->created_at->format('m/d H:i') }}
                                 </span>
                             </div>
-                            <div class="px-4 py-3 text-sm whitespace-pre-wrap leading-relaxed
-                                        {{ $isMe
-                                            ? 'bg-secondary-900 text-canvas-50 border border-secondary-900'
-                                            : 'bg-canvas-50 text-secondary-800 border border-secondary-300' }}">
-                                {{ $message->body }}
-                            </div>
+                            <div class="px-4 py-3 text-sm whitespace-pre-wrap leading-relaxed {{ $isMe ? 'bg-secondary-900 text-canvas-50 border border-secondary-900' : 'bg-canvas-50 text-secondary-800 border border-secondary-300' }}">{{ $message->body }}</div>
                         </div>
                     </div>
                 @endforeach

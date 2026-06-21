@@ -225,4 +225,7 @@
         </div>
     </form>
 </div>
+
+@include('painter.jobs._date_validation')
+
 @endsection

@@ -71,22 +71,12 @@
                         </p>
                     </div>
 
-                    {{-- アクション --}}
+                    {{-- アクション（クリック時に自動既読化＋関連画面へ） --}}
                     <div class="shrink-0">
-                        @if($isUnread)
-                            <form action="{{ route('notifications.read', $notification) }}" method="POST">
-                                @csrf
-                                <button type="submit"
-                                        class="text-sm text-secondary-500 hover:text-secondary-900 transition-colors">
-                                    既読にする
-                                </button>
-                            </form>
-                        @else
-                            <a href="{{ route('notifications.read', $notification) }}"
-                               class="text-sm text-secondary-400 hover:text-secondary-900 transition-colors">
-                                詳細 →
-                            </a>
-                        @endif
+                        <a href="{{ route('notifications.read', $notification) }}"
+                           class="text-sm {{ $isUnread ? 'text-secondary-700 font-medium' : 'text-secondary-400' }} hover:text-secondary-900 transition-colors">
+                            詳細を見る →
+                        </a>
                     </div>
                 </div>
             @endforeach

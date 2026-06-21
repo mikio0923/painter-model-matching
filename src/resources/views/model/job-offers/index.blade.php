@@ -80,8 +80,11 @@
                                 @endif
                                 <span>{{ $offer->job->location_type === 'online' ? 'オンライン' : 'オフライン' }}</span>
                             </div>
-                            <div class="mt-3">
-                                <a href="{{ route('jobs.show', $offer->job) }}" class="text-xs text-primary-600 hover:text-primary-700 underline">依頼の詳細を見る</a>
+                            <div class="mt-3 flex flex-wrap gap-3">
+                                <a href="{{ route('model.job-offers.show', $offer) }}"
+                                   class="text-xs px-3 py-1.5 bg-secondary-900 text-white hover:bg-secondary-800 transition-colors">
+                                    詳細を開く / 受諾・辞退する
+                                </a>
                             </div>
                         </div>
 
@@ -93,40 +96,6 @@
                             </div>
                         @endif
 
-                        {{-- 受諾フォーム --}}
-                        <details class="border-t border-secondary-100">
-                            <summary class="px-5 py-3 cursor-pointer text-sm text-success-700 font-medium hover:bg-success-50 transition-colors">
-                                受諾する
-                            </summary>
-                            <form action="{{ route('model.job-offers.accept', $offer) }}" method="POST" class="px-5 py-4 space-y-3">
-                                @csrf
-                                <textarea name="model_response" rows="3" maxlength="2000"
-                                          placeholder="画家への一言（任意・最大 2000 文字）"
-                                          class="w-full px-3 py-2 bg-white border border-secondary-300 text-secondary-900 text-sm focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900"></textarea>
-                                <button type="submit" class="px-5 py-2 bg-success-600 text-white text-sm font-medium hover:bg-success-700 transition-colors">
-                                    この依頼を受諾する
-                                </button>
-                            </form>
-                        </details>
-
-                        {{-- 辞退フォーム --}}
-                        <details class="border-t border-secondary-100">
-                            <summary class="px-5 py-3 cursor-pointer text-sm text-error-700 font-medium hover:bg-error-50 transition-colors">
-                                辞退する
-                            </summary>
-                            <form action="{{ route('model.job-offers.decline', $offer) }}" method="POST" class="px-5 py-4 space-y-3">
-                                @csrf
-                                <p class="text-xs text-secondary-500 leading-relaxed">
-                                    辞退の連絡は丁寧な定型文で画家へお伝えします。差し支えなければ補足のメッセージを添えられます（任意）。
-                                </p>
-                                <textarea name="model_response" rows="3" maxlength="2000"
-                                          placeholder="補足メッセージ（任意・最大 2000 文字）"
-                                          class="w-full px-3 py-2 bg-white border border-secondary-300 text-secondary-900 text-sm focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900"></textarea>
-                                <button type="submit" class="px-5 py-2 bg-canvas-50 border border-error-500 text-error-600 text-sm font-medium hover:bg-error-50 transition-colors">
-                                    辞退する
-                                </button>
-                            </form>
-                        </details>
                     </article>
                 @endforeach
             </div>

@@ -14,6 +14,15 @@ use Illuminate\View\View;
 
 class ModelJobOfferController extends Controller
 {
+    public function show(JobOffer $offer): View|RedirectResponse
+    {
+        abort_unless($offer->model_id === Auth::id(), 403);
+
+        $offer->load(['job.painter.painterProfile']);
+
+        return view('model.job-offers.show', compact('offer'));
+    }
+
     public function index(): View
     {
         $pendingOffers = JobOffer::where('model_id', Auth::id())

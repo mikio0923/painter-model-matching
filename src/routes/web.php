@@ -155,6 +155,7 @@ Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->grou
 
     // 個別依頼（Job Offer）
     Route::get('/job-offers', [\App\Http\Controllers\Model\ModelJobOfferController::class, 'index'])->name('job-offers.index');
+    Route::get('/job-offers/{offer}', [\App\Http\Controllers\Model\ModelJobOfferController::class, 'show'])->name('job-offers.show');
     Route::post('/job-offers/{offer}/accept', [\App\Http\Controllers\Model\ModelJobOfferController::class, 'accept'])
         ->middleware('throttle:10,1')
         ->name('job-offers.accept');

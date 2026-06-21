@@ -103,6 +103,29 @@ class NotificationController extends Controller
                     }
                 }
                 break;
+            case 'offer_received':
+                // モデル向け: 個別依頼の詳細画面へ
+                if ($notification->related_type === \App\Models\JobOffer::class) {
+                    return redirect()->route('model.job-offers.show', $notification->related_id);
+                }
+                break;
+            case 'offer_accepted':
+            case 'offer_declined':
+                // 画家向け: 送ったオファー一覧へ
+                return redirect()->route('painter.job-offers.index');
+            case 'favorite_received_model':
+                // モデル向け: 自分のお気に入りされた人を確認できるページがまだ無いので
+                // 一旦お気に入り通知元の Fav 一覧 (favorites.index) ではなくマイページに
+                return redirect()->route('mypage');
+            case 'favorite_received_job':
+                // 画家向け: 該当の依頼詳細へ
+                if ($notification->related_type === \App\Models\Job::class) {
+                    $job = \App\Models\Job::find($notification->related_id);
+                    if ($job) {
+                        return redirect()->route('jobs.show', $job);
+                    }
+                }
+                break;
         }
 
         // デフォルトは通知一覧に戻る

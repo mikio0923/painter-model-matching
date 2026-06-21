@@ -17,6 +17,7 @@ class JobController extends Controller
     public function index(Request $request): View
     {
         $query = Job::where('status', 'open')
+            ->whereDoesntHave('pendingOffers') // pending offer がある依頼は一時的に非公開
             ->with('painter.painterProfile')
             ->withCount('applications');
 
@@ -97,6 +98,17 @@ class JobController extends Controller
         // 非公開の依頼は404
         if ($job->status !== 'open') {
             abort(404);
+        }
+
+        // pending な個別依頼がある場合は、画家本人と指名されたモデルのみ閲覧可
+        if ($job->pendingOffers()->exists()) {
+            $allowed = Auth::check() && (
+                Auth::id() === $job->painter_id
+                || $job->pendingOffers()->where('model_id', Auth::id())->exists()
+            );
+            if (!$allowed) {
+                abort(404);
+            }
         }
 
         $job->load(

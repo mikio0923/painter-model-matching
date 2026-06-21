@@ -153,6 +153,15 @@ Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->grou
     Route::post('/questions/{modelProfileQuestion}/answer', [ModelQuestionController::class, 'answer'])->name('questions.answer');
     Route::get('/questions/{modelProfileQuestion}/edit', [ModelQuestionController::class, 'edit'])->name('questions.edit');
 
+    // 個別依頼（Job Offer）
+    Route::get('/job-offers', [\App\Http\Controllers\Model\ModelJobOfferController::class, 'index'])->name('job-offers.index');
+    Route::post('/job-offers/{offer}/accept', [\App\Http\Controllers\Model\ModelJobOfferController::class, 'accept'])
+        ->middleware('throttle:10,1')
+        ->name('job-offers.accept');
+    Route::post('/job-offers/{offer}/decline', [\App\Http\Controllers\Model\ModelJobOfferController::class, 'decline'])
+        ->middleware('throttle:10,1')
+        ->name('job-offers.decline');
+
     // 本人確認（一旦停止 — マイページ掲載写真を実在証明として運用）
     // Route::get('/identity-verification', [\App\Http\Controllers\Model\IdentityVerificationController::class, 'show'])->name('identity-verification');
     // Route::post('/identity-verification', [\App\Http\Controllers\Model\IdentityVerificationController::class, 'store'])
@@ -185,6 +194,13 @@ Route::middleware(['auth', 'role:painter'])->prefix('painter')->name('painter.')
     Route::get('/jobs/{job}/applications', [PainterJobApplicationController::class, 'index'])->name('jobs.applications.index');
     Route::post('/jobs/{job}/applications/{application}/accept', [PainterJobApplicationController::class, 'accept'])->name('jobs.applications.accept');
     Route::post('/jobs/{job}/applications/{application}/reject', [PainterJobApplicationController::class, 'reject'])->name('jobs.applications.reject');
+
+    // 個別依頼（Job Offer）
+    Route::get('/job-offers', [\App\Http\Controllers\Painter\PainterJobOfferController::class, 'index'])->name('job-offers.index');
+    Route::get('/job-offers/create', [\App\Http\Controllers\Painter\PainterJobOfferController::class, 'create'])->name('job-offers.create');
+    Route::post('/job-offers', [\App\Http\Controllers\Painter\PainterJobOfferController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('job-offers.store');
 });
 
 /*

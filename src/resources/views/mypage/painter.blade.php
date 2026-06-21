@@ -151,6 +151,12 @@
                             'desc' => '投稿した依頼の管理・編集',
                         ],
                         [
+                            'href' => route('painter.job-offers.index'),
+                            'label' => '送った個別依頼',
+                            'sub' => 'Sent Offers',
+                            'desc' => 'モデルへの個別依頼の状況',
+                        ],
+                        [
                             'href' => route('models.index'),
                             'label' => 'モデルを探す',
                             'sub' => 'Browse Models',

@@ -137,4 +137,68 @@ class NotificationService
             Mail::to($reviewedUser->email)->queue(new ReviewReceivedMail($review));
         }
     }
+
+    /**
+     * 個別依頼が届いた（モデル宛）
+     */
+    public static function notifyOfferReceived(\App\Models\JobOffer $offer): void
+    {
+        $job     = $offer->job;
+        $painter = $job->painter;
+        $painterName = $painter->painterProfile?->display_name ?? $painter->name;
+
+        Notification::create([
+            'user_id'      => $offer->model_id,
+            'type'         => 'offer_received',
+            'title'        => '個別の仕事依頼が届きました',
+            'body'         => "{$painterName}さんから「{$job->title}」の個別依頼が届いています。",
+            'related_id'   => $offer->id,
+            'related_type' => \App\Models\JobOffer::class,
+        ]);
+    }
+
+    /**
+     * 個別依頼が受諾された（画家宛）
+     */
+    public static function notifyOfferAccepted(\App\Models\JobOffer $offer): void
+    {
+        $job   = $offer->job;
+        $model = $offer->model;
+        $modelName = $model->modelProfile?->display_name ?? $model->name;
+
+        Notification::create([
+            'user_id'      => $job->painter_id,
+            'type'         => 'offer_accepted',
+            'title'        => '個別依頼が受諾されました',
+            'body'         => "{$modelName}さんが「{$job->title}」の個別依頼を受諾しました。",
+            'related_id'   => $offer->id,
+            'related_type' => \App\Models\JobOffer::class,
+        ]);
+    }
+
+    /**
+     * 個別依頼が辞退された（画家宛）
+     * 本文は丁寧な定型文。モデルからの補足コメントがある場合のみ末尾に添える。
+     */
+    public static function notifyOfferDeclined(\App\Models\JobOffer $offer): void
+    {
+        $job   = $offer->job;
+        $model = $offer->model;
+        $modelName = $model->modelProfile?->display_name ?? $model->name;
+
+        $body  = "{$modelName}さんより、「{$job->title}」の個別依頼について、誠に恐縮ながら今回はお引き受けが難しいとのご連絡をいただきました。";
+        $body .= "ご縁がありましたら、改めてどうぞよろしくお願いいたします。";
+        if (!empty($offer->model_response)) {
+            $body .= "\n\n― モデルさんからの補足 ―\n" . $offer->model_response;
+        }
+
+        Notification::create([
+            'user_id'      => $job->painter_id,
+            'type'         => 'offer_declined',
+            'title'        => '個別依頼へのご返答が届きました',
+            'body'         => $body,
+            'related_id'   => $offer->id,
+            'related_type' => \App\Models\JobOffer::class,
+        ]);
+    }
 }

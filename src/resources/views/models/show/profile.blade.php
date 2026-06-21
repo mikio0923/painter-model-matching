@@ -227,18 +227,18 @@
                         </div>
                     @endauth
 
-                    {{-- メッセージを送る --}}
+                    {{-- 個別で仕事を依頼する --}}
                     @auth
                         @if(auth()->user()->role === 'painter')
-                            <a href="{{ route('painter.jobs.create', ['model_id' => $modelProfile->id]) }}"
-                               class="block w-full px-4 py-3 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-lg text-center transition-colors">
-                                メッセージを送る
+                            <a href="{{ route('painter.job-offers.create', ['model' => $modelProfile->id]) }}"
+                               class="block w-full px-4 py-3 bg-secondary-900 hover:bg-secondary-800 text-white font-semibold rounded-lg text-center transition-colors">
+                                個別で仕事を依頼する
                             </a>
                         @endif
                     @else
                         <a href="{{ route('login-register') }}"
-                           class="block w-full px-4 py-3 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-lg text-center transition-colors">
-                            メッセージを送る
+                           class="block w-full px-4 py-3 bg-secondary-900 hover:bg-secondary-800 text-white font-semibold rounded-lg text-center transition-colors">
+                            個別で仕事を依頼する
                         </a>
                     @endauth
                 </div>

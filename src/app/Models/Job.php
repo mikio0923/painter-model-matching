@@ -50,6 +50,16 @@ class Job extends Model
         return $this->hasMany(JobApplication::class);
     }
 
+    public function offers(): HasMany
+    {
+        return $this->hasMany(JobOffer::class);
+    }
+
+    public function pendingOffers(): HasMany
+    {
+        return $this->hasMany(JobOffer::class)->where('status', JobOffer::STATUS_PENDING);
+    }
+
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);

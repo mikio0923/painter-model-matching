@@ -165,6 +165,13 @@
                             'desc' => '応募状況・承認状況を確認',
                         ],
                         [
+                            'href' => route('model.job-offers.index'),
+                            'label' => '届いた個別依頼',
+                            'sub' => 'Direct Offers',
+                            'desc' => '画家からの個別依頼に返答する',
+                            'badge' => \App\Models\JobOffer::where('model_id', auth()->id())->where('status', 'pending')->count(),
+                        ],
+                        [
                             'href' => route('model.profile.edit'),
                             'label' => 'プロフィール編集',
                             'sub' => 'Edit Profile',

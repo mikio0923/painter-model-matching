@@ -35,6 +35,17 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
+        // 既存 demo データをクリーンアップ（冪等化）
+        // User は SoftDeletes が有効なので forceDelete() で物理削除する
+        // demo.local の画家が作った Job を先に消すことで、関連する応募・メッセージ・
+        // 個別依頼・レビューも cascadeOnDelete で連鎖削除される
+        $this->command->info('既存の demo データを削除...');
+        $demoUserIds = User::withTrashed()->where('email', 'like', '%@demo.local')->pluck('id');
+        if ($demoUserIds->isNotEmpty()) {
+            Job::whereIn('painter_id', $demoUserIds)->delete();
+            User::withTrashed()->whereIn('id', $demoUserIds)->forceDelete();
+        }
+
         $this->command->info('画家とモデルを作成...');
 
         $painters = collect();

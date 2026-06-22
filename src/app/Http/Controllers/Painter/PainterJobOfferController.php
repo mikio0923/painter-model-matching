@@ -100,7 +100,8 @@ class PainterJobOfferController extends Controller
 
         NotificationService::notifyOfferReceived($offer);
 
-        return redirect()->route('painter.jobs.show', $job)
+        // painter.jobs.show は存在しないため、画家側の個別依頼一覧へ
+        return redirect()->route('painter.job-offers.index')
             ->with('success', '個別依頼を送信しました。モデルからの返答をお待ちください。');
     }
 

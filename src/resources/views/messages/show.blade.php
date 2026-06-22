@@ -103,7 +103,7 @@
     let pollTimer = null;
     let isPolling = false;
 
-    // 既存メッセージから最大 id を再計算（@foreach の最後 = last_id）
+    // 既存メッセージから最大 id を再計算（描画済みの末尾を last_id にする）
     listEl.querySelectorAll('[data-message-id]').forEach(el => {
         const id = parseInt(el.dataset.messageId, 10);
         if (!isNaN(id) && id > lastId) lastId = id;

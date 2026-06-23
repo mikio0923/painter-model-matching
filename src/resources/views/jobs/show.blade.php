@@ -342,8 +342,9 @@
                         :id="$job->id"
                         :favorited="$isFavorite"
                         variant="large"
-                        :label-on="'お気に入り解除 (' . $goodCount . ')'"
-                        :label-off="'お気に入りに追加 (' . $goodCount . ')'" />
+                        color-on="red"
+                        label-on="お気に入り"
+                        label-off="お気に入り" />
                 </div>
                 @endif
                 @endauth

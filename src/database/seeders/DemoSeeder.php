@@ -42,9 +42,16 @@ class DemoSeeder extends Seeder
         $this->command->info('既存の demo データを削除...');
         $demoUserIds = User::withTrashed()->where('email', 'like', '%@demo.local')->pluck('id');
         if ($demoUserIds->isNotEmpty()) {
+            // reviews.reviewer_id / reviewed_user_id は nullOnDelete のため、
+            // User を消すと NULL 行が残り home の集計でぶつかる。先に削除する。
+            Review::whereIn('reviewer_id', $demoUserIds)
+                ->orWhereIn('reviewed_user_id', $demoUserIds)
+                ->delete();
             Job::whereIn('painter_id', $demoUserIds)->delete();
             User::withTrashed()->whereIn('id', $demoUserIds)->forceDelete();
         }
+        // 過去の demo データ残骸で reviewer / reviewedUser が NULL の Review があれば掃除
+        Review::whereNull('reviewer_id')->orWhereNull('reviewed_user_id')->delete();
 
         $this->command->info('画家とモデルを作成...');
 

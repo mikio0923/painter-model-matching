@@ -68,6 +68,8 @@ class HomeController extends Controller
                 'reviewedUser.modelProfile',
                 'job.painter.painterProfile'
             ])
+            ->whereHas('reviewer')
+            ->whereHas('reviewedUser')
             ->latest()
             ->take(20)
             ->get();
@@ -81,6 +83,10 @@ class HomeController extends Controller
                 'job.painter.painterProfile'
             ])
             ->where('rating', '>=', 4)
+            // reviewer / reviewedUser が削除されたレビュー（FK が nullOnDelete のため
+            // user_id が NULL のまま残る）は表示しない
+            ->whereHas('reviewer')
+            ->whereHas('reviewedUser')
             ->latest()
             ->take(10)
             ->get();

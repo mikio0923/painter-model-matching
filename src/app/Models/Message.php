@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Message extends Model
 {
@@ -12,6 +13,7 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'body',
+        'image_path',
         'read_at',
     ];
 
@@ -32,5 +34,10 @@ class Message extends Model
     public function receiver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'receiver_id');
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image_path ? Storage::url($this->image_path) : null;
     }
 }

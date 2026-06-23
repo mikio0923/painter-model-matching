@@ -126,17 +126,33 @@ class MessageController extends Controller
     public function store(Request $request, Job $job): RedirectResponse|JsonResponse
     {
         $request->validate([
-            'body' => ['required', 'string', 'max:5000'],
+            'body'        => ['nullable', 'string', 'max:5000'],
+            'image'       => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
             'receiver_id' => ['required', 'integer', 'exists:users,id'],
         ]);
 
+        // 本文か画像のどちらかは必須
+        if (!$request->filled('body') && !$request->hasFile('image')) {
+            return $this->respondError(
+                $request,
+                'body',
+                'メッセージ本文または画像のどちらかを入力してください。'
+            );
+        }
+
         $user = Auth::user();
 
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('messages', 'public');
+        }
+
         $message = Message::create([
-            'job_id' => $job->id,
-            'sender_id' => $user->id,
+            'job_id'      => $job->id,
+            'sender_id'   => $user->id,
             'receiver_id' => $request->receiver_id,
-            'body' => $request->body,
+            'body'        => $request->input('body', ''),
+            'image_path'  => $imagePath,
         ]);
 
         // 通知を作成（受信者に通知）
@@ -208,11 +224,27 @@ class MessageController extends Controller
     private function serializeMessage(Message $message, int $viewerId): array
     {
         return [
-            'id'         => $message->id,
-            'body'       => $message->body,
-            'is_me'      => $message->sender_id === $viewerId,
-            'sender_name'=> $message->sender->name ?? '退会済みユーザー',
-            'created_at' => $message->created_at->format('m/d H:i'),
+            'id'          => $message->id,
+            'body'        => $message->body,
+            'image_url'   => $message->image_url,
+            'is_me'       => $message->sender_id === $viewerId,
+            'sender_name' => $message->sender->name ?? '退会済みユーザー',
+            'created_at'  => $message->created_at->format('m/d H:i'),
         ];
+    }
+
+    /**
+     * バリデーション以外で送信を弾く時の共通レスポンス
+     * （AJAX なら 422 + JSON、通常リクエストならフォームへ戻す）
+     */
+    private function respondError(Request $request, string $field, string $message): RedirectResponse|JsonResponse
+    {
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => [$field => [$message]],
+            ], 422);
+        }
+        return back()->withErrors([$field => $message])->withInput();
     }
 }

@@ -44,6 +44,19 @@
                 @if($painterProfile->accepts_offers)
                     <span class="inline-block mt-3 px-3 py-1 text-xs bg-success-50 text-success-700 border border-success-200 rounded-full">オファー受付中</span>
                 @endif
+
+                {{-- 評価サマリー --}}
+                <div class="mt-5 pt-4 border-t border-secondary-100">
+                    @if($reviewCount > 0)
+                        <div class="flex items-center justify-center gap-2">
+                            <x-star-rating :rating="(int) round($reviewAvg)" />
+                            <span class="text-sm font-medium text-secondary-800">{{ $reviewAvg }}</span>
+                            <span class="text-xs text-secondary-500">({{ $reviewCount }}件)</span>
+                        </div>
+                    @else
+                        <p class="text-xs text-secondary-400">まだ評価がありません</p>
+                    @endif
+                </div>
             </div>
 
             {{-- 基本情報 --}}
@@ -136,6 +149,54 @@
                                     <p class="font-medium text-secondary-900 line-clamp-1">{{ $job->title }}</p>
                                     <p class="text-xs text-secondary-500 mt-1 line-clamp-2">{{ $job->description }}</p>
                                 </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- 過去の完了依頼（実績） --}}
+            @if($pastJobs->isNotEmpty())
+                <div class="bg-canvas-50 border border-secondary-200 rounded-xl p-6">
+                    <h3 class="font-display font-semibold text-secondary-900 mb-4">これまでの実績</h3>
+                    <ul class="divide-y divide-secondary-100">
+                        @foreach($pastJobs as $job)
+                            <li class="py-3">
+                                <a href="{{ route('jobs.show', $job) }}" class="block hover:bg-secondary-50 -mx-3 px-3 py-2 rounded transition-colors">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0 flex-1">
+                                            <p class="font-medium text-secondary-900 line-clamp-1">{{ $job->title }}</p>
+                                            <p class="text-xs text-secondary-500 mt-1 line-clamp-2">{{ $job->description }}</p>
+                                            @if($job->scheduled_date)
+                                                <p class="text-[10px] text-secondary-400 mt-1.5 uppercase tracking-wider">{{ $job->scheduled_date->format('Y / n / j') }} 実施</p>
+                                            @endif
+                                        </div>
+                                        <span class="text-[10px] px-2 py-0.5 bg-secondary-100 text-secondary-600 border border-secondary-200 rounded-full shrink-0">完了</span>
+                                    </div>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- 最新レビュー --}}
+            @if($latestReviews->isNotEmpty())
+                <div class="bg-canvas-50 border border-secondary-200 rounded-xl p-6">
+                    <h3 class="font-display font-semibold text-secondary-900 mb-4">レビュー</h3>
+                    <ul class="space-y-4">
+                        @foreach($latestReviews as $review)
+                            <li class="border-b border-secondary-100 last:border-b-0 pb-4 last:pb-0">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <x-star-rating :rating="(int) $review->rating" size="sm" />
+                                    <span class="text-xs text-secondary-500">
+                                        {{ $review->reviewer->name ?? '退会済みユーザー' }} ・
+                                        {{ $review->created_at->format('Y/n/j') }}
+                                    </span>
+                                </div>
+                                @if($review->comment)
+                                    <p class="text-sm text-secondary-700 leading-relaxed whitespace-pre-line">{{ $review->comment }}</p>
+                                @endif
                             </li>
                         @endforeach
                     </ul>

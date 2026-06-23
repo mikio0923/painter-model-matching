@@ -255,6 +255,59 @@ class DemoSeeder extends Seeder
                 ]);
             });
 
+        // ── painter10 専用: 過去の完了依頼を 4 件 + 各々レビュー ──
+        // 画家プロフィール画面の「これまでの実績」「レビュー」セクションの動作確認用
+        $this->command->info('painter10 の過去完了依頼を作成...');
+        $painter10 = $painters->last();
+        $pastTitles = [
+            ['title' => 'ポートレート撮影 / スタジオ',     'days' => 35, 'desc' => 'スタジオでのポートレート撮影。自然光メインで柔らかい雰囲気に仕上げました。'],
+            ['title' => '屋外ロケーション撮影',             'days' => 55, 'desc' => '都内の公園での屋外撮影。夕方のマジックアワーを活用。'],
+            ['title' => 'モード系作品撮り',                 'days' => 80, 'desc' => 'モード雑誌風の作品撮り。衣装はスタイリスト同行。'],
+            ['title' => 'カジュアル日常スナップ',           'days' => 110,'desc' => '日常の延長線にあるような自然なスナップ撮影でした。'],
+        ];
+        foreach ($pastTitles as $idx => $info) {
+            $pastJob = Job::create([
+                'painter_id'      => $painter10->id,
+                'title'           => "[{$painter10->name}] " . $info['title'],
+                'description'     => $info['desc'],
+                'reward_amount'   => 15000 + $idx * 5000,
+                'reward_unit'     => 'per_session',
+                'location_type'   => $idx % 2 === 0 ? 'offline' : 'online',
+                'prefecture'      => '東京都',
+                'status'          => 'closed',
+                'scheduled_date'  => now()->subDays($info['days']),
+                'apply_deadline'  => now()->subDays($info['days'] + 14),
+                'recruitment_number' => 1,
+            ]);
+
+            // モデルを1人割り当てて取引完了 + 双方レビュー
+            $partnerModel = $models[$idx % $models->count()];
+            $pastApp = JobApplication::create([
+                'job_id'              => $pastJob->id,
+                'model_id'            => $partnerModel->id,
+                'message'             => 'よろしくお願いいたします。',
+                'status'              => 'accepted',
+                'payment_received_at' => now()->subDays($info['days'] - 1),
+            ]);
+
+            // 画家(painter10) → モデル
+            Review::create([
+                'job_id'           => $pastJob->id,
+                'reviewer_id'      => $painter10->id,
+                'reviewed_user_id' => $partnerModel->id,
+                'rating'           => 4 + ($idx % 2),
+                'comment'          => 'プロ意識が高く、現場でも非常に協力的でした。',
+            ]);
+            // モデル → 画家(painter10)
+            Review::create([
+                'job_id'           => $pastJob->id,
+                'reviewer_id'      => $partnerModel->id,
+                'reviewed_user_id' => $painter10->id,
+                'rating'           => 4 + (($idx + 1) % 2),
+                'comment'          => 'ディレクションが明確で、安心して撮影に臨めました。',
+            ]);
+        }
+
         $this->command->info(sprintf(
             '完了: 画家 %d / モデル %d / 依頼 %d / 応募 %d / メッセージ %d / 個別依頼 %d / レビュー %d',
             User::where('role', 'painter')->where('email', 'like', '%@demo.local')->count(),

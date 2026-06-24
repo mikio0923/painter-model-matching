@@ -22,10 +22,32 @@
         </div>
     @endif
 
+    {{-- フィルタ --}}
+    @php
+        $tabs = [
+            'all'      => ['label' => 'すべて', 'count' => $counts['all']],
+            'applying' => ['label' => '応募',   'count' => $counts['applying']],
+            'closed'   => ['label' => '締切',   'count' => $counts['closed']],
+            'done'     => ['label' => '完了',   'count' => $counts['done']],
+        ];
+    @endphp
+    <div class="flex flex-wrap gap-2 mb-6">
+        @foreach($tabs as $key => $t)
+            <a href="{{ route('model.applications.index', ['filter' => $key]) }}"
+               class="inline-flex items-center gap-2 px-4 py-2 text-sm border transition-colors
+                      {{ $filter === $key
+                          ? 'bg-secondary-900 text-canvas-50 border-secondary-900'
+                          : 'bg-canvas-50 text-secondary-700 border-secondary-300 hover:bg-secondary-100' }}">
+                {{ $t['label'] }}
+                <span class="text-xs {{ $filter === $key ? 'text-canvas-50/70' : 'text-secondary-400' }}">{{ $t['count'] }}</span>
+            </a>
+        @endforeach
+    </div>
+
     @if($applications->isEmpty())
         <div class="border border-secondary-200 px-5 py-16 text-center">
             <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-400 mb-3">No Applications</p>
-            <p class="text-secondary-500 text-sm mb-6">まだ応募がありません。</p>
+            <p class="text-secondary-500 text-sm mb-6">該当する応募がありません。</p>
             <a href="{{ route('jobs.index') }}" class="btn-museum-dark inline-flex">
                 依頼を探す
             </a>
@@ -34,11 +56,13 @@
         <div class="space-y-5">
             @foreach($applications as $application)
                 @php
-                    $statusInfo = match($application->status) {
-                        'pending'   => ['label' => '応募中',     'text' => 'text-warning-700',   'border' => 'border-warning-500',   'bg' => 'bg-warning-50'],
-                        'accepted'  => ['label' => '承認済み',   'text' => 'text-success-700',   'border' => 'border-success-500',   'bg' => 'bg-success-50'],
-                        'rejected'  => ['label' => '却下',       'text' => 'text-error-600',     'border' => 'border-error-500',     'bg' => 'bg-error-50'],
-                        'canceled'  => ['label' => 'キャンセル', 'text' => 'text-secondary-500', 'border' => 'border-secondary-300', 'bg' => 'bg-secondary-50'],
+                    // display_status は controller で付与済（応募中 / 締切 / 完了 / 採用 / 辞退）
+                    $statusInfo = match($application->display_status ?? '') {
+                        'applying'  => ['label' => '応募中',     'text' => 'text-warning-700',   'border' => 'border-warning-500',   'bg' => 'bg-warning-50'],
+                        'accepted'  => ['label' => '採用済み',   'text' => 'text-success-700',   'border' => 'border-success-500',   'bg' => 'bg-success-50'],
+                        'closed'    => ['label' => '締切',       'text' => 'text-secondary-700', 'border' => 'border-secondary-400', 'bg' => 'bg-secondary-100'],
+                        'done'      => ['label' => '完了',       'text' => 'text-secondary-700', 'border' => 'border-secondary-900', 'bg' => 'bg-canvas-50'],
+                        'rejected'  => ['label' => '辞退',       'text' => 'text-error-600',     'border' => 'border-error-500',     'bg' => 'bg-error-50'],
                         default     => ['label' => '不明',       'text' => 'text-secondary-400', 'border' => 'border-secondary-300', 'bg' => 'bg-secondary-50'],
                     };
                 @endphp

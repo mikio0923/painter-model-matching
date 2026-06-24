@@ -15,6 +15,38 @@ use Illuminate\View\View;
 class PainterJobApplicationController extends Controller
 {
     /**
+     * 自分の全依頼の全応募を一覧表示（応募者・コメント・依頼概要・採否ボタンを一目で）
+     * GET /painter/applications?filter=pending|accepted|rejected
+     */
+    public function indexAll(Request $request): View
+    {
+        $filter = $request->get('filter', 'all');
+
+        $query = JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))
+            ->with(['job', 'model.modelProfile']);
+
+        if (in_array($filter, ['pending', 'accepted', 'rejected'], true)) {
+            $query->where('status', $filter);
+        }
+
+        $applications = $query->orderBy('created_at', 'desc')->get();
+
+        // フィルタ用カウント
+        $counts = [
+            'all'      => JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))->count(),
+            'pending'  => JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))->where('status', 'pending')->count(),
+            'accepted' => JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))->where('status', 'accepted')->count(),
+            'rejected' => JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))->where('status', 'rejected')->count(),
+        ];
+
+        return view('painter.applications.index', [
+            'applications' => $applications,
+            'filter'       => $filter,
+            'counts'       => $counts,
+        ]);
+    }
+
+    /**
      * 応募者一覧を表示
      */
     public function index(Job $job): View

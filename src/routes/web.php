@@ -205,6 +205,9 @@ Route::middleware(['auth', 'role:painter'])->prefix('painter')->name('painter.')
     Route::post('/jobs/{job}/applications/{application}/accept', [PainterJobApplicationController::class, 'accept'])->name('jobs.applications.accept');
     Route::post('/jobs/{job}/applications/{application}/reject', [PainterJobApplicationController::class, 'reject'])->name('jobs.applications.reject');
 
+    // 自分の全依頼に対する応募一覧（採用/辞退をその場で判定）
+    Route::get('/applications', [PainterJobApplicationController::class, 'indexAll'])->name('applications.index');
+
     // 個別依頼（Job Offer）
     Route::get('/job-offers', [\App\Http\Controllers\Painter\PainterJobOfferController::class, 'index'])->name('job-offers.index');
     Route::get('/job-offers/create', [\App\Http\Controllers\Painter\PainterJobOfferController::class, 'create'])->name('job-offers.create');

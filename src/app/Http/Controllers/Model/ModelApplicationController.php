@@ -15,17 +15,91 @@ class ModelApplicationController extends Controller
 {
     /**
      * 応募一覧を表示
+     * クエリ ?filter=applying|closed|done で 応募中 / 締切 / 完了 に絞り込み可能。
+     *
+     * 派生ステータス（依頼の状態と連動）:
+     *  - 完了 (done)    : payment_received_at がセット済み or job.status === 'done'
+     *  - 締切 (closed)  : job.status === 'closed'（完了未確定）
+     *  - 採用 (accepted): job 開催中で app.status='accepted'
+     *  - 辞退 (rejected): app.status='rejected'
+     *  - 応募中 (applying): それ以外（job が open かつ pending）
      */
-    public function index(): View
+    public function index(Request $request): View
     {
+        $filter = $request->get('filter', 'all');
+
         $applications = JobApplication::where('model_id', Auth::id())
             ->with(['job.painter.painterProfile'])
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // 派生ステータスを各 application に付与
+        $applications->each(function (JobApplication $app) {
+            $app->display_status = $this->resolveDisplayStatus($app);
+        });
+
+        // フィルタリング
+        $filtered = $applications;
+        if (in_array($filter, ['applying', 'closed', 'done'], true)) {
+            $filtered = $applications->filter(fn(JobApplication $app) =>
+                $this->matchesFilter($app->display_status, $filter)
+            )->values();
+        }
+
+        // 件数カウント
+        $counts = [
+            'all'      => $applications->count(),
+            'applying' => $applications->filter(fn($a) => $this->matchesFilter($a->display_status, 'applying'))->count(),
+            'closed'   => $applications->filter(fn($a) => $this->matchesFilter($a->display_status, 'closed'))->count(),
+            'done'     => $applications->filter(fn($a) => $this->matchesFilter($a->display_status, 'done'))->count(),
+        ];
+
         return view('model.applications.index', [
-            'applications' => $applications,
+            'applications' => $filtered,
+            'filter'       => $filter,
+            'counts'       => $counts,
         ]);
+    }
+
+    /**
+     * 応募の派生ステータスを判定
+     * 戻り値: 'done' | 'closed' | 'accepted' | 'rejected' | 'applying'
+     */
+    private function resolveDisplayStatus(JobApplication $app): string
+    {
+        if ($app->payment_received_at !== null) {
+            return 'done';
+        }
+        $jobStatus = $app->job?->status;
+        if ($jobStatus === 'done') {
+            return 'done';
+        }
+        if ($jobStatus === 'closed') {
+            return 'closed';
+        }
+        if ($app->status === 'rejected') {
+            return 'rejected';
+        }
+        if ($app->status === 'accepted') {
+            return 'accepted';
+        }
+        return 'applying';
+    }
+
+    /**
+     * 「応募・締切・完了」3 フィルタへの集約マッピング
+     * applying: 'applying' + 'accepted'（採用済みも撮影日まで「応募中（採用済）」扱い）
+     * closed:   'closed' + 'rejected'（依頼締切と辞退は履歴扱いに）
+     * done:     'done'
+     */
+    private function matchesFilter(string $displayStatus, string $filter): bool
+    {
+        return match ($filter) {
+            'applying' => in_array($displayStatus, ['applying', 'accepted'], true),
+            'closed'   => in_array($displayStatus, ['closed', 'rejected'], true),
+            'done'     => $displayStatus === 'done',
+            default    => true,
+        };
     }
 
     /**

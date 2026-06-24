@@ -109,43 +109,17 @@
             </div>
             @endif
 
-            {{-- エントリーコメント --}}
+            {{-- エントリー数（プライバシー観点でコメント本文は表示しない） --}}
             <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
-                <div class="px-6 py-4 border-b border-secondary-100 flex items-center justify-between">
+                <div class="px-6 py-4 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="w-1 h-5 bg-success-500 rounded-full inline-block"></span>
-                        <h2 class="font-display text-lg font-bold text-secondary-900">エントリーコメント</h2>
+                        <h2 class="font-display text-lg font-bold text-secondary-900">エントリー状況</h2>
                     </div>
-                    <span class="badge badge-secondary">{{ $job->applications->count() }}件</span>
-                </div>
-                <div class="p-6">
-                    @if($job->applications->count() > 0)
-                        <div class="space-y-5">
-                            @foreach($job->applications->sortByDesc('created_at') as $app)
-                            <div class="flex gap-3">
-                                <div class="avatar avatar-sm border border-secondary-200 shrink-0">
-                                    <svg class="w-3.5 h-3.5 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-baseline gap-2 mb-1">
-                                        <span class="text-sm font-semibold text-secondary-900">
-                                            {{ $app->model->modelProfile?->display_name ?? $app->model->name }}
-                                        </span>
-                                        @if($app->model->modelProfile?->prefecture)
-                                            <span class="text-xs text-secondary-400">{{ $app->model->modelProfile->prefecture }}</span>
-                                        @endif
-                                        <span class="text-xs text-secondary-400 ml-auto">{{ $app->created_at->format('Y.m.d H:i') }}</span>
-                                    </div>
-                                    @if($app->message)
-                                        <p class="text-sm text-secondary-600 leading-relaxed whitespace-pre-wrap">{{ $app->message }}</p>
-                                    @endif
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-sm text-secondary-400 text-center py-8">まだエントリーがありません</p>
-                    @endif
+                    <span class="text-sm text-secondary-800">
+                        <span class="font-semibold tabular-nums">{{ number_format($job->applications->count()) }}</span>
+                        <span class="text-secondary-500 ml-1">件のエントリー</span>
+                    </span>
                 </div>
             </div>
 

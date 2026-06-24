@@ -76,8 +76,16 @@ class NotificationController extends Controller
                 }
                 break;
             case 'application_accepted':
+                // 採用通知 → 該当依頼の詳細ページへ（モデルが内容を確認できるように）
+                if ($notification->related_type === \App\Models\JobApplication::class) {
+                    $application = \App\Models\JobApplication::find($notification->related_id);
+                    if ($application?->job) {
+                        return redirect()->route('jobs.show', $application->job);
+                    }
+                }
+                return redirect()->route('model.applications.index');
             case 'application_rejected':
-                // 応募一覧ページへ
+                // 辞退通知 → 応募一覧（履歴）
                 return redirect()->route('model.applications.index');
             case 'message_received':
                 // メッセージ詳細ページへ

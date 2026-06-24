@@ -95,11 +95,11 @@
                         <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $completedJobs }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">完了</div>
                     </a>
-                    <a href="{{ route('painter.jobs.index') }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                    <a href="{{ route('painter.applications.index') }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
                         <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $totalApplications }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">総応募</div>
                     </a>
-                    <a href="{{ route('painter.jobs.index') }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
+                    <a href="{{ route('painter.applications.index', ['filter' => 'accepted']) }}" class="p-5 text-center hover:bg-secondary-50 transition-colors group">
                         <div class="text-3xl font-semibold text-secondary-900 tabular-nums group-hover:text-secondary-700 transition-colors">{{ $acceptedApplications }}</div>
                         <div class="text-[10px] uppercase tracking-[0.2em] text-secondary-500 mt-1">承認</div>
                     </a>
@@ -149,6 +149,12 @@
                             'label' => '自分の依頼',
                             'sub' => 'My Jobs',
                             'desc' => '投稿した依頼の管理・編集',
+                        ],
+                        [
+                            'href' => route('painter.applications.index'),
+                            'label' => '受け取った応募',
+                            'sub' => 'Applications',
+                            'desc' => 'モデルからの応募を採用・辞退する',
                         ],
                         [
                             'href' => route('painter.job-offers.index'),

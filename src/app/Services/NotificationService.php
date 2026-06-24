@@ -48,13 +48,18 @@ class NotificationService
     public static function notifyApplicationAccepted(JobApplication $application): void
     {
         $job = $application->job;
+        $painter = $job->painter;
+        $painterName = $painter?->painterProfile?->display_name ?? $painter?->name ?? '画家';
+
+        $body  = "おめでとうございます。{$painterName}さんからの依頼「{$job->title}」にあなたが採用されました。\n\n";
+        $body .= "下記より依頼内容の詳細をご確認のうえ、画家とのメッセージで日程や持ち物などをすり合わせてください。";
 
         Notification::create([
-            'user_id' => $application->model_id,
-            'type' => 'application_accepted',
-            'title' => '応募が承認されました',
-            'body' => "「{$job->title}」への応募が承認されました。",
-            'related_id' => $application->id,
+            'user_id'      => $application->model_id,
+            'type'         => 'application_accepted',
+            'title'        => '【採用通知】応募が採用されました',
+            'body'         => $body,
+            'related_id'   => $application->id,
             'related_type' => JobApplication::class,
         ]);
 
@@ -66,18 +71,25 @@ class NotificationService
     }
 
     /**
-     * 応募却下通知を作成（モデルに通知）
+     * 応募辞退通知を作成（モデルに通知）— 企業面接の不採用通知のような丁寧な定型文
      */
     public static function notifyApplicationRejected(JobApplication $application): void
     {
         $job = $application->job;
+        $painter = $job->painter;
+        $painterName = $painter?->painterProfile?->display_name ?? $painter?->name ?? '画家';
+
+        $body  = "この度は{$painterName}さんの依頼「{$job->title}」へご応募いただき、誠にありがとうございました。\n\n";
+        $body .= "慎重に検討いたしましたが、今回は他の方とのご縁とさせていただくこととなりました。";
+        $body .= "あなたのプロフィールや作品は確かに拝見いたしましたので、ご縁がございましたら今後改めてお声がけさせていただく場合がございます。\n\n";
+        $body .= "また別の依頼でお会いできることを楽しみにしております。";
 
         Notification::create([
-            'user_id' => $application->model_id,
-            'type' => 'application_rejected',
-            'title' => '応募が却下されました',
-            'body' => "「{$job->title}」への応募が却下されました。",
-            'related_id' => $application->id,
+            'user_id'      => $application->model_id,
+            'type'         => 'application_rejected',
+            'title'        => 'ご応募ありがとうございました',
+            'body'         => $body,
+            'related_id'   => $application->id,
             'related_type' => JobApplication::class,
         ]);
 

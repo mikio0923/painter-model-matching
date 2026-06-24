@@ -40,9 +40,9 @@
             @foreach($applications as $application)
                 @php
                     $statusInfo = match($application->status) {
-                        'applied'  => ['label' => '応募中',   'text' => 'text-warning-700',   'border' => 'border-warning-500',   'bg' => 'bg-warning-50'],
-                        'accepted' => ['label' => '承認済み', 'text' => 'text-success-700',   'border' => 'border-success-500',   'bg' => 'bg-success-50'],
-                        'rejected' => ['label' => '却下',     'text' => 'text-error-600',     'border' => 'border-error-500',     'bg' => 'bg-error-50'],
+                        'pending'  => ['label' => '未対応',   'text' => 'text-warning-700',   'border' => 'border-warning-500',   'bg' => 'bg-warning-50'],
+                        'accepted' => ['label' => '採用済み', 'text' => 'text-success-700',   'border' => 'border-success-500',   'bg' => 'bg-success-50'],
+                        'rejected' => ['label' => '辞退',     'text' => 'text-error-600',     'border' => 'border-error-500',     'bg' => 'bg-error-50'],
                         default    => ['label' => '—',        'text' => 'text-secondary-400', 'border' => 'border-secondary-300', 'bg' => 'bg-secondary-50'],
                     };
                 @endphp
@@ -103,21 +103,21 @@
                             応募日 {{ $application->created_at->format('Y . n . j  H:i') }}
                         </p>
                         <div class="flex flex-wrap gap-2">
-                            @if($application->status === 'applied')
-                                <form action="{{ route('painter.jobs.applications.accept', ['job' => $job, 'application' => $application]) }}" method="POST">
+                            @if($application->status === 'pending')
+                                <form action="{{ route('painter.jobs.applications.reject', ['job' => $job, 'application' => $application]) }}" method="POST"
+                                      onsubmit="return confirm('この応募を辞退（不採用）として通知します。よろしいですか？');">
                                     @csrf
                                     <button type="submit"
-                                            onclick="return confirm('この応募を承認しますか？')"
-                                            class="px-5 py-2 bg-success-600 text-canvas-50 border border-success-600 text-sm hover:bg-success-700 hover:border-success-700 transition-colors duration-200">
-                                        承認
+                                            class="px-5 py-2 bg-canvas-50 border border-error-500 text-error-600 text-sm hover:bg-error-50 transition-colors duration-200">
+                                        辞退する
                                     </button>
                                 </form>
-                                <form action="{{ route('painter.jobs.applications.reject', ['job' => $job, 'application' => $application]) }}" method="POST">
+                                <form action="{{ route('painter.jobs.applications.accept', ['job' => $job, 'application' => $application]) }}" method="POST"
+                                      onsubmit="return confirm('この応募を採用として通知します。よろしいですか？');">
                                     @csrf
                                     <button type="submit"
-                                            onclick="return confirm('この応募を却下しますか？')"
-                                            class="px-5 py-2 bg-canvas-50 border border-error-500 text-error-600 text-sm hover:bg-error-50 transition-colors duration-200">
-                                        却下
+                                            class="px-5 py-2 bg-success-600 text-canvas-50 border border-success-600 text-sm hover:bg-success-700 hover:border-success-700 transition-colors duration-200">
+                                        採用する
                                     </button>
                                 </form>
                             @endif

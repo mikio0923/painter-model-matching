@@ -14,7 +14,31 @@
     </div>
 </div>
 
-<div class="page-narrow">
+<div class="page-narrow"
+     x-data="{
+        filter: '{{ $filter }}',
+        counts: {{ Js::from($counts) }},
+        setFilter(f) {
+            this.filter = f;
+            const url = new URL(window.location.href);
+            if (f === 'all') {
+                url.searchParams.delete('filter');
+            } else {
+                url.searchParams.set('filter', f);
+            }
+            history.replaceState(null, '', url.toString());
+        },
+        get visibleCount() {
+            return this.counts[this.filter] ?? 0;
+        },
+        matches(status) {
+            if (this.filter === 'all') return true;
+            if (this.filter === 'applying') return ['applying', 'accepted'].includes(status);
+            if (this.filter === 'closed')   return ['closed', 'rejected'].includes(status);
+            if (this.filter === 'done')     return status === 'done';
+            return false;
+        }
+     }">
     @if(session('success'))
         <div class="border-l-2 border-success-500 bg-canvas-50 px-4 py-3 mb-6 text-sm text-secondary-700">
             <p class="text-[10px] uppercase tracking-[0.3em] text-success-700 mb-1">Updated</p>
@@ -33,26 +57,34 @@
     @endphp
     <div class="flex flex-wrap gap-2 mb-6">
         @foreach($tabs as $key => $t)
-            <a href="{{ route('model.applications.index', ['filter' => $key]) }}"
-               class="inline-flex items-center gap-2 px-4 py-2 text-sm border transition-colors
-                      {{ $filter === $key
-                          ? 'bg-secondary-900 text-canvas-50 border-secondary-900'
-                          : 'bg-canvas-50 text-secondary-700 border-secondary-300 hover:bg-secondary-100' }}">
+            <button type="button" @click="setFilter('{{ $key }}')"
+                    :class="filter === '{{ $key }}'
+                        ? 'bg-secondary-900 text-canvas-50 border-secondary-900'
+                        : 'bg-canvas-50 text-secondary-700 border-secondary-300 hover:bg-secondary-100'"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm border transition-colors">
                 {{ $t['label'] }}
-                <span class="text-xs {{ $filter === $key ? 'text-canvas-50/70' : 'text-secondary-400' }}">{{ $t['count'] }}</span>
-            </a>
+                <span class="text-xs"
+                      :class="filter === '{{ $key }}' ? 'text-canvas-50/70' : 'text-secondary-400'">
+                    {{ $t['count'] }}
+                </span>
+            </button>
         @endforeach
     </div>
 
-    @if($applications->isEmpty())
-        <div class="border border-secondary-200 px-5 py-16 text-center">
-            <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-400 mb-3">No Applications</p>
-            <p class="text-secondary-500 text-sm mb-6">該当する応募がありません。</p>
-            <a href="{{ route('jobs.index') }}" class="btn-museum-dark inline-flex">
-                依頼を探す
-            </a>
-        </div>
-    @else
+    {{-- 0件メッセージ（フィルタで該当が無い時） --}}
+    <div x-show="visibleCount === 0"
+         class="border border-secondary-200 px-5 py-16 text-center">
+        <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-400 mb-3">No Applications</p>
+        <p class="text-secondary-500 text-sm mb-6">
+            <span x-show="counts.all === 0">まだ応募がありません。</span>
+            <span x-show="counts.all > 0">該当する応募はありません。</span>
+        </p>
+        <a x-show="counts.all === 0" href="{{ route('jobs.index') }}" class="btn-museum-dark inline-flex">
+            依頼を探す
+        </a>
+    </div>
+
+    @if($applications->isNotEmpty())
         <div class="space-y-5">
             @foreach($applications as $application)
                 @php
@@ -67,7 +99,9 @@
                     };
                 @endphp
 
-                <article class="border border-secondary-200 bg-canvas-50 hover:border-secondary-400 transition-colors duration-300">
+                <article class="border border-secondary-200 bg-canvas-50 hover:border-secondary-400 transition-colors duration-300"
+                         x-show="matches('{{ $application->display_status ?? '' }}')"
+                         x-cloak>
                     <div class="px-5 sm:px-6 py-5">
                         <div class="flex items-start justify-between gap-4 mb-4">
                             <div class="min-w-0 flex-1">

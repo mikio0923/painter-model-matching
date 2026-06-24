@@ -21,7 +21,24 @@
     </div>
 </div>
 
-<div class="page space-y-6">
+<div class="page space-y-6"
+     x-data="{
+        filter: '{{ $filter }}',
+        counts: {{ Js::from($counts) }},
+        setFilter(f) {
+            this.filter = f;
+            const url = new URL(window.location.href);
+            if (f === 'all') {
+                url.searchParams.delete('filter');
+            } else {
+                url.searchParams.set('filter', f);
+            }
+            history.replaceState(null, '', url.toString());
+        },
+        get visibleCount() {
+            return this.counts[this.filter] ?? 0;
+        }
+     }">
 
     @if(session('success'))
         <div class="border-l-2 border-success-500 bg-canvas-50 px-4 py-3 text-sm text-secondary-700">
@@ -41,22 +58,27 @@
     @endphp
     <div class="flex flex-wrap gap-2">
         @foreach($tabs as $key => $t)
-            <a href="{{ route('painter.applications.index', ['filter' => $key]) }}"
-               class="inline-flex items-center gap-2 px-4 py-2 text-sm border transition-colors
-                      {{ $filter === $key
-                          ? 'bg-secondary-900 text-canvas-50 border-secondary-900'
-                          : 'bg-canvas-50 text-secondary-700 border-secondary-300 hover:bg-secondary-100' }}">
+            <button type="button" @click="setFilter('{{ $key }}')"
+                    :class="filter === '{{ $key }}'
+                        ? 'bg-secondary-900 text-canvas-50 border-secondary-900'
+                        : 'bg-canvas-50 text-secondary-700 border-secondary-300 hover:bg-secondary-100'"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm border transition-colors">
                 {{ $t['label'] }}
-                <span class="text-xs {{ $filter === $key ? 'text-canvas-50/70' : 'text-secondary-400' }}">{{ $t['count'] }}</span>
-            </a>
+                <span class="text-xs"
+                      :class="filter === '{{ $key }}' ? 'text-canvas-50/70' : 'text-secondary-400'">
+                    {{ $t['count'] }}
+                </span>
+            </button>
         @endforeach
     </div>
 
-    @if($applications->isEmpty())
-        <div class="border border-dashed border-secondary-300 px-5 py-12 text-center">
-            <p class="text-sm text-secondary-500">該当する応募はありません。</p>
-        </div>
-    @else
+    {{-- 0件メッセージ（フィルタ条件で何も該当しない時） --}}
+    <div x-show="visibleCount === 0"
+         class="border border-dashed border-secondary-300 px-5 py-12 text-center">
+        <p class="text-sm text-secondary-500">該当する応募はありません。</p>
+    </div>
+
+    @if($applications->isNotEmpty())
         <div class="space-y-4">
             @foreach($applications as $app)
                 @php
@@ -65,7 +87,9 @@
                     $modelName = $modelProfile?->display_name ?? $model?->name ?? '退会済みユーザー';
                     $modelImage = $modelProfile?->profile_image_path;
                 @endphp
-                <article class="bg-canvas-50 border border-secondary-200 rounded-xl overflow-hidden">
+                <article class="bg-canvas-50 border border-secondary-200 rounded-xl overflow-hidden"
+                         x-show="filter === 'all' || filter === '{{ $app->status }}'"
+                         x-cloak>
                     {{-- ヘッダー: 応募者 + ステータス --}}
                     <div class="px-5 py-4 border-b border-secondary-100 flex items-start justify-between gap-4">
                         <div class="flex items-center gap-3 min-w-0">

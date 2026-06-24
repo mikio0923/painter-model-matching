@@ -3,3 +3,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Alpine.js 用: 初期化前は x-cloak 要素を非表示にしてチラつき防止 */
+[x-cloak] { display: none !important; }

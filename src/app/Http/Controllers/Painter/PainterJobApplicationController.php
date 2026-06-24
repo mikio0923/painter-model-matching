@@ -20,23 +20,20 @@ class PainterJobApplicationController extends Controller
      */
     public function indexAll(Request $request): View
     {
+        // 全件をクライアントに渡し、Alpine.js でリロードなしにフィルタ切替する。
+        // ?filter= は初期表示用（URL 直アクセス時の初期タブ）にのみ使う。
         $filter = $request->get('filter', 'all');
 
-        $query = JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))
-            ->with(['job', 'model.modelProfile']);
+        $applications = JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))
+            ->with(['job', 'model.modelProfile'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        if (in_array($filter, ['pending', 'accepted', 'rejected'], true)) {
-            $query->where('status', $filter);
-        }
-
-        $applications = $query->orderBy('created_at', 'desc')->get();
-
-        // フィルタ用カウント
         $counts = [
-            'all'      => JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))->count(),
-            'pending'  => JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))->where('status', 'pending')->count(),
-            'accepted' => JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))->where('status', 'accepted')->count(),
-            'rejected' => JobApplication::whereHas('job', fn($q) => $q->where('painter_id', Auth::id()))->where('status', 'rejected')->count(),
+            'all'      => $applications->count(),
+            'pending'  => $applications->where('status', 'pending')->count(),
+            'accepted' => $applications->where('status', 'accepted')->count(),
+            'rejected' => $applications->where('status', 'rejected')->count(),
         ];
 
         return view('painter.applications.index', [

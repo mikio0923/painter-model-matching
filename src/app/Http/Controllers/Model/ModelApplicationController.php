@@ -26,6 +26,8 @@ class ModelApplicationController extends Controller
      */
     public function index(Request $request): View
     {
+        // 全件をクライアントに渡し、Alpine.js でリロードなしにフィルタ切替する。
+        // ?filter= は初期表示用（URL 直アクセス時の初期タブ）にのみ使う。
         $filter = $request->get('filter', 'all');
 
         $applications = JobApplication::where('model_id', Auth::id())
@@ -38,15 +40,6 @@ class ModelApplicationController extends Controller
             $app->display_status = $this->resolveDisplayStatus($app);
         });
 
-        // フィルタリング
-        $filtered = $applications;
-        if (in_array($filter, ['applying', 'closed', 'done'], true)) {
-            $filtered = $applications->filter(fn(JobApplication $app) =>
-                $this->matchesFilter($app->display_status, $filter)
-            )->values();
-        }
-
-        // 件数カウント
         $counts = [
             'all'      => $applications->count(),
             'applying' => $applications->filter(fn($a) => $this->matchesFilter($a->display_status, 'applying'))->count(),
@@ -55,7 +48,7 @@ class ModelApplicationController extends Controller
         ];
 
         return view('model.applications.index', [
-            'applications' => $filtered,
+            'applications' => $applications,
             'filter'       => $filter,
             'counts'       => $counts,
         ]);

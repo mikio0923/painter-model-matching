@@ -42,6 +42,16 @@
         {{-- ========== メインコンテンツ ========== --}}
         <div class="lg:col-span-2 space-y-6">
 
+            {{-- 応募済みお知らせ（モデル本人のみ・依頼内容の上に表示） --}}
+            @auth
+                @if(auth()->user()->role === 'model' && $hasApplied)
+                    <div class="bg-gold-50 border border-gold-200 rounded-2xl p-5 flex items-center gap-3">
+                        <svg class="w-5 h-5 text-gold-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <p class="text-sm font-semibold text-gold-800">この依頼には既に応募済みです</p>
+                    </div>
+                @endif
+            @endauth
+
             {{-- 依頼内容 --}}
             <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                 <div class="p-6 md:p-8">
@@ -110,28 +120,43 @@
             @endif
 
             {{-- エントリー数（プライバシー観点でコメント本文は表示しない） --}}
+            @php
+                $recruitmentTotal = (int) ($job->recruitment_number ?? 0);
+                $acceptedCount = $job->applications->where('status', 'accepted')->count();
+                $remaining = max(0, $recruitmentTotal - $acceptedCount);
+            @endphp
             <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
-                <div class="px-6 py-4 flex items-center justify-between">
+                <div class="px-6 py-4 flex items-center justify-between flex-wrap gap-2">
                     <div class="flex items-center gap-2">
                         <span class="w-1 h-5 bg-success-500 rounded-full inline-block"></span>
                         <h2 class="font-display text-lg font-bold text-secondary-900">エントリー状況</h2>
                     </div>
-                    <span class="text-sm text-secondary-800">
-                        <span class="font-semibold tabular-nums">{{ number_format($job->applications->count()) }}</span>
-                        <span class="text-secondary-500 ml-1">件のエントリー</span>
-                    </span>
+                    <div class="flex items-center gap-4 text-sm">
+                        <span class="text-secondary-800">
+                            <span class="font-semibold tabular-nums">{{ number_format($job->applications->count()) }}</span>
+                            <span class="text-secondary-500 ml-1">件のエントリー</span>
+                        </span>
+                        @if($recruitmentTotal > 0)
+                            <span class="text-secondary-300">|</span>
+                            <span class="{{ $remaining === 0 ? 'text-secondary-400' : 'text-secondary-800' }}">
+                                @if($remaining === 0)
+                                    <span class="font-medium">募集締切</span>
+                                    <span class="text-secondary-500 ml-1">（{{ $acceptedCount }} / {{ $recruitmentTotal }} 名）</span>
+                                @else
+                                    <span class="text-secondary-500">{{ $recruitmentTotal }} 名募集 / 残り</span>
+                                    <span class="font-semibold tabular-nums">{{ $remaining }}</span>
+                                    <span class="text-secondary-500 ml-1">名</span>
+                                @endif
+                            </span>
+                        @endif
+                    </div>
                 </div>
             </div>
 
-            {{-- 応募フォーム --}}
+            {{-- 応募フォーム（既応募の場合はページ上部にお知らせを表示済みなのでここでは省略） --}}
             @auth
                 @if(auth()->user()->role === 'model')
-                    @if($hasApplied)
-                        <div class="bg-gold-50 border border-gold-200 rounded-2xl p-6 flex items-center gap-3">
-                            <svg class="w-5 h-5 text-gold-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <p class="text-sm font-semibold text-gold-800">この依頼には既に応募済みです</p>
-                        </div>
-                    @else
+                    @if(!$hasApplied)
                         <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
                             <div class="px-6 py-4 border-b border-secondary-100 flex items-center gap-2">
                                 <span class="w-1 h-5 bg-primary-600 rounded-full inline-block"></span>
@@ -307,9 +332,14 @@
                     </dl>
                 </div>
 
-                {{-- お気に入りボタン（自分の依頼には表示しない） --}}
+                {{-- お気に入りボタン（自分の依頼・採用済みモデルには表示しない） --}}
                 @auth
-                @if(auth()->id() !== $job->painter_id)
+                @php
+                    $isAcceptedModel = auth()->user()->role === 'model'
+                        && $acceptedApplication
+                        && $acceptedApplication->model_id === auth()->id();
+                @endphp
+                @if(auth()->id() !== $job->painter_id && !$isAcceptedModel)
                 <div class="px-5 pb-5">
                     <x-favorite-button
                         type="job"

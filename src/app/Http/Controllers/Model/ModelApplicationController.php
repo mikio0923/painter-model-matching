@@ -43,6 +43,7 @@ class ModelApplicationController extends Controller
         $counts = [
             'all'      => $applications->count(),
             'applying' => $applications->filter(fn($a) => $this->matchesFilter($a->display_status, 'applying'))->count(),
+            'accepted' => $applications->filter(fn($a) => $this->matchesFilter($a->display_status, 'accepted'))->count(),
             'closed'   => $applications->filter(fn($a) => $this->matchesFilter($a->display_status, 'closed'))->count(),
             'done'     => $applications->filter(fn($a) => $this->matchesFilter($a->display_status, 'done'))->count(),
         ];
@@ -80,15 +81,17 @@ class ModelApplicationController extends Controller
     }
 
     /**
-     * 「応募・締切・完了」3 フィルタへの集約マッピング
-     * applying: 'applying' + 'accepted'（採用済みも撮影日まで「応募中（採用済）」扱い）
+     * 「応募・採用・締切・完了」4 フィルタへの集約マッピング
+     * applying: 'applying' のみ（返答待ち）
+     * accepted: 'accepted'（採用済みは単独で絞り込めるように分離）
      * closed:   'closed' + 'rejected'（依頼締切と辞退は履歴扱いに）
      * done:     'done'
      */
     private function matchesFilter(string $displayStatus, string $filter): bool
     {
         return match ($filter) {
-            'applying' => in_array($displayStatus, ['applying', 'accepted'], true),
+            'applying' => $displayStatus === 'applying',
+            'accepted' => $displayStatus === 'accepted',
             'closed'   => in_array($displayStatus, ['closed', 'rejected'], true),
             'done'     => $displayStatus === 'done',
             default    => true,

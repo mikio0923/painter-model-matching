@@ -126,9 +126,9 @@
                 @error('target')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
             <div>
-                <label for="recruitment_number" class="{{ $rowLabel }}">募集人数</label>
+                <label for="recruitment_number" class="{{ $rowLabel }}">募集人数（最大5名）</label>
                 <input type="number" id="recruitment_number" name="recruitment_number" value="{{ old('recruitment_number') }}"
-                       min="1" placeholder="例：1" class="{{ $input }}">
+                       min="1" max="5" placeholder="例：1（最大5名まで）" class="{{ $input }}">
                 @error('recruitment_number')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
         </div>

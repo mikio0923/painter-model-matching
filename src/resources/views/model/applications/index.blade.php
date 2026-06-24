@@ -33,7 +33,8 @@
         },
         matches(status) {
             if (this.filter === 'all') return true;
-            if (this.filter === 'applying') return ['applying', 'accepted'].includes(status);
+            if (this.filter === 'applying') return status === 'applying';
+            if (this.filter === 'accepted') return status === 'accepted';
             if (this.filter === 'closed')   return ['closed', 'rejected'].includes(status);
             if (this.filter === 'done')     return status === 'done';
             return false;
@@ -49,10 +50,11 @@
     {{-- フィルタ --}}
     @php
         $tabs = [
-            'all'      => ['label' => 'すべて', 'count' => $counts['all']],
-            'applying' => ['label' => '応募',   'count' => $counts['applying']],
-            'closed'   => ['label' => '締切',   'count' => $counts['closed']],
-            'done'     => ['label' => '完了',   'count' => $counts['done']],
+            'all'      => ['label' => 'すべて',   'count' => $counts['all']],
+            'applying' => ['label' => '応募',     'count' => $counts['applying']],
+            'accepted' => ['label' => '採用済',   'count' => $counts['accepted']],
+            'closed'   => ['label' => '締切',     'count' => $counts['closed']],
+            'done'     => ['label' => '完了',     'count' => $counts['done']],
         ];
     @endphp
     <div class="flex flex-wrap gap-2 mb-6">

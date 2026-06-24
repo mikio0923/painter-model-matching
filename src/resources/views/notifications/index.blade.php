@@ -43,8 +43,15 @@
     @else
         <div class="space-y-3">
             @foreach($notifications as $notification)
-                @php $isUnread = $notification->isUnread(); @endphp
-                <div class="flex items-start gap-4 p-5 border-2 border-secondary-900 rounded-md {{ $isUnread ? 'bg-canvas-100' : 'bg-canvas-50' }}">
+                @php
+                    $isUnread = $notification->isUnread();
+                    $isAcceptance = $notification->type === 'application_accepted';
+                    // 採用通知は赤枠＋赤強調で目立たせる
+                    $borderClass = $isAcceptance ? 'border-error-500' : 'border-secondary-900';
+                    $titleClass  = $isAcceptance ? 'text-error-600 font-bold' : 'font-medium text-secondary-900';
+                    $bodyClass   = $isAcceptance ? 'text-error-700 font-medium' : 'text-secondary-600';
+                @endphp
+                <div class="flex items-start gap-4 p-5 border-2 {{ $borderClass }} rounded-md {{ $isUnread ? 'bg-canvas-100' : 'bg-canvas-50' }}">
 
                     {{-- マーカー（未読は赤丸、既読は薄い丸） --}}
                     <div class="shrink-0 mt-2">
@@ -53,7 +60,7 @@
 
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-3 mb-1.5">
-                            <h3 class="font-medium text-secondary-900 leading-snug">
+                            <h3 class="leading-snug {{ $titleClass }}">
                                 {{ $notification->title }}
                             </h3>
                             @if($isUnread)
@@ -61,7 +68,7 @@
                             @endif
                         </div>
                         @if($notification->body)
-                            <p class="text-sm text-secondary-600 leading-relaxed mb-2">{{ $notification->body }}</p>
+                            <p class="text-sm leading-relaxed mb-2 whitespace-pre-line {{ $bodyClass }}">{{ $notification->body }}</p>
                         @endif
                         <p class="text-xs text-secondary-400">
                             {{ $notification->created_at->format('Y年n月j日 H:i') }}

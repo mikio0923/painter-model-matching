@@ -131,9 +131,6 @@
                         <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500 mb-1">Menu</p>
                         <h2 class="font-display text-2xl font-semibold text-secondary-900">アクション</h2>
                     </div>
-                    <a href="{{ route('painter.jobs.create') }}" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-secondary-900 text-canvas-50 text-[10px] uppercase tracking-[0.25em] border border-secondary-900 hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
-                        + New Job
-                    </a>
                 </div>
 
                 @php

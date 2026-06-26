@@ -67,9 +67,6 @@
                                 <span class="text-xs border border-error-500 bg-error-50 text-error-700 px-2 py-0.5 shrink-0 font-medium">未読</span>
                             @endif
                         </div>
-                        @if($notification->body)
-                            <p class="text-sm leading-relaxed mb-2 whitespace-pre-line {{ $bodyClass }}">{{ $notification->body }}</p>
-                        @endif
                         <p class="text-xs text-secondary-400">
                             {{ $notification->created_at->format('Y年n月j日 H:i') }}
                             @if($notification->read_at)

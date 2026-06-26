@@ -32,9 +32,6 @@ Route::get('/models/{modelProfile}', [ModelProfileController::class, 'show'])->n
 
 // 画家プロフィール公開ページ
 Route::get('/painters/{painterProfile}', [\App\Http\Controllers\PainterProfileController::class, 'show'])->name('painters.show');
-Route::post('/models/{modelProfile}/questions', [\App\Http\Controllers\ModelProfileQuestionController::class, 'store'])
-    ->middleware(['auth', 'throttle:10,1'])
-    ->name('model-profile.questions.store');
 
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
 Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
@@ -157,10 +154,16 @@ Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->grou
         ->middleware('throttle:10,1')
         ->name('applications.complete');
 
-    // あなたへの質問
+    // よくある質問 (Q&A) — モデル本人が作成・編集
     Route::get('/questions', [ModelQuestionController::class, 'index'])->name('questions.index');
-    Route::post('/questions/{modelProfileQuestion}/answer', [ModelQuestionController::class, 'answer'])->name('questions.answer');
+    Route::post('/questions', [ModelQuestionController::class, 'store'])
+        ->middleware('throttle:20,1')
+        ->name('questions.store');
     Route::get('/questions/{modelProfileQuestion}/edit', [ModelQuestionController::class, 'edit'])->name('questions.edit');
+    Route::put('/questions/{modelProfileQuestion}', [ModelQuestionController::class, 'update'])
+        ->middleware('throttle:20,1')
+        ->name('questions.update');
+    Route::delete('/questions/{modelProfileQuestion}', [ModelQuestionController::class, 'destroy'])->name('questions.destroy');
 
     // 個別依頼（Job Offer）
     Route::get('/job-offers', [\App\Http\Controllers\Model\ModelJobOfferController::class, 'index'])->name('job-offers.index');

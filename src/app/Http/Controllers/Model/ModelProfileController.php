@@ -177,10 +177,10 @@ class ModelProfileController extends Controller
             ->take(10)
             ->get();
 
-        // Q&A（回答済みのみ公開表示）
+        // Q&A: モデル本人が登録したセルフ FAQ のみ公開 (asker_id IS NULL)
         $questions = $modelProfile->questions()
+            ->whereNull('asker_id')
             ->whereNotNull('answer')
-            ->with('asker')
             ->orderBy('created_at', 'desc')
             ->get();
 

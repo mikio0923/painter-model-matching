@@ -169,14 +169,20 @@
                                     辞退する
                                 </button>
                             </form>
-                            <form action="{{ route('painter.jobs.applications.accept', [$app->job, $app]) }}" method="POST"
-                                  onsubmit="return confirm('この応募を採用として通知します。よろしいですか？');">
-                                @csrf
-                                <button type="submit"
-                                        class="px-4 py-2 text-sm bg-success-600 text-white border border-success-600 hover:bg-success-700 transition-colors">
-                                    採用する
-                                </button>
-                            </form>
+                            @if($app->job_is_full ?? false)
+                                <span class="px-4 py-2 text-sm bg-secondary-100 border border-secondary-300 text-secondary-500 cursor-not-allowed">
+                                    定員に達しています（{{ $app->job_accepted_count }} / {{ $app->job_limit }} 名）
+                                </span>
+                            @else
+                                <form action="{{ route('painter.jobs.applications.accept', [$app->job, $app]) }}" method="POST"
+                                      onsubmit="return confirm('この応募を採用として通知します。よろしいですか？');">
+                                    @csrf
+                                    <button type="submit"
+                                            class="px-4 py-2 text-sm bg-success-600 text-white border border-success-600 hover:bg-success-700 transition-colors">
+                                        採用する
+                                    </button>
+                                </form>
+                            @endif
                         @else
                             <span class="text-xs text-secondary-400">
                                 {{ $app->status === 'accepted' ? '採用通知済み' : '辞退通知済み' }}

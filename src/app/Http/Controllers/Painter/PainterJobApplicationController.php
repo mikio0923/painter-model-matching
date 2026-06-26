@@ -29,6 +29,22 @@ class PainterJobApplicationController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // 各 application に「この依頼の枠が満員か」を付与（UI で採用ボタンを非活性化するため）
+        $jobIds = $applications->pluck('job_id')->unique()->all();
+        $acceptedCounts = JobApplication::whereIn('job_id', $jobIds)
+            ->where('status', 'accepted')
+            ->selectRaw('job_id, COUNT(*) as c')
+            ->groupBy('job_id')
+            ->pluck('c', 'job_id')
+            ->all();
+        $applications->each(function (JobApplication $app) use ($acceptedCounts) {
+            $limit = (int) ($app->job->recruitment_number ?? 1);
+            $accepted = (int) ($acceptedCounts[$app->job_id] ?? 0);
+            $app->job_is_full = $accepted >= $limit;
+            $app->job_accepted_count = $accepted;
+            $app->job_limit = $limit;
+        });
+
         $counts = [
             'all'      => $applications->count(),
             'pending'  => $applications->where('status', 'pending')->count(),
@@ -77,6 +93,14 @@ class PainterJobApplicationController extends Controller
         // 応募がこの依頼のものかチェック
         if ($application->job_id !== $job->id) {
             abort(404);
+        }
+
+        // 採用済が募集人数に達していたら弾く（達した瞬間以降は採用不可）
+        $limit = (int) ($job->recruitment_number ?? 1);
+        $acceptedCount = $job->applications()->where('status', 'accepted')->count();
+        // 既に accepted な応募を再度 accept する操作は意味がないので素通し
+        if ($application->status !== 'accepted' && $acceptedCount >= $limit) {
+            return back()->with('error', "募集人数（{$limit}名）に達しているため、これ以上採用できません。");
         }
 
         $application->update([

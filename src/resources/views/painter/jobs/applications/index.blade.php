@@ -39,6 +39,25 @@
         </div>
     @endif
 
+    @php
+        $jobLimit = (int) ($job->recruitment_number ?? 1);
+        $jobAcceptedCount = $applications->where('status', 'accepted')->count();
+        $jobIsFull = $jobAcceptedCount >= $jobLimit;
+    @endphp
+
+    {{-- 募集枠の状況 --}}
+    <div class="mb-6 px-5 py-3 border border-secondary-200 bg-canvas-50 text-sm flex items-center justify-between flex-wrap gap-2">
+        <span class="text-secondary-700">
+            募集人数 <span class="font-semibold tabular-nums">{{ $jobLimit }}</span> 名 /
+            採用済 <span class="font-semibold tabular-nums">{{ $jobAcceptedCount }}</span> 名
+        </span>
+        @if($jobIsFull)
+            <span class="text-xs px-3 py-1 rounded-full bg-secondary-100 text-secondary-700 border border-secondary-300">定員達成</span>
+        @else
+            <span class="text-xs text-secondary-500">残り {{ $jobLimit - $jobAcceptedCount }} 名</span>
+        @endif
+    </div>
+
     @if($applications->isEmpty())
         <div class="border border-secondary-200 px-5 py-16 text-center">
             <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-400 mb-3">No Applicants</p>
@@ -121,14 +140,20 @@
                                         辞退する
                                     </button>
                                 </form>
-                                <form action="{{ route('painter.jobs.applications.accept', ['job' => $job, 'application' => $application]) }}" method="POST"
-                                      onsubmit="return confirm('この応募を採用として通知します。よろしいですか？');">
-                                    @csrf
-                                    <button type="submit"
-                                            class="px-5 py-2 bg-success-600 text-canvas-50 border border-success-600 text-sm hover:bg-success-700 hover:border-success-700 transition-colors duration-200">
-                                        採用する
-                                    </button>
-                                </form>
+                                @if($jobIsFull)
+                                    <span class="px-5 py-2 text-sm bg-secondary-100 border border-secondary-300 text-secondary-500 cursor-not-allowed">
+                                        定員達成（{{ $jobAcceptedCount }} / {{ $jobLimit }}）
+                                    </span>
+                                @else
+                                    <form action="{{ route('painter.jobs.applications.accept', ['job' => $job, 'application' => $application]) }}" method="POST"
+                                          onsubmit="return confirm('この応募を採用として通知します。よろしいですか？');">
+                                        @csrf
+                                        <button type="submit"
+                                                class="px-5 py-2 bg-success-600 text-canvas-50 border border-success-600 text-sm hover:bg-success-700 hover:border-success-700 transition-colors duration-200">
+                                            採用する
+                                        </button>
+                                    </form>
+                                @endif
                             @endif
 
                             @if($application->status === 'accepted')

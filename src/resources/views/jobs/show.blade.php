@@ -179,7 +179,8 @@
                             </div>
                         </div>
                     @endif
-                @else
+                @elseif(auth()->id() !== $job->painter_id)
+                    {{-- 画家本人以外（他の画家など）の場合のみ案内を表示 --}}
                     <div class="bg-secondary-50 rounded-2xl border border-secondary-200 p-6">
                         <p class="text-sm text-secondary-500">モデルアカウントでログインすると応募できます</p>
                     </div>

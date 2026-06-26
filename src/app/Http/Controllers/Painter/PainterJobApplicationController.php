@@ -86,8 +86,8 @@ class PainterJobApplicationController extends Controller
         // 通知を作成（モデルに通知）
         NotificationService::notifyApplicationAccepted($application);
 
-        return redirect()->route('painter.jobs.applications.index', $job)
-            ->with('success', '応募を承認しました');
+        // 遷移元（受け取った応募一覧 / 依頼別応募者一覧 など）にそのまま戻す
+        return back()->with('success', '応募を採用しました。モデルに通知しました。');
     }
 
     /**
@@ -112,7 +112,7 @@ class PainterJobApplicationController extends Controller
         // 通知を作成（モデルに通知）
         NotificationService::notifyApplicationRejected($application);
 
-        return redirect()->route('painter.jobs.applications.index', $job)
-            ->with('success', '応募を却下しました');
+        // 遷移元（受け取った応募一覧 / 依頼別応募者一覧 など）にそのまま戻す
+        return back()->with('success', '応募を辞退しました。モデルに通知しました。');
     }
 }

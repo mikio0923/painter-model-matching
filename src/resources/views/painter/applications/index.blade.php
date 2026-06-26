@@ -171,7 +171,7 @@
                             </form>
                             @if($app->job_is_full ?? false)
                                 <span class="px-4 py-2 text-sm bg-secondary-100 border border-secondary-300 text-secondary-500 cursor-not-allowed">
-                                    定員に達しています（{{ $app->job_accepted_count }} / {{ $app->job_limit }} 名）
+                                    既に採用済みのモデルがいます
                                 </span>
                             @else
                                 <form action="{{ route('painter.jobs.applications.accept', [$app->job, $app]) }}" method="POST"

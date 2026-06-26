@@ -73,7 +73,7 @@ class PainterJobController extends Controller
             'transportation_fee' => $validated['transportation_fee'] ?? null,
             'costume_provided' => $validated['costume_provided'] ?? null,
             'target' => $validated['target'] ?? null,
-            'recruitment_number' => $validated['recruitment_number'] ?? null,
+            'recruitment_number' => 1, // 募集は常に1名に固定
             'location_type' => $validated['location_type'],
             'prefecture' => $validated['prefecture'] ?? null,
             'city' => $validated['city'] ?? null,
@@ -126,7 +126,7 @@ class PainterJobController extends Controller
             'transportation_fee' => $validated['transportation_fee'] ?? null,
             'costume_provided' => $validated['costume_provided'] ?? null,
             'target' => $validated['target'] ?? null,
-            'recruitment_number' => $validated['recruitment_number'] ?? null,
+            'recruitment_number' => 1, // 募集は常に1名に固定
             'location_type' => $validated['location_type'],
             'prefecture' => $validated['prefecture'] ?? null,
             'city' => $validated['city'] ?? null,

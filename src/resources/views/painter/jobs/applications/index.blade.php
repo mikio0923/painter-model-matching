@@ -40,23 +40,9 @@
     @endif
 
     @php
-        $jobLimit = (int) ($job->recruitment_number ?? 1);
-        $jobAcceptedCount = $applications->where('status', 'accepted')->count();
-        $jobIsFull = $jobAcceptedCount >= $jobLimit;
+        // 募集は1名固定。採用済が出たら以降の採用ボタンは非活性化
+        $jobIsFull = $applications->where('status', 'accepted')->count() >= 1;
     @endphp
-
-    {{-- 募集枠の状況 --}}
-    <div class="mb-6 px-5 py-3 border border-secondary-200 bg-canvas-50 text-sm flex items-center justify-between flex-wrap gap-2">
-        <span class="text-secondary-700">
-            募集人数 <span class="font-semibold tabular-nums">{{ $jobLimit }}</span> 名 /
-            採用済 <span class="font-semibold tabular-nums">{{ $jobAcceptedCount }}</span> 名
-        </span>
-        @if($jobIsFull)
-            <span class="text-xs px-3 py-1 rounded-full bg-secondary-100 text-secondary-700 border border-secondary-300">定員達成</span>
-        @else
-            <span class="text-xs text-secondary-500">残り {{ $jobLimit - $jobAcceptedCount }} 名</span>
-        @endif
-    </div>
 
     @if($applications->isEmpty())
         <div class="border border-secondary-200 px-5 py-16 text-center">
@@ -142,7 +128,7 @@
                                 </form>
                                 @if($jobIsFull)
                                     <span class="px-5 py-2 text-sm bg-secondary-100 border border-secondary-300 text-secondary-500 cursor-not-allowed">
-                                        定員達成（{{ $jobAcceptedCount }} / {{ $jobLimit }}）
+                                        既に採用済みのモデルがいます
                                     </span>
                                 @else
                                     <form action="{{ route('painter.jobs.applications.accept', ['job' => $job, 'application' => $application]) }}" method="POST"

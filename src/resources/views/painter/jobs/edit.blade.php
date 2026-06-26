@@ -103,19 +103,11 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <label for="target" class="{{ $rowLabel }}">募集対象</label>
-                <input type="text" id="target" name="target" value="{{ old('target', $job->target) }}"
-                       placeholder="例：女性 / 男性 / 指定なし" class="{{ $input }}">
-                @error('target')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
-            </div>
-            <div>
-                <label for="recruitment_number" class="{{ $rowLabel }}">募集人数（最大5名）</label>
-                <input type="number" id="recruitment_number" name="recruitment_number" value="{{ old('recruitment_number', $job->recruitment_number) }}"
-                       min="1" max="5" placeholder="例：1（最大5名まで）" class="{{ $input }}">
-                @error('recruitment_number')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
-            </div>
+        <div>
+            <label for="target" class="{{ $rowLabel }}">募集対象</label>
+            <input type="text" id="target" name="target" value="{{ old('target', $job->target) }}"
+                   placeholder="例：女性 / 男性 / 指定なし" class="{{ $input }}">
+            @error('target')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
         {{-- セクション: 場所 --}}

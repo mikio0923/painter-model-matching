@@ -31,7 +31,8 @@ class UpdateJobRequest extends FormRequest
             'transportation_fee' => ['nullable', 'string', 'max:255'],
             'costume_provided' => ['nullable', 'string', 'max:255'],
             'target' => ['nullable', 'string', 'max:255'],
-            'recruitment_number' => ['nullable', 'integer', 'min:1', 'max:5'],
+            // 募集は常に 1 名固定。フォームでも受け付けないがダイレクトPOSTに備えて1のみ許可
+            'recruitment_number' => ['nullable', 'integer', 'min:1', 'max:1'],
             'location_type' => ['required', 'string', 'in:online,offline'],
             'prefecture' => ['nullable', 'string', 'max:50'],
             'city' => ['nullable', 'string', 'max:100'],

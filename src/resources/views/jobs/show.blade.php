@@ -85,7 +85,6 @@
                         ['label' => '交通費', 'value' => $job->transportation_fee],
                         ['label' => '衣装提供', 'value' => $job->costume_provided],
                         ['label' => '募集対象', 'value' => $job->target],
-                        ['label' => '募集人数', 'value' => $job->recruitment_number ? number_format($job->recruitment_number) . '名' : null],
                         ['label' => '応募期限', 'value' => $job->apply_deadline ? $job->apply_deadline->format('Y年n月j日') . 'まで' : null],
                         ['label' => '投稿者', 'value' => $painterName],
                     ];
@@ -119,37 +118,17 @@
             </div>
             @endif
 
-            {{-- エントリー数（プライバシー観点でコメント本文は表示しない） --}}
-            @php
-                $recruitmentTotal = (int) ($job->recruitment_number ?? 0);
-                $acceptedCount = $job->applications->where('status', 'accepted')->count();
-                $remaining = max(0, $recruitmentTotal - $acceptedCount);
-            @endphp
+            {{-- エントリー状況（件数のみ・コメント本文は表示しない） --}}
             <div class="bg-canvas-50 rounded-xl border border-secondary-200 overflow-hidden">
-                <div class="px-6 py-4 flex items-center justify-between flex-wrap gap-2">
+                <div class="px-6 py-4 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="w-1 h-5 bg-success-500 rounded-full inline-block"></span>
                         <h2 class="font-display text-lg font-bold text-secondary-900">エントリー状況</h2>
                     </div>
-                    <div class="flex items-center gap-4 text-sm">
-                        <span class="text-secondary-800">
-                            <span class="font-semibold tabular-nums">{{ number_format($job->applications->count()) }}</span>
-                            <span class="text-secondary-500 ml-1">件のエントリー</span>
-                        </span>
-                        @if($recruitmentTotal > 0)
-                            <span class="text-secondary-300">|</span>
-                            <span class="{{ $remaining === 0 ? 'text-secondary-400' : 'text-secondary-800' }}">
-                                @if($remaining === 0)
-                                    <span class="font-medium">募集締切</span>
-                                    <span class="text-secondary-500 ml-1">（{{ $acceptedCount }} / {{ $recruitmentTotal }} 名）</span>
-                                @else
-                                    <span class="text-secondary-500">{{ $recruitmentTotal }} 名募集 / 残り</span>
-                                    <span class="font-semibold tabular-nums">{{ $remaining }}</span>
-                                    <span class="text-secondary-500 ml-1">名</span>
-                                @endif
-                            </span>
-                        @endif
-                    </div>
+                    <span class="text-sm text-secondary-800">
+                        <span class="font-semibold tabular-nums">{{ number_format($job->applications->count()) }}</span>
+                        <span class="text-secondary-500 ml-1">件のエントリー</span>
+                    </span>
                 </div>
             </div>
 

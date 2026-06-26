@@ -115,6 +115,19 @@ class ModelApplicationController extends Controller
                 ->with('error', '既に応募済みです');
         }
 
+        // 同日に他の依頼で採用済みの場合は応募禁止（ダブルブッキング防止）
+        if ($job->scheduled_date) {
+            $conflict = JobApplication::where('model_id', $user->id)
+                ->where('status', 'accepted')
+                ->where('job_id', '!=', $job->id)
+                ->whereHas('job', fn($q) => $q->whereDate('scheduled_date', $job->scheduled_date))
+                ->exists();
+            if ($conflict) {
+                return redirect()->route('jobs.show', $job)
+                    ->with('error', 'この日程は他の依頼で採用済みのため応募できません。');
+            }
+        }
+
         // 応募を作成
         $application = JobApplication::create([
             'job_id' => $job->id,

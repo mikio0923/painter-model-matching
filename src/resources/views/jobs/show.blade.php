@@ -163,17 +163,34 @@
                                 <h2 class="font-display text-lg font-bold text-secondary-900">この依頼に応募する</h2>
                             </div>
                             <div class="p-6">
+                                @if($hasSchedulingConflict)
+                                    {{-- 同日に他の依頼で採用済み → ダブルブッキング防止 --}}
+                                    <div class="mb-5 px-4 py-3 border-l-2 border-warning-500 bg-warning-50 text-sm text-secondary-800">
+                                        <p class="font-medium text-warning-700 mb-1">この日程は他の依頼で採用済みです</p>
+                                        <p class="text-secondary-700 leading-relaxed">
+                                            撮影日（{{ $job->scheduled_date?->format('Y/n/j') }}）に
+                                            <a href="{{ route('jobs.show', $conflictJob) }}" class="font-medium text-primary-700 hover:text-primary-800 underline">
+                                                「{{ $conflictJob?->title }}」
+                                            </a>
+                                            で既に採用されているため、この依頼には応募できません。
+                                        </p>
+                                    </div>
+                                @endif
+
                                 <form action="{{ route('model.jobs.apply', $job) }}" method="POST">
                                     @csrf
                                     <div class="mb-4">
                                         <label for="message" class="form-label">メッセージ <span class="text-secondary-400 font-normal">（任意）</span></label>
                                         <textarea id="message" name="message" rows="5"
                                                   placeholder="自己紹介やこの依頼への意気込みを書いてください"
-                                                  class="form-textarea"></textarea>
+                                                  @disabled($hasSchedulingConflict)
+                                                  class="form-textarea {{ $hasSchedulingConflict ? 'opacity-60 cursor-not-allowed' : '' }}"></textarea>
                                     </div>
-                                    <button type="submit" class="btn-primary">
+                                    <button type="submit"
+                                            @disabled($hasSchedulingConflict)
+                                            class="btn-primary {{ $hasSchedulingConflict ? 'opacity-50 cursor-not-allowed' : '' }}">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                                        応募する
+                                        {{ $hasSchedulingConflict ? '日程重複のため応募不可' : '応募する' }}
                                     </button>
                                 </form>
                             </div>
@@ -239,6 +256,19 @@
 
                     <div class="bg-canvas-50 border border-secondary-200 rounded-xl p-5 space-y-4">
                         <p class="text-xs font-semibold text-secondary-400 uppercase tracking-wider">取引ステータス</p>
+
+                        {{-- メッセージを送る（双方が見える / 採用済みの相手とやり取りできる） --}}
+                        @php
+                            $messageWith = $isModel ? $job->painter_id : $acceptedApplication->model_id;
+                            $counterpartName = $isModel
+                                ? ($job->painter->painterProfile?->display_name ?? $job->painter->name ?? '画家')
+                                : ($acceptedApplication->model->modelProfile?->display_name ?? $acceptedApplication->model->name ?? 'モデル');
+                        @endphp
+                        <a href="{{ route('messages.show', ['job' => $job, 'with' => $messageWith]) }}"
+                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-sm font-medium hover:bg-canvas-50 hover:text-secondary-900 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+                            {{ $counterpartName }}さんとメッセージ
+                        </a>
 
                         @if($acceptedApplication->isCompleted())
                             <p class="text-sm text-success-700">

@@ -173,6 +173,26 @@ class JobController extends Controller
             }
         }
 
+        // 同日に他の依頼で採用済みの応募があるか（モデル用：日程ブッキング防止）
+        $hasSchedulingConflict = false;
+        $conflictJob = null;
+        if (Auth::check()
+            && Auth::user()->role === 'model'
+            && $job->scheduled_date
+            && !$hasApplied
+        ) {
+            $conflictApp = JobApplication::where('model_id', Auth::id())
+                ->where('status', 'accepted')
+                ->where('job_id', '!=', $job->id)
+                ->whereHas('job', fn($q) => $q->whereDate('scheduled_date', $job->scheduled_date))
+                ->with('job')
+                ->first();
+            if ($conflictApp) {
+                $hasSchedulingConflict = true;
+                $conflictJob = $conflictApp->job;
+            }
+        }
+
         // お気に入り状態を取得
         $isFavorite = false;
         if (Auth::check()) {
@@ -182,6 +202,6 @@ class JobController extends Controller
                 ->exists();
         }
 
-        return view('jobs.show', compact('job', 'hasApplied', 'canReview', 'reviewTarget', 'isFavorite', 'acceptedApplication', 'canMarkComplete'));
+        return view('jobs.show', compact('job', 'hasApplied', 'canReview', 'reviewTarget', 'isFavorite', 'acceptedApplication', 'canMarkComplete', 'hasSchedulingConflict', 'conflictJob'));
     }
 }

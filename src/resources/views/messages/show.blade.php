@@ -303,7 +303,15 @@
                 return;
             }
             if (!res.ok) {
-                errorEl.textContent = '送信に失敗しました。時間を置いて再度お試しください。';
+                // 422 以外の失敗（419 CSRF / 429 throttle / 500 など）。
+                // 原因を切り分けやすいよう、サーバが返した詳細メッセージも一緒に表示する。
+                let detail = '';
+                try {
+                    const data = await res.json();
+                    detail = data?.message || data?.error || '';
+                } catch (_) {}
+                errorEl.textContent = '送信に失敗しました（HTTP ' + res.status + '）'
+                    + (detail ? '：' + detail : '。時間を置いて再度お試しください。');
                 errorEl.classList.remove('hidden');
                 return;
             }

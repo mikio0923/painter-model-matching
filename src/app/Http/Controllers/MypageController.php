@@ -91,7 +91,12 @@ class MypageController extends Controller
             $totalApplications = JobApplication::whereHas('job', function($query) use ($user) {
                 $query->where('painter_id', $user->id);
             })->count();
-            
+
+            // 「応募一覧」ボタンに出すのは「未対応 (pending)」の件数
+            $pendingApplications = JobApplication::whereHas('job', function($query) use ($user) {
+                $query->where('painter_id', $user->id);
+            })->where('status', 'pending')->count();
+
             $unreadMessages = Message::where('receiver_id', $user->id)
                 ->whereNull('read_at')
                 ->count();
@@ -117,6 +122,7 @@ class MypageController extends Controller
                 'painterProfile' => $painterProfile,
                 'jobs' => $jobs,
                 'totalApplications' => $totalApplications,
+                'pendingApplications' => $pendingApplications,
                 'unreadMessages' => $unreadMessages,
                 'totalJobs' => $totalJobs,
                 'openJobs' => $openJobs,

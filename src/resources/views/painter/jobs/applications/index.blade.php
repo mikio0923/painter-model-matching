@@ -23,6 +23,15 @@
 </div>
 
 <div class="page">
+    {{-- 依頼一覧に戻る --}}
+    <div class="mb-6">
+        <a href="{{ route('painter.jobs.index') }}"
+           class="inline-flex items-center gap-2 text-sm text-secondary-600 hover:text-secondary-900 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            依頼一覧に戻る
+        </a>
+    </div>
+
     @if(session('success'))
         <div class="border-l-2 border-success-500 bg-canvas-50 px-4 py-3 mb-6 text-sm text-secondary-700">
             <p class="text-[10px] uppercase tracking-[0.3em] text-success-700 mb-1">Updated</p>

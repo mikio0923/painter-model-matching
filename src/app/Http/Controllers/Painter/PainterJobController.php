@@ -150,11 +150,14 @@ class PainterJobController extends Controller
             abort(403);
         }
 
-        // 承認済みの応募がある場合は削除不可
-        $hasAccepted = $job->applications()->where('status', 'accepted')->exists();
-        if ($hasAccepted) {
-            return redirect()->route('painter.jobs.index')
-                ->with('error', '承認済みの応募がある依頼は削除できません。先にステータスを変更してください。');
+        // 公開中 (open) の依頼で採用済みの応募がある場合のみ削除を防止する
+        // 締切 (closed) や完了 (done) は応募有無に関わらず削除可（履歴整理用）
+        if ($job->status === 'open') {
+            $hasAccepted = $job->applications()->where('status', 'accepted')->exists();
+            if ($hasAccepted) {
+                return redirect()->route('painter.jobs.index')
+                    ->with('error', '公開中で採用済みの応募がある依頼は削除できません。先に依頼を締切ってください。');
+            }
         }
 
         $job->delete();

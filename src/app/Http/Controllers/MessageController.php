@@ -142,18 +142,32 @@ class MessageController extends Controller
 
         $user = Auth::user();
 
+        // messages.image_path カラムが存在するかでファイル添付対応かを判定
+        $hasImageColumn = \Illuminate\Support\Facades\Schema::hasColumn('messages', 'image_path');
+
         $imagePath = null;
-        if ($request->hasFile('image')) {
+        if ($hasImageColumn && $request->hasFile('image')) {
             $imagePath = $request->file('image')->store('messages', 'public');
+        } elseif (!$hasImageColumn && $request->hasFile('image')) {
+            // カラム未マイグレートの環境では画像添付を拒否（テキスト送信は通す）
+            return $this->respondError(
+                $request,
+                'image',
+                'サーバ側で画像添付の準備が完了していません。本文のみで送信してください。'
+            );
         }
 
-        $message = Message::create([
+        $data = [
             'job_id'      => $job->id,
             'sender_id'   => $user->id,
             'receiver_id' => $request->receiver_id,
             'body'        => $request->input('body', ''),
-            'image_path'  => $imagePath,
-        ]);
+        ];
+        if ($hasImageColumn) {
+            $data['image_path'] = $imagePath;
+        }
+
+        $message = Message::create($data);
 
         // 通知を作成（受信者に通知）
         NotificationService::notifyMessageReceived($message);

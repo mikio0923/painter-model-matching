@@ -32,6 +32,7 @@ Route::get('/models/{modelProfile}', [ModelProfileController::class, 'show'])->n
 
 // 画家プロフィール公開ページ
 Route::get('/painters/{painterProfile}', [\App\Http\Controllers\PainterProfileController::class, 'show'])->name('painters.show');
+Route::get('/painters/{painterProfile}/jobs', [\App\Http\Controllers\PainterProfileController::class, 'jobs'])->name('painters.jobs');
 
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
 Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');

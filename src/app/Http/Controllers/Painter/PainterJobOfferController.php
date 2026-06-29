@@ -42,13 +42,20 @@ class PainterJobOfferController extends Controller
                 ->with('error', 'このモデルにはすでに個別依頼を送信しています。返答をお待ちください。');
         }
 
-        // 自分が作った open かつ pending offer が無い依頼一覧（既存依頼から選ぶ用）
+        // 個別依頼として送れる依頼:
+        //   1) open であること
+        //   2) このモデルへの既存オファーが無い
+        //   3) 他モデルへの pending オファーが無い
+        //   4) 採用済み (accepted) の応募が無い ← 募集が事実上埋まっている依頼は除外
         $availableJobs = Job::where('painter_id', Auth::id())
             ->where('status', 'open')
             ->whereDoesntHave('offers', fn($q) =>
                 $q->where('model_id', $modelUserId)
             )
             ->whereDoesntHave('pendingOffers')
+            ->whereDoesntHave('applications', fn($q) =>
+                $q->where('status', 'accepted')
+            )
             ->latest()
             ->get();
 

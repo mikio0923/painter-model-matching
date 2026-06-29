@@ -37,11 +37,22 @@ class JobFlowTest extends TestCase
 
     public function test_painter_can_create_job(): void
     {
+        // 仕様: 「アクセス補足」以外は全て必須
         $response = $this->actingAs($this->painter)->post(route('painter.jobs.store'), [
-            'title' => 'テスト依頼',
-            'description' => 'テスト依頼の説明文です。',
-            'location_type' => 'offline',
-            'prefecture' => '東京都',
+            'title'              => 'テスト依頼',
+            'description'        => 'テスト依頼の説明文です。',
+            'usage_purpose'      => '個展',
+            'reward_amount'      => 10000,
+            'reward_unit'        => 'per_session',
+            'transportation_fee' => 'なし',
+            'costume_provided'   => 'なし',
+            'target'             => '指定なし',
+            'location_type'      => 'offline',
+            'prefecture'         => '東京都',
+            'city'               => '新宿区',
+            'address'            => '新宿4-2-16',
+            'scheduled_date'     => now()->addDays(14)->toDateString(),
+            'apply_deadline'     => now()->addDays(7)->toDateString(),
         ]);
 
         $response->assertRedirect(route('painter.jobs.index'));

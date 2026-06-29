@@ -66,18 +66,10 @@
 
         {{-- 用途 --}}
         <div>
-            <label for="usage_purpose" class="{{ $rowLabel }}">用途</label>
-            <input type="text" id="usage_purpose" name="usage_purpose" value="{{ old('usage_purpose') }}"
+            <label for="usage_purpose" class="{{ $rowLabel }}">用途 <span class="text-error-500">*</span></label>
+            <input type="text" id="usage_purpose" name="usage_purpose" value="{{ old('usage_purpose') }}" required
                    placeholder="例：個展、練習、作品制作" class="{{ $input }}">
             @error('usage_purpose')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
-        </div>
-
-        {{-- カテゴリ --}}
-        <div>
-            <label for="category" class="{{ $rowLabel }}">カテゴリ</label>
-            <input type="text" id="category" name="category" value="{{ old('category') }}"
-                   placeholder="例：広告用モデル募集" class="{{ $input }}">
-            @error('category')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
         {{-- セクション: 報酬・条件 --}}
@@ -88,14 +80,14 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label for="reward_amount" class="{{ $rowLabel }}">報酬額（円）</label>
-                <input type="number" id="reward_amount" name="reward_amount" value="{{ old('reward_amount') }}"
-                       min="0" placeholder="例：5000" class="{{ $input }}">
+                <label for="reward_amount" class="{{ $rowLabel }}">報酬額（円） <span class="text-error-500">*</span></label>
+                <input type="number" id="reward_amount" name="reward_amount" value="{{ old('reward_amount') }}" required
+                       min="0" placeholder="例:5000" class="{{ $input }}">
                 @error('reward_amount')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
             <div>
-                <label for="reward_unit" class="{{ $rowLabel }}">単位</label>
-                <select id="reward_unit" name="reward_unit" class="{{ $input }}">
+                <label for="reward_unit" class="{{ $rowLabel }}">単位 <span class="text-error-500">*</span></label>
+                <select id="reward_unit" name="reward_unit" required class="{{ $input }}">
                     <option value="per_session" {{ old('reward_unit', 'per_session') === 'per_session' ? 'selected' : '' }}>1回あたり</option>
                     <option value="per_hour" {{ old('reward_unit') === 'per_hour' ? 'selected' : '' }}>1時間あたり</option>
                 </select>
@@ -105,23 +97,23 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label for="transportation_fee" class="{{ $rowLabel }}">交通費の支給</label>
-                <input type="text" id="transportation_fee" name="transportation_fee" value="{{ old('transportation_fee') }}"
-                       placeholder="例：なし / あり / 応相談" class="{{ $input }}">
+                <label for="transportation_fee" class="{{ $rowLabel }}">交通費の支給 <span class="text-error-500">*</span></label>
+                <input type="text" id="transportation_fee" name="transportation_fee" value="{{ old('transportation_fee') }}" required
+                       placeholder="例:なし / あり / 応相談" class="{{ $input }}">
                 @error('transportation_fee')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
             <div>
-                <label for="costume_provided" class="{{ $rowLabel }}">衣装の提供</label>
-                <input type="text" id="costume_provided" name="costume_provided" value="{{ old('costume_provided') }}"
-                       placeholder="例：なし / あり / 応相談" class="{{ $input }}">
+                <label for="costume_provided" class="{{ $rowLabel }}">衣装の提供 <span class="text-error-500">*</span></label>
+                <input type="text" id="costume_provided" name="costume_provided" value="{{ old('costume_provided') }}" required
+                       placeholder="例:なし / あり / 応相談" class="{{ $input }}">
                 @error('costume_provided')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
         </div>
 
         <div>
-            <label for="target" class="{{ $rowLabel }}">募集対象</label>
-            <input type="text" id="target" name="target" value="{{ old('target') }}"
-                   placeholder="例：女性 / 男性 / 指定なし" class="{{ $input }}">
+            <label for="target" class="{{ $rowLabel }}">募集対象 <span class="text-error-500">*</span></label>
+            <input type="text" id="target" name="target" value="{{ old('target') }}" required
+                   placeholder="例:女性 / 男性 / 指定なし" class="{{ $input }}">
             @error('target')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
@@ -156,8 +148,8 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label for="prefecture" class="{{ $rowLabel }}">都道府県</label>
-                <select id="prefecture" name="prefecture" class="{{ $input }}">
+                <label for="prefecture" class="{{ $rowLabel }}">都道府県 <span class="text-error-500">*</span></label>
+                <select id="prefecture" name="prefecture" required class="{{ $input }}">
                     <option value="">選択してください</option>
                     @foreach($prefectures as $pref)
                         <option value="{{ $pref }}" {{ old('prefecture') === $pref ? 'selected' : '' }}>{{ $pref }}</option>
@@ -166,21 +158,21 @@
                 @error('prefecture')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
             <div>
-                <label for="city" class="{{ $rowLabel }}">市区町村</label>
-                <input type="text" id="city" name="city" value="{{ old('city') }}" class="{{ $input }}">
+                <label for="city" class="{{ $rowLabel }}">市区町村 <span class="text-error-500">*</span></label>
+                <input type="text" id="city" name="city" value="{{ old('city') }}" required class="{{ $input }}">
                 @error('city')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
         </div>
 
         <div>
-            <label for="address" class="{{ $rowLabel }}">住所</label>
-            <input type="text" id="address" name="address" value="{{ old('address') }}"
-                   placeholder="例：新宿4-2-16 パシフィックマークス新宿サウスゲート7階" class="{{ $input }}">
+            <label for="address" class="{{ $rowLabel }}">住所 <span class="text-error-500">*</span></label>
+            <input type="text" id="address" name="address" value="{{ old('address') }}" required
+                   placeholder="例:新宿4-2-16 パシフィックマークス新宿サウスゲート7階" class="{{ $input }}">
             @error('address')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
 
         <div>
-            <label for="access" class="{{ $rowLabel }}">アクセス・補足</label>
+            <label for="access" class="{{ $rowLabel }}">アクセス・補足 <span class="text-secondary-400 text-[10px] font-normal normal-case tracking-normal ml-1">(任意)</span></label>
             <textarea id="access" name="access" rows="4" class="{{ $input }} resize-y leading-relaxed">{{ old('access') }}</textarea>
             @error('access')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
         </div>
@@ -193,13 +185,13 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label for="scheduled_date" class="{{ $rowLabel }}">撮影日</label>
-                <input type="date" id="scheduled_date" name="scheduled_date" value="{{ old('scheduled_date') }}" class="{{ $input }}">
+                <label for="scheduled_date" class="{{ $rowLabel }}">撮影日 <span class="text-error-500">*</span></label>
+                <input type="date" id="scheduled_date" name="scheduled_date" value="{{ old('scheduled_date') }}" required class="{{ $input }}">
                 @error('scheduled_date')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
             <div>
-                <label for="apply_deadline" class="{{ $rowLabel }}">応募締切</label>
-                <input type="date" id="apply_deadline" name="apply_deadline" value="{{ old('apply_deadline') }}" class="{{ $input }}">
+                <label for="apply_deadline" class="{{ $rowLabel }}">応募締切 <span class="text-error-500">*</span></label>
+                <input type="date" id="apply_deadline" name="apply_deadline" value="{{ old('apply_deadline') }}" required class="{{ $input }}">
                 @error('apply_deadline')<p class="text-xs text-error-600 mt-2">{{ $message }}</p>@enderror
             </div>
         </div>
@@ -207,17 +199,18 @@
         {{-- 送信 --}}
         <div class="flex flex-col sm:flex-row gap-3 sm:justify-end pt-4 border-t border-secondary-200">
             <a href="{{ route('painter.jobs.index') }}"
-               class="order-2 sm:order-1 px-6 py-2.5 border border-secondary-400 text-secondary-700 text-xs uppercase tracking-[0.2em] hover:bg-secondary-100 transition-colors duration-200 text-center">
-                Cancel
+               class="order-2 sm:order-1 px-6 py-2.5 border border-secondary-400 text-secondary-700 text-sm hover:bg-secondary-100 transition-colors duration-200 text-center">
+                キャンセル
             </a>
             <button type="submit"
-                    class="order-1 sm:order-2 px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.25em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
-                Create Job
+                    class="order-1 sm:order-2 px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-sm hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+                作成
             </button>
         </div>
     </form>
 </div>
 
 @include('painter.jobs._date_validation')
+@include('painter.jobs._required_validation')
 
 @endsection

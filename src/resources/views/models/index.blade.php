@@ -24,7 +24,7 @@
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
-      document.querySelectorAll('input[name="body_type[]"], input[name="tag[]"]').forEach(cb => cb.checked = false);
+      document.querySelectorAll('input[name="body_type[]"]').forEach(cb => cb.checked = false);
     }
   </script>
 
@@ -117,21 +117,6 @@
           </div>
         </div>
 
-        {{-- タグ --}}
-        <div class="sm:col-span-2 lg:col-span-4">
-          <label class="form-label">タグ</label>
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-3 gap-y-2">
-            @foreach($allTags as $tag)
-              <label class="flex items-center cursor-pointer min-w-0">
-                <input type="checkbox" name="tag[]" value="{{ $tag }}"
-                       {{ in_array($tag, (array)request('tag', [])) ? 'checked' : '' }}
-                       class="border-secondary-400 text-secondary-900 focus:ring-secondary-700 shrink-0">
-                <span class="ml-2 text-sm text-secondary-700 truncate">{{ $tag }}</span>
-              </label>
-            @endforeach
-          </div>
-        </div>
-
         {{-- ボタン --}}
         <div class="sm:col-span-2 lg:col-span-4 flex items-end gap-3 sm:justify-end">
           <button type="submit" class="btn-primary flex-1 sm:flex-none">
@@ -149,7 +134,7 @@
   </div>
 
   {{-- 検索結果数 --}}
-  @if(request()->hasAny(['keyword', 'prefecture', 'gender', 'age_min', 'age_max', 'tag', 'online_available', 'reward_min']))
+  @if(request()->hasAny(['keyword', 'prefecture', 'gender', 'age_min', 'age_max', 'online_available', 'reward_min']))
     <div class="mb-4 text-sm text-secondary-600">
       検索結果: {{ $models->total() }}件
     </div>
@@ -231,17 +216,6 @@
                   </div>
                 @endif
 
-                @php $tags = $model->style_tags ?? []; @endphp
-                @if(count($tags) > 0)
-                  <div class="mt-1 flex flex-wrap gap-0.5">
-                    @foreach(array_slice($tags, 0, 2) as $tag)
-                      <span class="badge badge-secondary text-xs px-1 py-0">{{ $tag }}</span>
-                    @endforeach
-                    @if(count($tags) > 2)
-                      <span class="text-xs text-secondary-500">+{{ count($tags) - 2 }}</span>
-                    @endif
-                  </div>
-                @endif
               </div>
             </a>
             </div>

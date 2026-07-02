@@ -87,15 +87,6 @@
                                 @endif
                             </p>
                         @endif
-                        @php $tags = $model->style_tags ?? []; @endphp
-                        @if(count($tags) > 0)
-                            <div class="mt-1.5 flex flex-wrap gap-0.5">
-                                @foreach(array_slice($tags, 0, 2) as $tag)
-                                    <span class="inline-block px-1.5 py-0 rounded text-[10px] font-medium bg-primary-50 text-primary-600">{{ $tag }}</span>
-                                @endforeach
-                                @if(count($tags) > 2)<span class="text-[10px] text-secondary-400">+{{ count($tags) - 2 }}</span>@endif
-                            </div>
-                        @endif
                     </div>
                 </a>
                 <div class="absolute top-2 right-2 z-10">

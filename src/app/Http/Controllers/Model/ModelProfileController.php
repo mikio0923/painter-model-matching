@@ -60,19 +60,6 @@ class ModelProfileController extends Controller
             $query->where('online_available', true);
         }
 
-        // タグで検索（JSON配列内を検索・複数選択対応）
-        if ($request->filled('tag')) {
-            $tags = is_array($request->tag) ? $request->tag : [$request->tag];
-            $tags = array_filter($tags); // 空の値を除外
-            if (!empty($tags)) {
-                $query->where(function($q) use ($tags) {
-                    foreach ($tags as $tag) {
-                        $q->orWhereJsonContains('style_tags', $tag);
-                    }
-                });
-            }
-        }
-
         // 報酬範囲で検索
         if ($request->filled('reward_min')) {
             $query->where(function($q) use ($request) {
@@ -126,18 +113,6 @@ class ModelProfileController extends Controller
                 ->values();
         });
 
-        // タグリスト（検索フォーム用・キャッシュ）
-        $allTags = cache()->remember('model_tags', 3600, function () {
-            return ModelProfile::where('is_public', true)
-                ->whereNotNull('style_tags')
-                ->get()
-                ->pluck('style_tags')
-                ->flatten()
-                ->unique()
-                ->sort()
-                ->values();
-        });
-
         // 体型リスト（検索フォーム用・キャッシュ）
         $bodyTypes = cache()->remember('model_body_types', 3600, function () {
             return ModelProfile::where('is_public', true)
@@ -149,7 +124,7 @@ class ModelProfileController extends Controller
                 ->values();
         });
 
-        return view('models.index', compact('models', 'prefectures', 'allTags', 'bodyTypes', 'favoriteModelIds'));
+        return view('models.index', compact('models', 'prefectures', 'bodyTypes', 'favoriteModelIds'));
     }
 
     // 詳細

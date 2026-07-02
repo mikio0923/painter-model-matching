@@ -291,14 +291,7 @@ class ModelProfileEditController extends Controller
             $validated['profile_image_path'] = $imagePath;
         }
 
-        // style_tagsとpose_rangesをJSON形式で保存
-        if ($request->has('style_tags_input')) {
-            $tags = array_filter(array_map('trim', explode(',', $request->input('style_tags_input'))));
-            $validated['style_tags'] = array_values($tags);
-        } elseif (isset($validated['style_tags'])) {
-            $validated['style_tags'] = array_values(array_filter($validated['style_tags']));
-        }
-
+        // pose_rangesをJSON形式で保存（style_tags は 2026-07 に UI 廃止。DB カラムは残置）
         if ($request->has('pose_ranges_input')) {
             $ranges = array_filter(array_map('trim', explode(',', $request->input('pose_ranges_input'))));
             $validated['pose_ranges'] = array_values($ranges);

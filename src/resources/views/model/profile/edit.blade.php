@@ -313,14 +313,6 @@
         </div>
 
         <div>
-            <label for="style_tags_input" class="{{ $rowLabel }}">スタイルタグ（カンマ区切り）</label>
-            <input type="text" id="style_tags_input" name="style_tags_input"
-                   value="{{ old('style_tags_input', is_array($modelProfile->style_tags) ? implode(',', $modelProfile->style_tags) : '') }}"
-                   placeholder="例：清楚,クール,セクシー" class="{{ $input }}">
-            <p class="text-xs text-secondary-500 mt-2">カンマ区切りで複数のタグを入力できます。</p>
-        </div>
-
-        <div>
             <label for="pose_ranges_input" class="{{ $rowLabel }}">ポーズ範囲（カンマ区切り）</label>
             <input type="text" id="pose_ranges_input" name="pose_ranges_input"
                    value="{{ old('pose_ranges_input', is_array($modelProfile->pose_ranges) ? implode(',', $modelProfile->pose_ranges) : '') }}"
@@ -498,19 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.querySelector('form').addEventListener('submit', function(e) {
-    const styleTagsInput = document.querySelector('input[name="style_tags_input"]');
     const poseRangesInput = document.querySelector('input[name="pose_ranges_input"]');
-
-    if (styleTagsInput && styleTagsInput.value) {
-        const tags = styleTagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
-        tags.forEach((tag, index) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = `style_tags[${index}]`;
-            input.value = tag;
-            this.appendChild(input);
-        });
-    }
 
     if (poseRangesInput && poseRangesInput.value) {
         const ranges = poseRangesInput.value.split(',').map(r => r.trim()).filter(Boolean);

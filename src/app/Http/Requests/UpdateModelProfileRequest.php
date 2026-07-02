@@ -71,8 +71,6 @@ class UpdateModelProfileRequest extends FormRequest
             'portfolio_url' => ['nullable', 'url', 'max:255'],
             'sns_links' => ['nullable', 'array'],
             'sns_links.*' => ['url', 'max:255'],
-            'style_tags' => ['nullable', 'array'],
-            'style_tags.*' => ['string', 'max:50'],
             'pose_ranges' => ['nullable', 'array'],
             'pose_ranges.*' => ['string', 'max:50'],
             'online_available' => ['nullable', 'boolean'],

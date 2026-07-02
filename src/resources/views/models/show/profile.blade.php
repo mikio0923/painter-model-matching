@@ -243,14 +243,6 @@
                     @endauth
                 </div>
 
-                {{-- タグ --}}
-                @if(!empty($modelProfile->style_tags))
-                    <div class="flex flex-wrap gap-2">
-                        @foreach($modelProfile->style_tags as $tag)
-                            <span class="badge badge-secondary text-xs">#{{ $tag }}</span>
-                        @endforeach
-                    </div>
-                @endif
             </div>
         </div>
     </div>

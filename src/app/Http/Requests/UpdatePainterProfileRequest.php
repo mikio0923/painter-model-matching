@@ -23,6 +23,7 @@ class UpdatePainterProfileRequest extends FormRequest
     {
         return [
             'display_name'    => ['required', 'string', 'max:255'],
+            'profile_image'   => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
             'gender'          => ['nullable', 'string', 'in:male,female,other'],
             'bio'             => ['nullable', 'string', 'max:2000'],
             'experience'      => ['nullable', 'string', 'max:2000'],
@@ -50,6 +51,9 @@ class UpdatePainterProfileRequest extends FormRequest
     {
         return [
             'display_name.required' => '表示名を入力してください。',
+            'profile_image.image' => 'プロフィール画像は画像ファイルを選択してください。',
+            'profile_image.mimes' => 'プロフィール画像は JPEG / PNG / GIF / WebP 形式のみ対応しています。',
+            'profile_image.max' => 'プロフィール画像は 5MB 以内にしてください。',
             'display_name.max' => '表示名は255文字以内で入力してください。',
             'portfolio_url.url' => 'ポートフォリオURLは有効なURLを入力してください。',
             'portfolio_url.max' => 'ポートフォリオURLは255文字以内で入力してください。',

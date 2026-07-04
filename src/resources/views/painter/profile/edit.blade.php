@@ -30,7 +30,7 @@
         </div>
     @endif
 
-    <form action="{{ route('painter.profile.update') }}" method="POST" class="space-y-8">
+    <form action="{{ route('painter.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
         @csrf
         @method('PUT')
 
@@ -40,6 +40,33 @@
                 <p class="text-[10px] tracking-[0.3em] uppercase text-secondary-500">Basic</p>
             </div>
             <div class="p-5 sm:p-6 space-y-5">
+                {{-- プロフィール画像（依頼一覧・依頼詳細のアイコンとして表示される） --}}
+                <div>
+                    <label for="profile_image" class="form-label">プロフィール画像</label>
+                    <div class="flex items-center gap-4">
+                        <div class="avatar avatar-lg border-2 border-secondary-200 shrink-0" id="profile-image-preview-wrap">
+                            @if($painterProfile->profile_image_path)
+                                <img id="profile-image-preview" src="{{ Storage::url($painterProfile->profile_image_path) }}"
+                                     alt="プロフィール画像" class="w-full h-full object-cover">
+                            @else
+                                <img id="profile-image-preview" src="" alt="" class="w-full h-full object-cover hidden">
+                                <svg id="profile-image-placeholder" class="w-7 h-7 text-secondary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            @endif
+                        </div>
+                        <div>
+                            <input type="file" id="profile_image" name="profile_image"
+                                   accept="image/jpeg,image/png,image/gif,image/webp" class="hidden"
+                                   onchange="previewProfileImage(this)">
+                            <label for="profile_image"
+                                   class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-secondary-400 text-secondary-700 text-sm hover:bg-secondary-100 transition-colors duration-200">
+                                画像を選択
+                            </label>
+                            <p class="text-xs text-secondary-500 mt-2">JPEG / PNG / GIF / WebP、最大 5MB。依頼のアイコンとしても表示されます。</p>
+                        </div>
+                    </div>
+                    @error('profile_image')<p class="form-error">{{ $message }}</p>@enderror
+                </div>
+
                 <div>
                     <label for="display_name" class="form-label">
                         表示名 <span class="text-error-500">*</span>
@@ -168,14 +195,30 @@
         {{-- 送信ボタン --}}
         <div class="flex flex-col sm:flex-row gap-3 sm:justify-end">
             <a href="{{ route('mypage') }}"
-               class="order-2 sm:order-1 px-6 py-2.5 border border-secondary-400 text-secondary-700 text-xs uppercase tracking-[0.2em] hover:bg-secondary-100 transition-colors duration-200 text-center">
-                Cancel
+               class="order-2 sm:order-1 px-6 py-2.5 border border-secondary-400 text-secondary-700 text-sm hover:bg-secondary-100 transition-colors duration-200 text-center">
+                キャンセル
             </a>
             <button type="submit"
-                    class="order-1 sm:order-2 px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs uppercase tracking-[0.25em] hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
-                Save
+                    class="order-1 sm:order-2 px-8 py-2.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-sm hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-300">
+                保存
             </button>
         </div>
     </form>
 </div>
+
+<script>
+function previewProfileImage(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const img = document.getElementById('profile-image-preview');
+    const placeholder = document.getElementById('profile-image-placeholder');
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        img.src = e.target.result;
+        img.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+}
+</script>
 @endsection

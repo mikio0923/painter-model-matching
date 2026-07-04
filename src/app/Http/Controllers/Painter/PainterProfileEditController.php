@@ -8,6 +8,7 @@ use App\Models\PainterProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PainterProfileEditController extends Controller
@@ -75,6 +76,14 @@ class PainterProfileEditController extends Controller
 
         // チェックボックス: 未送信なら false にする
         $validated['accepts_offers'] = $request->boolean('accepts_offers');
+
+        // プロフィール画像のアップロード（モデル側と同じ挙動: 旧画像は物理削除）
+        if ($request->hasFile('profile_image')) {
+            if ($painterProfile->profile_image_path) {
+                Storage::disk('public')->delete($painterProfile->profile_image_path);
+            }
+            $validated['profile_image_path'] = $request->file('profile_image')->store('painter_profiles', 'public');
+        }
 
         $painterProfile->fill($validated);
         $painterProfile->save();

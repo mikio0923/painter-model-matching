@@ -13,7 +13,7 @@
         const p = document.createElement('p');
         p.dataset.requiredError = 'true';
         p.className = 'text-xs text-error-600 mt-2 hidden';
-        // 既存の @error 出力の直後 or input の直後に置く
+        // 既存のサーバ側エラー出力の直後 or input の直後に置く
         field.insertAdjacentElement('afterend', p);
         return p;
     }

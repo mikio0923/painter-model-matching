@@ -58,10 +58,6 @@
                    class="px-4 py-2 text-sm font-medium transition-colors {{ $tab === 'qa' ? 'text-white border-b-2 border-white' : 'text-gray-400 hover:text-gray-200' }}">
                     Q&A
                 </a>
-                <a href="{{ route('models.show', ['modelProfile' => $modelProfile, 'tab' => 'photo']) }}"
-                   class="px-4 py-2 text-sm font-medium transition-colors {{ $tab === 'photo' ? 'text-white border-b-2 border-white' : 'text-gray-400 hover:text-gray-200' }}">
-                    Photo
-                </a>
                 <a href="{{ route('models.show', ['modelProfile' => $modelProfile, 'tab' => 'comments']) }}"
                    class="px-4 py-2 text-sm font-medium transition-colors {{ $tab === 'comments' ? 'text-white border-b-2 border-white' : 'text-gray-400 hover:text-gray-200' }}">
                     Comments
@@ -75,8 +71,6 @@
         @include('models.show.profile', ['modelProfile' => $modelProfile, 'isFavorite' => $isFavorite, 'favoritesCount' => $favoritesCount])
     @elseif($tab === 'qa')
         @include('models.show.qa', ['modelProfile' => $modelProfile, 'questions' => $questions ?? collect()])
-    @elseif($tab === 'photo')
-        @include('models.show.photo', ['modelProfile' => $modelProfile])
     @elseif($tab === 'comments')
         @include('models.show.comments', ['modelProfile' => $modelProfile, 'reviews' => $reviews])
     @endif

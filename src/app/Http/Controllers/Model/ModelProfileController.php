@@ -140,7 +140,7 @@ class ModelProfileController extends Controller
 
         // タブの選択（デフォルトはprofile）
         $tab = $request->get('tab', 'profile');
-        $validTabs = ['profile', 'qa', 'photo', 'comments'];
+        $validTabs = ['profile', 'qa', 'comments'];
         if (!in_array($tab, $validTabs)) {
             $tab = 'profile';
         }

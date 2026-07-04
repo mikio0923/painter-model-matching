@@ -99,14 +99,18 @@ class JobController extends Controller
         $hasRelatedOffer = Auth::check()
             && $job->offers()->where('model_id', Auth::id())->exists();
 
+        // 自分がこの依頼に応募しているか（採用済みモデルが closed 依頼を確認できるように）
+        $isApplicant = Auth::check()
+            && $job->applications()->where('model_id', Auth::id())->exists();
+
         // 取引完了済（応募が accepted かつ payment_received_at セット）なら「実績」として公開
         $isCompletedJob = $job->applications()
             ->where('status', 'accepted')
             ->whereNotNull('payment_received_at')
             ->exists();
 
-        // closed/done の依頼は、所有画家本人 / 個別依頼の対象モデル / 取引完了済（公開実績）のみ閲覧可
-        if ($job->status !== 'open' && !$isOwner && !$hasRelatedOffer && !$isCompletedJob) {
+        // closed/done の依頼は、所有画家本人 / 応募者本人 / 個別依頼の対象モデル / 取引完了済（公開実績）のみ閲覧可
+        if ($job->status !== 'open' && !$isOwner && !$isApplicant && !$hasRelatedOffer && !$isCompletedJob) {
             abort(404);
         }
 

@@ -134,7 +134,6 @@ Route::middleware(['auth', 'role:model'])->prefix('model')->name('model.')->grou
     Route::post('/portfolio', [\App\Http\Controllers\Model\PortfolioController::class, 'store'])
         ->middleware('throttle:10,1')
         ->name('portfolio.store');
-    Route::put('/portfolio/{image}/caption', [\App\Http\Controllers\Model\PortfolioController::class, 'updateCaption'])->name('portfolio.caption');
     Route::post('/portfolio/{image}/main', [\App\Http\Controllers\Model\PortfolioController::class, 'setMain'])->name('portfolio.set-main');
     Route::delete('/portfolio/{image}', [\App\Http\Controllers\Model\PortfolioController::class, 'destroy'])->name('portfolio.destroy');
 

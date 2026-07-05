@@ -354,16 +354,6 @@ class ModelProfileEditController extends Controller
             }
         }
 
-        // キャプションを更新
-        if ($request->has('captions') && is_array($request->captions)) {
-            foreach ($request->captions as $imageId => $caption) {
-                $image = ModelProfileImage::find($imageId);
-                if ($image && $image->model_profile_id === $modelProfile->id) {
-                    $image->update(['caption' => $caption ?: null]);
-                }
-            }
-        }
-
         return redirect()->route('mypage')
             ->with('success', 'プロフィールを更新しました');
     }

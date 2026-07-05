@@ -41,8 +41,6 @@ class UpdateModelProfileRequest extends FormRequest
             'delete_images' => ['nullable', 'array'],
             'delete_images.*' => ['integer', 'exists:model_profile_images,id'],
             'main_image_id' => ['nullable', 'integer', 'exists:model_profile_images,id'],
-            'captions' => ['nullable', 'array'],
-            'captions.*' => ['nullable', 'string', 'max:500'],
             'age' => ['nullable', 'integer', 'min:1', 'max:150'],
             'birthdate' => ['nullable', 'date', 'before:today', 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')],
             'gender' => ['nullable', 'string', 'in:male,female,other'],

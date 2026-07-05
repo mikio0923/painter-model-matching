@@ -72,55 +72,38 @@
         <div class="space-y-4">
             <h2 class="font-display text-base font-semibold text-secondary-900">投稿済み画像（{{ $modelProfile->images->count() }} 枚）</h2>
 
-            @foreach($modelProfile->images as $image)
-                <div class="border border-secondary-200 bg-canvas-50 p-4 flex flex-col sm:flex-row gap-4">
-                    <div class="relative flex-shrink-0 w-full sm:w-40">
-                        <img src="{{ Storage::url($image->image_path) }}"
-                             alt="ギャラリー画像"
-                             class="w-full aspect-square object-cover border border-secondary-200">
-                        <div class="absolute top-2 right-2 flex flex-col gap-1">
-                            @if($image->is_main)
-                                <span class="bg-secondary-900 text-canvas-50 text-[9px] uppercase tracking-[0.2em] px-2 py-1">Main</span>
-                            @else
-                                <form action="{{ route('model.portfolio.set-main', $image) }}" method="POST">
-                                    @csrf
-                                    <button type="submit"
-                                            class="bg-canvas-50 border border-secondary-400 text-secondary-700 text-[9px] uppercase tracking-[0.2em] px-2 py-1 hover:bg-secondary-100">
-                                        Set Main
-                                    </button>
-                                </form>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="flex-1 min-w-0 space-y-3">
-                        <form action="{{ route('model.portfolio.caption', $image) }}" method="POST">
-                            @csrf @method('PUT')
-                            <label class="block text-[10px] uppercase tracking-[0.2em] text-secondary-500 mb-1">キャプション</label>
-                            <textarea name="caption" rows="3"
-                                      placeholder="写真へのコメントや日記を書けます"
-                                      class="w-full px-3 py-2 bg-canvas-50 border border-secondary-300 text-secondary-900 text-sm leading-relaxed
-                                             focus:outline-none focus:border-secondary-900 focus:ring-1 focus:ring-secondary-900
-                                             transition-colors duration-200">{{ $image->caption }}</textarea>
-                            <div class="mt-2 flex gap-2 justify-end">
-                                <button type="submit"
-                                        class="px-4 py-1.5 bg-secondary-900 text-canvas-50 border border-secondary-900 text-xs hover:bg-canvas-50 hover:text-secondary-900 transition-colors duration-200">
-                                    保存
-                                </button>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                @foreach($modelProfile->images as $image)
+                    <div class="border border-secondary-200 bg-canvas-50 p-2">
+                        <div class="relative">
+                            <img src="{{ Storage::url($image->image_path) }}"
+                                 alt="ポートフォリオ画像"
+                                 class="w-full aspect-square object-cover border border-secondary-200">
+                            <div class="absolute top-2 right-2">
+                                @if($image->is_main)
+                                    <span class="bg-secondary-900 text-canvas-50 text-[9px] uppercase tracking-[0.2em] px-2 py-1">Main</span>
+                                @else
+                                    <form action="{{ route('model.portfolio.set-main', $image) }}" method="POST">
+                                        @csrf
+                                        <button type="submit"
+                                                class="bg-canvas-50 border border-secondary-400 text-secondary-700 text-[9px] uppercase tracking-[0.2em] px-2 py-1 hover:bg-secondary-100">
+                                            Set Main
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
-                        </form>
-
+                        </div>
                         <form action="{{ route('model.portfolio.destroy', $image) }}" method="POST"
-                              onsubmit="return confirm('この画像を削除しますか？');" class="text-right">
+                              onsubmit="return confirm('この画像を削除しますか？');" class="mt-2 text-center">
                             @csrf @method('DELETE')
                             <button type="submit"
-                                    class="px-4 py-1.5 border border-error-500 text-error-600 text-xs hover:bg-error-50 transition-colors duration-200">
+                                    class="w-full px-3 py-1.5 border border-error-500 text-error-600 text-xs hover:bg-error-50 transition-colors duration-200">
                                 削除
                             </button>
                         </form>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
     @endif
 

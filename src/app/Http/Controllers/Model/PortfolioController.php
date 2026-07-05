@@ -67,17 +67,6 @@ class PortfolioController extends Controller
             ->with('success', '画像をアップロードしました。');
     }
 
-    public function updateCaption(Request $request, ModelProfileImage $image): RedirectResponse
-    {
-        $this->authorizeImage($image);
-
-        $request->validate(['caption' => ['nullable', 'string', 'max:500']]);
-        $image->update(['caption' => $request->input('caption')]);
-
-        return redirect()->route('model.portfolio.edit')
-            ->with('success', 'キャプションを更新しました。');
-    }
-
     public function setMain(ModelProfileImage $image): RedirectResponse
     {
         $this->authorizeImage($image);

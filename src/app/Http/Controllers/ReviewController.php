@@ -80,10 +80,28 @@ class ReviewController extends Controller
                 ->with('error', '取引完了後にレビューを投稿できます。');
         }
 
+        // 認可: レビューを書けるのはこの取引の当事者のみで、宛先は必ず「取引相手」
+        //   - 画家（依頼主）→ 採用されたモデル宛
+        //   - 採用されたモデル → 画家宛
+        $painterId = $job->painter_id;
+        $modelId   = $acceptedApplication->model_id;
+
+        if ($user->id === $painterId) {
+            $expectedTarget = $modelId;
+        } elseif ($user->id === $modelId) {
+            $expectedTarget = $painterId;
+        } else {
+            abort(403, 'この取引の当事者のみレビューを投稿できます。');
+        }
+
+        if ((int) $request->reviewed_user_id !== (int) $expectedTarget) {
+            abort(403, 'レビューの対象が不正です。');
+        }
+
         // 既にレビューを書いているかチェック
         $existingReview = Review::where('job_id', $job->id)
             ->where('reviewer_id', $user->id)
-            ->where('reviewed_user_id', $request->reviewed_user_id)
+            ->where('reviewed_user_id', $expectedTarget)
             ->first();
 
         if ($existingReview) {
@@ -94,7 +112,7 @@ class ReviewController extends Controller
         $review = Review::create([
             'job_id' => $job->id,
             'reviewer_id' => $user->id,
-            'reviewed_user_id' => $request->reviewed_user_id,
+            'reviewed_user_id' => $expectedTarget,
             'rating' => (int) $request->rating,
             'comment' => $request->comment,
         ]);

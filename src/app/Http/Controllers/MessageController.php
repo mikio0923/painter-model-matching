@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
+use App\Models\JobOffer;
 use App\Models\Message;
 use App\Models\JobApplication;
 use App\Services\NotificationService;
@@ -14,6 +15,36 @@ use Illuminate\Http\JsonResponse;
 
 class MessageController extends Controller
 {
+    /**
+     * 会話の当事者チェック。
+     * この依頼についてメッセージを交わせるのは
+     *   画家（依頼主） ⇄ その依頼に応募 or 個別依頼(オファー)されたモデル
+     * のペアのみ。どちらでもなければ 403。
+     */
+    private function assertConversationParticipants(Job $job, int $userId, int $otherUserId): void
+    {
+        $painterId = (int) $job->painter_id;
+
+        $isRelatedModel = function (int $modelUserId) use ($job): bool {
+            return JobApplication::where('job_id', $job->id)->where('model_id', $modelUserId)->exists()
+                || JobOffer::where('job_id', $job->id)->where('model_id', $modelUserId)->exists();
+        };
+
+        // 画家本人 → 相手はこの依頼に関係するモデルであること
+        if ($userId === $painterId) {
+            abort_unless($isRelatedModel($otherUserId), 403, 'この依頼に関係のない相手にはメッセージできません。');
+            return;
+        }
+
+        // 関係モデル本人 → 相手は依頼主の画家であること
+        if ($isRelatedModel($userId)) {
+            abort_unless($otherUserId === $painterId, 403, 'この依頼の依頼主以外にはメッセージできません。');
+            return;
+        }
+
+        abort(403, 'この依頼のメッセージに参加する権限がありません。');
+    }
+
     /**
      * メッセージスレッド一覧を表示
      */
@@ -91,6 +122,9 @@ class MessageController extends Controller
 
         $otherUser = \App\Models\User::findOrFail($otherUserId);
 
+        // 当事者（画家 ⇄ 応募/オファーされたモデル）以外は閲覧不可
+        $this->assertConversationParticipants($job, (int) $user->id, (int) $otherUserId);
+
         // メッセージを取得
         $messages = Message::where('job_id', $job->id)
             ->where(function($query) use ($user, $otherUserId) {
@@ -141,6 +175,9 @@ class MessageController extends Controller
         }
 
         $user = Auth::user();
+
+        // 当事者（画家 ⇄ 応募/オファーされたモデル）以外は送信不可
+        $this->assertConversationParticipants($job, (int) $user->id, (int) $request->receiver_id);
 
         // messages.image_path カラムが存在するかでファイル添付対応かを判定
         $hasImageColumn = \Illuminate\Support\Facades\Schema::hasColumn('messages', 'image_path');
@@ -200,6 +237,9 @@ class MessageController extends Controller
         $user        = Auth::user();
         $otherUserId = (int) $request->get('with');
         $since       = (int) $request->get('since', 0);
+
+        // 当事者以外はポーリング不可
+        $this->assertConversationParticipants($job, (int) $user->id, $otherUserId);
 
         $query = Message::where('job_id', $job->id)
             ->where(function ($q) use ($user, $otherUserId) {

@@ -96,16 +96,29 @@ class PainterJobApplicationController extends Controller
         }
 
         // 採用済が募集人数に達していたら弾く（達した瞬間以降は採用不可）
+        // チェックと更新をトランザクション + 行ロックで囲み、同時リクエストによる
+        // 二重採用（1名制限の突破）を防ぐ
         $limit = (int) ($job->recruitment_number ?? 1);
-        $acceptedCount = $job->applications()->where('status', 'accepted')->count();
-        // 既に accepted な応募を再度 accept する操作は意味がないので素通し
-        if ($application->status !== 'accepted' && $acceptedCount >= $limit) {
+
+        $accepted = \Illuminate\Support\Facades\DB::transaction(function () use ($job, $application, $limit) {
+            // この依頼の応募行をロックしてから採用済数を数える
+            $acceptedCount = JobApplication::where('job_id', $job->id)
+                ->where('status', 'accepted')
+                ->lockForUpdate()
+                ->count();
+
+            // 既に accepted な応募を再度 accept する操作は意味がないので素通し
+            if ($application->status !== 'accepted' && $acceptedCount >= $limit) {
+                return false;
+            }
+
+            $application->update(['status' => 'accepted']);
+            return true;
+        });
+
+        if (!$accepted) {
             return back()->with('error', "募集人数（{$limit}名）に達しているため、これ以上採用できません。");
         }
-
-        $application->update([
-            'status' => 'accepted',
-        ]);
 
         // 通知を作成（モデルに通知）
         NotificationService::notifyApplicationAccepted($application);

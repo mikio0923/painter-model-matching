@@ -105,6 +105,12 @@ class ModelApplicationController extends Controller
     {
         $user = Auth::user();
 
+        // 募集中 (open) の依頼のみ応募可（closed/done への直接POSTを拒否）
+        if ($job->status !== 'open') {
+            return redirect()->route('jobs.show', $job)
+                ->with('error', 'この依頼は募集を終了しています。');
+        }
+
         // 既に応募しているかチェック
         $existingApplication = JobApplication::where('job_id', $job->id)
             ->where('model_id', $user->id)

@@ -57,17 +57,10 @@ class ReviewController extends Controller
      */
     public function store(Request $request, Job $job): RedirectResponse
     {
-        $request->validate([
-            'reviewed_user_id' => ['required', 'integer', 'exists:users,id'],
-            'rating' => ['required', 'integer', 'between:1,5'],
-            'comment' => ['nullable', 'string', 'max:2000'],
-        ], [
-            'rating.required' => '評価を選択してください。',
-            'rating.integer'  => '評価は 1〜5 の星で選んでください。',
-            'rating.between'  => '評価は 1〜5 の星で選んでください。',
-        ]);
-
         $user = Auth::user();
+
+        // ── 認可を validation より先に行う ──
+        // 部外者にはバリデーション仕様すら見せず、まず 403 で遮断する
 
         // 取引完了（モデルが報酬受領を確定済み）でなければレビュー不可
         $acceptedApplication = JobApplication::where('job_id', $job->id)
@@ -97,6 +90,17 @@ class ReviewController extends Controller
         if ((int) $request->reviewed_user_id !== (int) $expectedTarget) {
             abort(403, 'レビューの対象が不正です。');
         }
+
+        // ── 認可通過後に入力を検証 ──
+        $request->validate([
+            'reviewed_user_id' => ['required', 'integer', 'exists:users,id'],
+            'rating' => ['required', 'integer', 'between:1,5'],
+            'comment' => ['nullable', 'string', 'max:2000'],
+        ], [
+            'rating.required' => '評価を選択してください。',
+            'rating.integer'  => '評価は 1〜5 の星で選んでください。',
+            'rating.between'  => '評価は 1〜5 の星で選んでください。',
+        ]);
 
         // 既にレビューを書いているかチェック
         $existingReview = Review::where('job_id', $job->id)

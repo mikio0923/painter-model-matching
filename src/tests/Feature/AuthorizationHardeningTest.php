@@ -84,6 +84,18 @@ class AuthorizationHardeningTest extends TestCase
         $this->assertDatabaseMissing('reviews', ['job_id' => $this->job->id]);
     }
 
+    public function test_outsider_gets_403_not_validation_error(): void
+    {
+        // 認可が validation より先: 部外者は不正入力でも 422 でなく 403 で弾かれる
+        $response = $this->actingAs($this->outsider)->post(route('reviews.store', $this->job), [
+            'reviewed_user_id' => $this->model->id,
+            'rating' => 99, // 範囲外の不正値
+        ]);
+
+        $response->assertStatus(403);
+        $response->assertSessionHasNoErrors();
+    }
+
     public function test_participant_can_review_counterpart(): void
     {
         $response = $this->actingAs($this->painter)->post(route('reviews.store', $this->job), [

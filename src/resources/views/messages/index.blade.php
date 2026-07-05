@@ -25,6 +25,7 @@
     @else
         <div class="border-t border-l border-secondary-200">
             @foreach($threads as $thread)
+                @continue(!$thread->job || !$thread->other_user)
                 <a href="{{ route('messages.show', ['job' => $thread->job, 'with' => $thread->other_user->id]) }}"
                    class="group flex items-start justify-between gap-4 px-5 py-5 border-r border-b border-secondary-200 hover:bg-secondary-50 transition-colors duration-300">
                     <div class="min-w-0 flex-1">

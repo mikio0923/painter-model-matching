@@ -69,10 +69,10 @@ class MessageController extends Controller
             })
             ->map(function($messages) use ($user) {
                 $firstMessage = $messages->first();
-                $otherUser = $firstMessage->sender_id === $user->id 
-                    ? $firstMessage->receiver 
+                $otherUser = $firstMessage->sender_id === $user->id
+                    ? $firstMessage->receiver
                     : $firstMessage->sender;
-                
+
                 return (object)[
                     'job' => $firstMessage->job,
                     'other_user' => $otherUser,
@@ -82,6 +82,8 @@ class MessageController extends Controller
                         ->count(),
                 ];
             })
+            // 依頼や相手ユーザーが削除されたスレッドは URL 生成に必要な情報が欠けるため除外
+            ->filter(fn($thread) => $thread->job !== null && $thread->other_user !== null)
             ->values();
 
         return view('messages.index', [
